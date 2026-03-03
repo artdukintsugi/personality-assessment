@@ -1,4 +1,4 @@
-# Moje Diagnostika
+# Personality Assessment
 
 Interaktivní diagnostický nástroj pro vyplňování PID-5 a LPFS-SR dotazníků s živým vyhodnocováním.
 
