@@ -9,7 +9,8 @@ export const SOURCES = {
     short: "Krueger et al. (2012)",
     full: "Krueger, R. F., Derringer, J., Markon, K. E., Watson, D., & Skodol, A. E. (2012). Initial construction of a maladaptive personality trait model and inventory for DSM-5. Psychological Medicine, 42(9), 1879–1890.",
     doi: "10.1017/S0033291711002674",
-    url: "https://doi.org/10.1017/S0033291711002674",
+    url: "https://novopsych.com/assessments/diagnosis/personality-inventory-for-dsm-5-short-form-pid-5-sf/",
+    note: "Volně dostupný přehled na NovoPsych",
   },
   apa2013: {
     short: "APA (2013) — DSM-5 Section III",
@@ -17,35 +18,33 @@ export const SOURCES = {
     doi: null,
     url: "https://www.psychiatry.org/psychiatrists/practice/dsm",
   },
-  bach2018: {
-    short: "Bach, Sellbom & Simonsen (2018)",
-    full: "Bach, B., Sellbom, M., & Simonsen, E. (2018). Personality Inventory for DSM-5 (PID-5) in clinical vs nonclinical individuals: Generalizability of psychometric features. Assessment, 25(7), 815–825.",
-    doi: "10.1177/1073191116684281",
-    url: "https://doi.org/10.1177/1073191116684281",
+  apaPid5: {
+    short: "APA — PID-5 plný formulář + skórovací klíč",
+    full: "APA: The Personality Inventory for DSM-5 (PID-5) — Full Version, Adult. Oficiální formulář s pokyny ke skórování.",
+    doi: null,
+    url: "https://www.psychiatry.org/getmedia/594673a6-1b9b-4298-8b52-c4c652c4a4e2/APA-DSM5TR-ThePersonalityInventoryForDSM5FullVersionAdult.pdf",
+    note: "Volně stažitelné PDF přímo od APA",
+  },
+  novopsych: {
+    short: "NovoPsych — PID-5-SF přehled",
+    full: "NovoPsych (2025). Personality Inventory for DSM-5 – Short Form (PID-5-SF): Scoring, interpretation, psychometrics.",
+    doi: null,
+    url: "https://novopsych.com/assessments/diagnosis/personality-inventory-for-dsm-5-short-form-pid-5-sf/",
+    note: "Volně dostupný přehled skórování a interpretace",
+  },
+  lloydPreece: {
+    short: "Lloyd & Preece — Psychometric Auto-Scorer",
+    full: "Lloyd, E. & Preece, D. (2023). Lloyd & Preece Psychometric Auto-Scorer v1.4. The Psychology Centre of Western Australia.",
+    doi: null,
+    url: "https://psychologywa.com/psychometric/",
+    note: "Volně stažitelný Excel s automatickým skórováním PID-5 a dalších testů",
   },
   morey2017: {
-    short: "Morey (2017)",
+    short: "Morey (2017) — LPFS-SR",
     full: "Morey, L. C. (2017). Development and initial evaluation of a self-report form of the DSM-5 Level of Personality Functioning Scale. Psychological Assessment, 29(10), 1302–1308.",
     doi: "10.1037/pas0000450",
-    url: "https://doi.org/10.1037/pas0000450",
-  },
-  widiger2019: {
-    short: "Widiger et al. (2019)",
-    full: "Widiger, T. A., Bach, B., Chmielewski, M., et al. (2019). Criterion A of the AMPD in HiTOP. Journal of Personality Assessment, 101(4), 345–355.",
-    doi: "10.1080/00223891.2018.1521946",
-    url: "https://doi.org/10.1080/00223891.2018.1521946",
-  },
-  bach2016: {
-    short: "Bach et al. (2016)",
-    full: "Bach, B., Maples-Keller, J. L., Bo, S., & Simonsen, E. (2016). The alternative DSM-5 personality disorder traits criterion: A comparative examination. Personality Disorders, 7(2), 124–135.",
-    doi: "10.1037/per0000162",
-    url: "https://doi.org/10.1037/per0000162",
-  },
-  apaPid5: {
-    short: "APA — PID-5 scoring manual",
-    full: "APA Online Assessment Measures: The Personality Inventory for DSM-5 (PID-5) — Adult, scoring instructions.",
-    doi: null,
-    url: "https://www.psychiatry.org/psychiatrists/practice/dsm/educational-resources/assessment-measures",
+    url: "https://novopsych.com/assessments/diagnosis/personality-inventory-for-dsm-5-short-form-pid-5-sf/",
+    note: "LPFS-SR referenční článek; přehled na NovoPsych",
   },
 };
 
@@ -287,7 +286,7 @@ export const DOMAIN_META = {
     formulaExact: "Neg. afektivita = průměr(Emoční labilita, Úzkostnost, Sep. nejistota, Hostilita, Perseverace, Submisivita, Restriktivní afektivita)",
     formulaOfficial: "APA oficiální = (Emoční labilita + Úzkostnost + Separační nejistota) / 3",
     desc: "Časté a intenzivní prožívání negativních emocí a projevů chování z nich vyplývajících.",
-    source: "krueger2012", cutoffSource: "bach2018",
+    source: "krueger2012", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
   "Odtažitost": {
@@ -297,7 +296,7 @@ export const DOMAIN_META = {
     formulaExact: "Odtažitost = průměr(Stažení, Vyh. se intimitě, Anhedonie, Depresivita, Restriktivní afektivita, Podezřívavost)",
     formulaOfficial: "APA oficiální = (Stažení + Anhedonie + Vyhýbání se intimitě) / 3",
     desc: "Stažení z mezilidských interakcí; omezený prožitek a projev emocí.",
-    source: "krueger2012", cutoffSource: "bach2018",
+    source: "krueger2012", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
   "Antagonismus": {
@@ -307,7 +306,7 @@ export const DOMAIN_META = {
     formulaExact: "Antagonismus = průměr(Manipulativnost, Klamavost, Grandiozita, Vyhášení pozornosti, Bezcitnost)",
     formulaOfficial: "APA oficiální = (Manipulativnost + Klamavost + Grandiozita) / 3",
     desc: "Chování stavějící osobu do konfliktu s druhými; přehnané pocity vlastní důležitosti.",
-    source: "krueger2012", cutoffSource: "bach2018",
+    source: "krueger2012", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
   "Disinhibice": {
@@ -317,7 +316,7 @@ export const DOMAIN_META = {
     formulaExact: "Disinhibice = průměr(Nezodpovědnost, Impulzivita, Roztříštěnost, Riskování, Rigidita)",
     formulaOfficial: "APA oficiální = (Nezodpovědnost + Impulzivita + Roztříštěnost) / 3",
     desc: "Orientace na okamžité uspokojení; impulzivní chování bez ohledu na následky.",
-    source: "krueger2012", cutoffSource: "bach2018",
+    source: "krueger2012", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
   "Psychoticismus": {
@@ -327,7 +326,7 @@ export const DOMAIN_META = {
     formulaExact: "Psychoticismus = průměr(Neobvyklé přesvědčení, Excentricita, Percepční dysregulace)",
     formulaOfficial: "APA oficiální = (Neobvyklé přesvědčení + Excentricita + Percepční dysregulace) / 3",
     desc: "Široké spektrum kulturně inkongruentních, zvláštních chování a myšlení.",
-    source: "krueger2012", cutoffSource: "bach2018",
+    source: "krueger2012", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
 };
@@ -343,7 +342,7 @@ export const SCORING_INFO = {
     diagFormula: "Diagnostické skóre = vážený průměr relevantních facetových skórů (váhy dle DSM-5 AMPD profilů)",
     diagFormulaMath: "diag_score = Σ(facet_score × weight) / Σ(weights)",
     cutoffs: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
-    cutoffSource: "bach2018",
+    cutoffSource: "novopsych",
     source: "krueger2012",
     itemCount: 220, facetCount: 25, domainCount: 5,
   },

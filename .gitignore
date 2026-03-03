@@ -28,3 +28,6 @@ npm-debug.log*
 # backups
 *.bak
 *.backup
+
+# large binary files
+*.pdf

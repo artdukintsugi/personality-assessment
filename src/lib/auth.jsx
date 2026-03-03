@@ -32,13 +32,22 @@ export function AuthProvider({ children }) {
     return { error };
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!isSupabaseConfigured()) return { error: { message: 'Supabase není nakonfigurován' } };
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    return { error };
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!isSupabaseConfigured()) return;
     await supabase.auth.signOut();
     setUser(null);
   }, []);
 
-  const value = { user, loading, signIn, signUp, signOut, showAuth, setShowAuth, isConfigured: isSupabaseConfigured() };
+  const value = { user, loading, signIn, signUp, signOut, signInWithGoogle, showAuth, setShowAuth, isConfigured: isSupabaseConfigured() };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
