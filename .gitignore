@@ -24,3 +24,7 @@ Thumbs.db
 # logs
 *.log
 npm-debug.log*
+
+# backups
+*.bak
+*.backup
