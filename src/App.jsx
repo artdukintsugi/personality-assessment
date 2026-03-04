@@ -17,6 +17,8 @@ import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, EAT26_SUBSCALES, scoreEAT
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from './data/mdq';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE, scoreCUDITR } from './data/cuditr';
 import { AUDIT_QUESTIONS, AUDIT_SCALES, AUDIT_SEVERITY, AUDIT_CUTOFF, AUDIT_SUBSCALES, scoreAUDIT, Q910_SCORE_MAP } from './data/audit';
+import { DAST10_QUESTIONS, DAST10_SCALE, DAST10_SEVERITY, DAST10_REVERSE_ITEM, DAST10_CUTOFF, scoreDAST10 } from './data/dast10';
+import { ITQ_QUESTIONS, ITQ_SCALE, ITQ_CLUSTERS, ITQ_SEVERITY, scoreITQ, diagnoseITQ } from './data/itq';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
@@ -29,6 +31,8 @@ import EAT26Results from './components/EAT26Results';
 import MDQResults from './components/MDQResults';
 import CUDITRResults from './components/CUDITRResults';
 import AUDITResults from './components/AUDITResults';
+import DAST10Results from './components/DAST10Results';
+import ITQResults from './components/ITQResults';
 import PatientProfile from './components/PatientProfile';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
@@ -307,7 +311,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx', auditAns: 'diag_audit_answers', auditIdx: 'diag_audit_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx', auditAns: 'diag_audit_answers', auditIdx: 'diag_audit_idx', dast10Ans: 'diag_dast10_answers', dast10Idx: 'diag_dast10_idx', itqAns: 'diag_itq_answers', itqIdx: 'diag_itq_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -332,6 +336,8 @@ export default function App() {
     if (p === '/mdq') return 'mdq';
     if (p === '/cuditr') return 'cuditr';
     if (p === '/audit') return 'audit';
+    if (p === '/dast10') return 'dast10';
+    if (p === '/itq') return 'itq';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/phq9/results') return 'phq9_results';
@@ -345,6 +351,8 @@ export default function App() {
     if (p === '/mdq/results') return 'mdq_results';
     if (p === '/cuditr/results') return 'cuditr_results';
     if (p === '/audit/results') return 'audit_results';
+    if (p === '/dast10/results') return 'dast10_results';
+    if (p === '/itq/results') return 'itq_results';
     if (p === '/sources') return 'sources';
     if (p === '/history') return 'history';
     if (p === '/profile') return 'profile';
@@ -355,7 +363,7 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', audit: '/audit', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', audit_results: '/audit/results', history: '/history', profile: '/profile', sources: '/sources' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', audit: '/audit', dast10: '/dast10', itq: '/itq', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', audit_results: '/audit/results', dast10_results: '/dast10/results', itq_results: '/itq/results', history: '/history', profile: '/profile', sources: '/sources' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
@@ -385,6 +393,10 @@ export default function App() {
   const [cuditrIdx, setCuditrIdx] = useState(() => lsGet(LS_KEYS.cuditrIdx, 0));
   const [auditAns, setAuditAns] = useState(() => lsGet(LS_KEYS.auditAns, {}));
   const [auditIdx, setAuditIdx] = useState(() => lsGet(LS_KEYS.auditIdx, 0));
+  const [dast10Ans, setDast10Ans] = useState(() => lsGet(LS_KEYS.dast10Ans, {}));
+  const [dast10Idx, setDast10Idx] = useState(() => lsGet(LS_KEYS.dast10Idx, 0));
+  const [itqAns, setItqAns] = useState(() => lsGet(LS_KEYS.itqAns, {}));
+  const [itqIdx, setItqIdx] = useState(() => lsGet(LS_KEYS.itqIdx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -433,6 +445,10 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.cuditrIdx, cuditrIdx); }, [cuditrIdx]);
   useEffect(() => { lsSet(LS_KEYS.auditAns, auditAns); }, [auditAns]);
   useEffect(() => { lsSet(LS_KEYS.auditIdx, auditIdx); }, [auditIdx]);
+  useEffect(() => { lsSet(LS_KEYS.dast10Ans, dast10Ans); }, [dast10Ans]);
+  useEffect(() => { lsSet(LS_KEYS.dast10Idx, dast10Idx); }, [dast10Idx]);
+  useEffect(() => { lsSet(LS_KEYS.itqAns, itqAns); }, [itqAns]);
+  useEffect(() => { lsSet(LS_KEYS.itqIdx, itqIdx); }, [itqIdx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -581,6 +597,19 @@ export default function App() {
     saveToHistory('audit', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: auditAns } });
   }, [auditAns, saveToHistory]);
 
+  const saveDast10Result = useCallback(() => {
+    const total = scoreDAST10(dast10Ans);
+    const sev = DAST10_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('dast10', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: dast10Ans } });
+  }, [dast10Ans, saveToHistory]);
+
+  const saveItqResult = useCallback(() => {
+    const total = scoreITQ(itqAns);
+    const dx = diagnoseITQ(itqAns);
+    const sev = ITQ_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('itq', { score: total, severity: sev?.key, diagnosis: dx.diagnosis, fullData: { score: total, severity: sev?.key, diagnosis: dx.diagnosis, odpovedi: itqAns } });
+  }, [itqAns, saveToHistory]);
+
   // View saved result — loads answers into state and navigates to full results page
   const viewSavedResult = useCallback((result) => {
     const fd = result.fullData || result;
@@ -615,6 +644,8 @@ export default function App() {
         mdq: { setAns: setMdqAns, setIdx: setMdqIdx, count: 15, results: 'mdq_results' },
         cuditr: { setAns: setCuditrAns, setIdx: setCuditrIdx, count: 8, results: 'cuditr_results' },
         audit: { setAns: setAuditAns, setIdx: setAuditIdx, count: 10, results: 'audit_results' },
+        dast10: { setAns: setDast10Ans, setIdx: setDast10Idx, count: 10, results: 'dast10_results' },
+        itq: { setAns: setItqAns, setIdx: setItqIdx, count: 18, results: 'itq_results' },
       };
       const cfg = typeMap[result.type];
       if (cfg) {
@@ -720,6 +751,8 @@ export default function App() {
   const fillSampleMdq = useCallback(() => { const s = {}; for (let i = 0; i < 13; i++) s[i] = Math.random() > 0.5 ? 0 : 1; s[13] = Math.random() > 0.5 ? 0 : 1; s[14] = Math.floor(Math.random() * 4); setMdqAns(s); setMdqIdx(14); setMode("mdq_results"); }, []);
   const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); s[7] = Math.floor(Math.random() * 3); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
   const fillSampleAudit = useCallback(() => { const s = {}; for (let i = 0; i < 8; i++) s[i] = Math.floor(Math.random() * 5); s[8] = Math.floor(Math.random() * 3); s[9] = Math.floor(Math.random() * 3); setAuditAns(s); setAuditIdx(9); setMode("audit_results"); }, []);
+  const fillSampleDast10 = useCallback(() => { const s = {}; for (let i = 0; i < 10; i++) s[i] = Math.random() > 0.5 ? 1 : 0; setDast10Ans(s); setDast10Idx(9); setMode("dast10_results"); }, []);
+  const fillSampleItq = useCallback(() => { const s = {}; for (let i = 0; i < 18; i++) s[i] = Math.floor(Math.random() * 5); setItqAns(s); setItqIdx(17); setMode("itq_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -803,13 +836,13 @@ export default function App() {
 
   // ═══ ONBOARDING POPUP ═══
   const ONBOARD_STEPS = useMemo(() => lang === 'cs' ? [
-    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 13 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
+    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 15 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
     { icon: '📋', title: 'Jak to funguje', desc: 'Vyberte si dotazník, odpovídejte na otázky a na konci uvidíte své výsledky s podrobným skórováním. Odpovědi se automaticky ukládají — můžete se kdykoliv vrátit a pokračovat.' },
     { icon: '🔗', title: 'Cross-reference analýza', desc: 'Po vyplnění více dotazníků systém automaticky analyzuje vztahy mezi vašimi výsledky — například jak spolu souvisí deprese, úzkost a nespavost.' },
     { icon: '🔒', title: 'Soukromí a bezpečnost', desc: 'Vaše data jsou uložena pouze lokálně ve vašem prohlížeči. Po přihlášení se synchronizují do cloudu a zpřístupní Klinický profil. Žádná data nesdílíme s třetími stranami.' },
     { icon: '⚕️', title: 'Důležité upozornění', desc: 'Tato aplikace je sebeposuzovací screeningový nástroj a nepředstavuje klinickou diagnózu. Pro odborné posouzení vždy konzultujte klinického psychologa nebo psychiatra.' },
   ] : [
-    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 13 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
+    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 15 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
     { icon: '📋', title: 'How It Works', desc: 'Choose a questionnaire, answer the questions, and see your results with detailed scoring at the end. Answers are saved automatically — you can return and continue anytime.' },
     { icon: '🔗', title: 'Cross-Reference Analysis', desc: 'After completing multiple questionnaires, the system automatically analyzes relationships between your results — e.g., how depression, anxiety, and insomnia are interconnected.' },
     { icon: '🔒', title: 'Privacy & Security', desc: 'Your data is stored locally in your browser only. After signing in, data syncs to the cloud and unlocks the Clinical Profile. We never share data with third parties.' },
@@ -886,7 +919,7 @@ export default function App() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-              {lang === 'cs' ? '13 validovaných nástrojů' : '13 validated instruments'}
+              {lang === 'cs' ? '15 validovaných nástrojů' : '15 validated instruments'}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">{t('appTitle')}</h1>
             <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto leading-relaxed">
@@ -1130,6 +1163,28 @@ export default function App() {
               </div>
             )}
           </button>
+          {/* DAST-10 */}
+          <button onClick={() => setMode("dast10")} className="p-4 rounded-2xl bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/20 hover:border-red-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-red-300 group-hover:text-red-200 transition-colors">DAST-10</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — drogy' : '10 items — drug use'}</div>
+            {Object.keys(dast10Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{width: `${(Object.keys(dast10Ans).length/10)*100}%`}} /></div>
+                <span className="text-xs text-red-400 shrink-0">{Object.keys(dast10Ans).length}/10</span>
+              </div>
+            )}
+          </button>
+          {/* ITQ */}
+          <button onClick={() => setMode("itq")} className="p-4 rounded-2xl bg-gradient-to-br from-fuchsia-900/40 to-fuchsia-800/20 border border-fuchsia-500/20 hover:border-fuchsia-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-fuchsia-300 group-hover:text-fuchsia-200 transition-colors">ITQ</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '18 otázek — CPTSD (ICD-11)' : '18 items — CPTSD (ICD-11)'}</div>
+            {Object.keys(itqAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-fuchsia-500 rounded-full" style={{width: `${(Object.keys(itqAns).length/18)*100}%`}} /></div>
+                <span className="text-xs text-fuchsia-400 shrink-0">{Object.keys(itqAns).length}/18</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Quick result buttons */}
@@ -1147,6 +1202,8 @@ export default function App() {
           {Object.keys(mdqAns).length === 15 && <button onClick={() => setMode("mdq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 MDQ</button>}
           {Object.keys(cuditrAns).length === 8 && <button onClick={() => setMode("cuditr_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CUDIT-R</button>}
           {Object.keys(auditAns).length === 10 && <button onClick={() => setMode("audit_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AUDIT</button>}
+          {Object.keys(dast10Ans).length === 10 && <button onClick={() => setMode("dast10_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DAST-10</button>}
+          {Object.keys(itqAns).length === 18 && <button onClick={() => setMode("itq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ITQ</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -1177,6 +1234,8 @@ export default function App() {
                           h.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
                           h.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
                           h.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
+                          h.type === 'dast10' ? 'bg-red-500/20 text-red-400' :
+                          h.type === 'itq' ? 'bg-fuchsia-500/20 text-fuchsia-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>{
                           { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[h.type] || h.type
@@ -1195,7 +1254,7 @@ export default function App() {
                       </div>
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
-                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit'].includes(h.type) && h.score != null && (
+                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit','dast10','itq'].includes(h.type) && h.score != null && (
                       <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
                     )}
                     {h.type === 'mdq' && (
@@ -1237,6 +1296,8 @@ export default function App() {
                               cr.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
                               cr.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
                               cr.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
+                              cr.type === 'dast10' ? 'bg-red-500/20 text-red-400' :
+                              cr.type === 'itq' ? 'bg-fuchsia-500/20 text-fuchsia-400' :
                               'bg-gray-500/20 text-gray-400'
                             }`}>{
                               { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', asrs: 'ASRS', eat26: 'EAT-26', mdq: 'MDQ', cuditr: 'CUDIT-R' }[cr.type] || cr.type
@@ -1286,8 +1347,10 @@ export default function App() {
             <button onClick={fillSampleMdq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 MDQ</button>
             <button onClick={fillSampleCuditr} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CUDIT</button>
             <button onClick={fillSampleAudit} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AUDIT</button>
+            <button onClick={fillSampleDast10} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 DAST</button>
+            <button onClick={fillSampleItq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ITQ</button>
           </div>
-          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
+          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); setDast10Ans({}); setDast10Idx(0); setItqAns({}); setItqIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
         </details>
 
         {/* Footer */}
@@ -1301,7 +1364,7 @@ export default function App() {
             <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span><span>·</span><span>CATI</span>
           </div>
           <div className="flex items-center justify-center gap-3 mt-1 text-xs text-gray-800">
-            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span>
+            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span><span>·</span><span>DAST-10</span><span>·</span><span>ITQ</span>
           </div>
           <button onClick={() => setMode('sources')} className="mt-4 text-xs text-purple-500/60 hover:text-purple-400 transition-all">
             📚 {lang === 'cs' ? 'Zdroje a reference' : 'Sources & References'}
@@ -2359,6 +2422,65 @@ export default function App() {
     <AUDITResults answers={auditAns} questions={AUDIT_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAuditResult(); alert(t('resultSaved')); }} />
   );
 
+  // ═══ DAST-10 QUESTIONNAIRE ═══
+  if (mode === 'dast10') {
+    const dast10ScaleLabels = DAST10_SCALE[lang] || DAST10_SCALE.cs;
+    return (
+      <QuestionnaireScreen
+        title="DAST-10"
+        questions={DAST10_QUESTIONS[lang]}
+        scaleLabels={dast10ScaleLabels}
+        scaleMin={0} scaleMax={1}
+        answers={dast10Ans} setAnswers={setDast10Ans}
+        idx={dast10Idx} setIdx={setDast10Idx}
+        onComplete={() => setMode('dast10_results')}
+        color="#EF4444" lang={lang} t={t} toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        instruction={lang === 'cs' ? 'Následující otázky se týkají vašeho užívání drog (bez alkoholu) za posledních 12 měsíců.' : 'The following questions concern your drug use (excluding alcohol) in the last 12 months.'}
+        liveScoreConfig={{ severityLevels: DAST10_SEVERITY, maxScore: 10, label: 'DAST-10', scoreFn: scoreDAST10 }}
+      />
+    );
+  }
+
+  // ═══ DAST-10 RESULTS ═══
+  if (mode === 'dast10_results') return (
+    <DAST10Results answers={dast10Ans} questions={DAST10_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDast10Result(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ ITQ QUESTIONNAIRE ═══
+  if (mode === 'itq') {
+    const itqScaleLabels = ITQ_SCALE[lang] || ITQ_SCALE.cs;
+    return (
+      <QuestionnaireScreen
+        title="ITQ"
+        questions={ITQ_QUESTIONS[lang]}
+        scaleLabels={itqScaleLabels}
+        scaleMin={0} scaleMax={4}
+        answers={itqAns} setAnswers={setItqAns}
+        idx={itqIdx} setIdx={setItqIdx}
+        onComplete={() => setMode('itq_results')}
+        color="#D946EF" lang={lang} t={t} toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        instruction={lang === 'cs' ? 'Následující otázky se týkají reakcí na traumatický zážitek. Uveďte, jak moc vás tyto problémy trápily v posledním měsíci.' : 'The following questions relate to reactions to a traumatic experience. Indicate how much these problems have bothered you in the past month.'}
+        liveScoreConfig={{ severityLevels: ITQ_SEVERITY, maxScore: 72, label: 'ITQ', scoreFn: scoreITQ,
+          subscales: [
+            { items: ITQ_CLUSTERS.reExperiencing.items, max: 8, color: ITQ_CLUSTERS.reExperiencing.color, cs: ITQ_CLUSTERS.reExperiencing.cs, en: ITQ_CLUSTERS.reExperiencing.en },
+            { items: ITQ_CLUSTERS.avoidance.items, max: 8, color: ITQ_CLUSTERS.avoidance.color, cs: ITQ_CLUSTERS.avoidance.cs, en: ITQ_CLUSTERS.avoidance.en },
+            { items: ITQ_CLUSTERS.senseOfThreat.items, max: 8, color: ITQ_CLUSTERS.senseOfThreat.color, cs: ITQ_CLUSTERS.senseOfThreat.cs, en: ITQ_CLUSTERS.senseOfThreat.en },
+            { items: ITQ_CLUSTERS.affectDysreg.items, max: 8, color: ITQ_CLUSTERS.affectDysreg.color, cs: ITQ_CLUSTERS.affectDysreg.cs, en: ITQ_CLUSTERS.affectDysreg.en },
+            { items: ITQ_CLUSTERS.negativeSelf.items, max: 8, color: ITQ_CLUSTERS.negativeSelf.color, cs: ITQ_CLUSTERS.negativeSelf.cs, en: ITQ_CLUSTERS.negativeSelf.en },
+            { items: ITQ_CLUSTERS.disturbedRel.items, max: 8, color: ITQ_CLUSTERS.disturbedRel.color, cs: ITQ_CLUSTERS.disturbedRel.cs, en: ITQ_CLUSTERS.disturbedRel.en },
+          ]
+        }}
+      />
+    );
+  }
+
+  // ═══ ITQ RESULTS ═══
+  if (mode === 'itq_results') return (
+    <ITQResults answers={itqAns} questions={ITQ_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveItqResult(); alert(t('resultSaved')); }} />
+  );
+
   // ═══ SOURCES / REFERENCES PAGE ═══
   if (mode === 'sources') return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
@@ -2423,6 +2545,8 @@ export default function App() {
             { title: 'MDQ', color: '#F59E0B', ref: 'Hirschfeld RMA, Williams JBW, Spitzer RL, et al. (2000). Development and Validation of a Screening Instrument for Bipolar Spectrum Disorder: The Mood Disorder Questionnaire. Am J Psychiatry, 157(11), 1873–1875.' },
             { title: 'CUDIT-R', color: '#84CC16', ref: 'Adamson SJ, Kay-Lambkin FJ, Baker AL, Lewin TJ, Thornton L, Kelly BJ, Sellman JD. (2010). An Improved Brief Measure of Cannabis Misuse: The Cannabis Use Disorders Identification Test–Revised (CUDIT-R). Drug and Alcohol Dependence, 110, 137–143.' },
             { title: 'AUDIT', color: '#EAB308', ref: 'Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction, 88(6), 791–804.' },
+            { title: 'DAST-10', color: '#EF4444', ref: 'Skinner HA. (1982). The Drug Abuse Screening Test. Addictive Behaviors, 7(4), 363–371.', ref2: 'Yudko E, Lozhkina O, Fouts A. (2007). A comprehensive review of the psychometric properties of the Drug Abuse Screening Test. Journal of Substance Abuse Treatment, 32(2), 189–198.' },
+            { title: 'ITQ', color: '#D946EF', ref: 'Cloitre M, Shevlin M, Brewin CR, et al. (2018). The International Trauma Questionnaire: development of a self-report measure of ICD-11 PTSD and complex PTSD. Acta Psychiatrica Scandinavica, 138(6), 536–546. doi:10.1111/acps.12956' },
           ].map((src, i) => (
             <div key={i} className="p-4 rounded-xl bg-gray-900/60 border border-gray-800/60" style={{ borderLeftWidth: 3, borderLeftColor: src.color }}>
               <div className="font-bold text-sm mb-1" style={{ color: src.color }}>{src.title}</div>

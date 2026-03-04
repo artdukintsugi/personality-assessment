@@ -1,7 +1,7 @@
 /**
  * Cross-Reference Engine
  * 
- * Maps clinical relationships between all 13 questionnaires.
+ * Maps clinical relationships between all 15 questionnaires.
  * Based on established comorbidity patterns and clinical literature.
  * 
  * Each cross-reference defines:
@@ -17,6 +17,7 @@ import { PCL5_CUTOFF } from '../data/pcl5';
 import { EAT26_CUTOFF } from '../data/eat26';
 import { CUDITR_CUTOFF } from '../data/cuditr';
 import { AUDIT_CUTOFF } from '../data/audit';
+import { DAST10_CUTOFF } from '../data/dast10';
 
 // ════════════════════════════════════════════════
 // Helper: get latest result of a given type from history
@@ -51,6 +52,10 @@ export function generateCrossReferences(history, lang = 'cs') {
   const asrs = getLatestScore(history, 'asrs');
   const cuditr = getLatestScore(history, 'cuditr');
   const audit = getLatestScore(history, 'audit');
+  const dast10 = getLatestScore(history, 'dast10');
+  const itqH = getLatest(history, 'itq');
+  const itq = itqH?.score ?? (itqH?.fullData?.score ?? null);
+  const itqDx = itqH?.diagnosis ?? itqH?.fullData?.diagnosis ?? null;
   const eat26H = getLatest(history, 'eat26');
   const eat26 = eat26H?.score ?? (eat26H?.fullData?.score ?? null);
   const mdqH = getLatest(history, 'mdq');
@@ -624,6 +629,178 @@ export function generateCrossReferences(history, lang = 'cs') {
     });
   }
 
+  // ─── DAST-10: Drug use + Depression ───
+  if (dast10 !== null && dast10 >= DAST10_CUTOFF && phq9 !== null && phq9 >= 10) {
+    refs.push({
+      id: 'drug_depression',
+      tests: ['dast10', 'phq9'],
+      strength: 'strong',
+      icon: '💊',
+      color: '#EF4444',
+      title: {
+        cs: 'Užívání drog a deprese',
+        en: 'Drug Use and Depression',
+      },
+      description: {
+        cs: `DAST-10 (${dast10}) a PHQ-9 (${phq9}) naznačují současné problémové užívání drog a depresi. Duální diagnóza je velmi častá — až 50 % osob se závislostí trpí komorbidní depresí. Integrovaná léčba obou stavů je klíčová.`,
+        en: `DAST-10 (${dast10}) and PHQ-9 (${phq9}) suggest concurrent problematic drug use and depression. Dual diagnosis is very common — up to 50% of individuals with substance use disorders have comorbid depression. Integrated treatment of both conditions is essential.`,
+      },
+    });
+  }
+
+  // ─── DAST-10: Drug use + Alcohol (polysubstance) ───
+  if (dast10 !== null && dast10 >= DAST10_CUTOFF && audit !== null && audit >= AUDIT_CUTOFF) {
+    refs.push({
+      id: 'drug_alcohol_polysubstance',
+      tests: ['dast10', 'audit'],
+      strength: 'strong',
+      icon: '⚠️',
+      color: '#DC2626',
+      title: {
+        cs: 'Polysubstanční užívání (drogy + alkohol)',
+        en: 'Polysubstance Use (Drugs + Alcohol)',
+      },
+      description: {
+        cs: `DAST-10 (${dast10}) a AUDIT (${audit}) oba překračují cut-off. Současné užívání více látek výrazně zvyšuje zdravotní rizika, komplikuje léčbu a je spojeno s horší prognózou.`,
+        en: `DAST-10 (${dast10}) and AUDIT (${audit}) both exceed cut-offs. Concurrent use of multiple substances significantly increases health risks, complicates treatment, and is associated with worse prognosis.`,
+      },
+    });
+  }
+
+  // ─── DAST-10: Drug use + Cannabis ───
+  if (dast10 !== null && dast10 >= DAST10_CUTOFF && cuditr !== null && cuditr >= CUDITR_CUTOFF) {
+    refs.push({
+      id: 'drug_cannabis',
+      tests: ['dast10', 'cuditr'],
+      strength: 'moderate',
+      icon: '🍃',
+      color: '#84CC16',
+      title: {
+        cs: 'Drogy a konopí',
+        en: 'Drug Use and Cannabis',
+      },
+      description: {
+        cs: `DAST-10 (${dast10}) a CUDIT-R (${cuditr}) naznačují problémové užívání jak drog obecně, tak konopí specificky. Konopí může být součástí širšího vzorce polysubstančního užívání.`,
+        en: `DAST-10 (${dast10}) and CUDIT-R (${cuditr}) suggest problematic use of both drugs in general and cannabis specifically. Cannabis may be part of a broader polysubstance use pattern.`,
+      },
+    });
+  }
+
+  // ─── DAST-10: Drug use + Insomnia ───
+  if (dast10 !== null && dast10 >= DAST10_CUTOFF && isi !== null && isi >= 15) {
+    refs.push({
+      id: 'drug_insomnia',
+      tests: ['dast10', 'isi'],
+      strength: 'moderate',
+      icon: '🌙',
+      color: '#6366F1',
+      title: {
+        cs: 'Drogy a nespavost',
+        en: 'Drug Use and Insomnia',
+      },
+      description: {
+        cs: `DAST-10 (${dast10}) a ISI (${isi}) ukazují na souvislost mezi užíváním drog a poruchami spánku. Mnohé substance (stimulanty, opiáty, abstinenční stavy) přímo narušují spánkovou architekturu.`,
+        en: `DAST-10 (${dast10}) and ISI (${isi}) indicate a link between drug use and sleep disturbance. Many substances (stimulants, opioids, withdrawal) directly disrupt sleep architecture.`,
+      },
+    });
+  }
+
+  // ─── ITQ: CPTSD + Depression ───
+  if (itqDx === 'cptsd' && phq9 !== null && phq9 >= 10) {
+    refs.push({
+      id: 'cptsd_depression',
+      tests: ['itq', 'phq9'],
+      strength: 'strong',
+      icon: '⚡',
+      color: '#D946EF',
+      title: {
+        cs: 'Komplexní PTSD a deprese',
+        en: 'Complex PTSD and Depression',
+      },
+      description: {
+        cs: `ITQ indikuje CPTSD a PHQ-9 (${phq9}) ukazuje depresi. Deprese je jednou z nejčastějších komorbidních diagnóz u CPTSD. DSO komponenta (negativní sebepojetí, dysregulace afektu) se s depresí značně překrývá.`,
+        en: `ITQ indicates CPTSD and PHQ-9 (${phq9}) shows depression. Depression is one of the most common comorbid diagnoses with CPTSD. The DSO component (negative self-concept, affect dysregulation) significantly overlaps with depression.`,
+      },
+    });
+  }
+
+  // ─── ITQ: PTSD concordance with PCL-5 ───
+  if ((itqDx === 'ptsd' || itqDx === 'cptsd') && pcl5 !== null && pcl5 >= PCL5_CUTOFF) {
+    refs.push({
+      id: 'itq_pcl5_concordance',
+      tests: ['itq', 'pcl5'],
+      strength: 'strong',
+      icon: '✓',
+      color: '#F43F5E',
+      title: {
+        cs: 'PTSD potvrzeno dvěma nástroji (ICD-11 + DSM-5)',
+        en: 'PTSD Confirmed by Two Instruments (ICD-11 + DSM-5)',
+      },
+      description: {
+        cs: `ITQ (ICD-11: ${itqDx?.toUpperCase()}) a PCL-5 (${pcl5}, DSM-5 cut-off ≥${PCL5_CUTOFF}) oba potvrzují traumatickou symptomatiku. Shoda ICD-11 a DSM-5 nástrojů výrazně zvyšuje diagnostickou jistotu.`,
+        en: `ITQ (ICD-11: ${itqDx?.toUpperCase()}) and PCL-5 (${pcl5}, DSM-5 cut-off ≥${PCL5_CUTOFF}) both confirm trauma symptomatology. Agreement between ICD-11 and DSM-5 instruments significantly increases diagnostic confidence.`,
+      },
+    });
+  }
+
+  // ─── ITQ: CPTSD + Substance use ───
+  if ((itqDx === 'cptsd') && ((dast10 !== null && dast10 >= DAST10_CUTOFF) || (audit !== null && audit >= AUDIT_CUTOFF))) {
+    const subLabel = dast10 >= DAST10_CUTOFF && audit >= AUDIT_CUTOFF ? 'DAST-10 + AUDIT' : dast10 >= DAST10_CUTOFF ? 'DAST-10' : 'AUDIT';
+    refs.push({
+      id: 'cptsd_substance',
+      tests: ['itq', ...(dast10 >= DAST10_CUTOFF ? ['dast10'] : []), ...(audit >= AUDIT_CUTOFF ? ['audit'] : [])],
+      strength: 'strong',
+      icon: '💊',
+      color: '#DC2626',
+      title: {
+        cs: 'CPTSD a užívání substancí',
+        en: 'CPTSD and Substance Use',
+      },
+      description: {
+        cs: `ITQ indikuje CPTSD a ${subLabel} ukazuje rizikové užívání substancí. Substance jsou u osob s komplexním traumatem často používány jako maladaptivní copingová strategie (self-mediating). Léčba by měla adresovat obojí.`,
+        en: `ITQ indicates CPTSD and ${subLabel} shows risky substance use. Substances in individuals with complex trauma are often used as a maladaptive coping strategy (self-medicating). Treatment should address both.`,
+      },
+    });
+  }
+
+  // ─── ITQ: CPTSD + BPD personality ───
+  if (itqDx === 'cptsd' && pid5HasBPD) {
+    refs.push({
+      id: 'cptsd_bpd',
+      tests: ['itq', 'pid5'],
+      strength: 'strong',
+      icon: '🧠',
+      color: '#A855F7',
+      title: {
+        cs: 'CPTSD a hraniční osobnostní rysy',
+        en: 'CPTSD and Borderline Personality Traits',
+      },
+      description: {
+        cs: 'ITQ indikuje CPTSD a PID-5 ukazuje zvýšené hraniční rysy. Diferenciální diagnostika CPTSD vs. BPD je klíčová — sdílejí emoční dysregulaci a interpersonální potíže, ale liší se v etiologii (trauma vs. vývojová porucha) a léčebném přístupu.',
+        en: 'ITQ indicates CPTSD and PID-5 shows elevated borderline traits. Differential diagnosis between CPTSD and BPD is crucial — they share emotional dysregulation and interpersonal difficulties, but differ in etiology (trauma vs. developmental disorder) and treatment approach.',
+      },
+    });
+  }
+
+  // ─── ITQ: CPTSD + Insomnia ───
+  if ((itqDx === 'ptsd' || itqDx === 'cptsd') && isi !== null && isi >= 15) {
+    refs.push({
+      id: 'cptsd_insomnia',
+      tests: ['itq', 'isi'],
+      strength: 'moderate',
+      icon: '🌙',
+      color: '#6366F1',
+      title: {
+        cs: 'Trauma a nespavost',
+        en: 'Trauma and Insomnia',
+      },
+      description: {
+        cs: `ITQ (${itqDx?.toUpperCase()}) a ISI (${isi}) ukazují na komorbidní poruchy spánku u traumatické symptomatiky. Nespavost a noční můry jsou jedním z hlavních symptomů PTSD/CPTSD a často přetrvávají i po léčbě traumatu.`,
+        en: `ITQ (${itqDx?.toUpperCase()}) and ISI (${isi}) indicate comorbid sleep disturbance with trauma symptomatology. Insomnia and nightmares are core PTSD/CPTSD symptoms and often persist even after trauma treatment.`,
+      },
+    });
+  }
+
   // Sort by strength
   const order = { strong: 0, moderate: 1, suggestive: 2 };
   refs.sort((a, b) => (order[a.strength] ?? 9) - (order[b.strength] ?? 9));
@@ -649,8 +826,8 @@ export const CLINICAL_DOMAINS = [
     icon: '⚡',
     color: '#EF4444',
     title: { cs: 'Trauma a stres', en: 'Trauma & Stress' },
-    tests: ['pcl5', 'dass42'],
-    description: { cs: 'PTSD, stresová zátěž', en: 'PTSD, stress burden' },
+    tests: ['pcl5', 'dass42', 'itq'],
+    description: { cs: 'PTSD, CPTSD, stresová zátěž', en: 'PTSD, CPTSD, stress burden' },
   },
   {
     id: 'neurodevelopmental',
@@ -673,7 +850,7 @@ export const CLINICAL_DOMAINS = [
     icon: '🔄',
     color: '#F59E0B',
     title: { cs: 'Behaviorální', en: 'Behavioral' },
-    tests: ['eat26', 'cuditr', 'audit', 'mdq'],
+    tests: ['eat26', 'cuditr', 'audit', 'dast10', 'mdq'],
     description: { cs: 'Příjem potravy, substance, nálady', en: 'Eating, substances, moods' },
   },
   {
@@ -701,6 +878,8 @@ export const TEST_META = {
   mdq:    { name: 'MDQ',      items: 15,  color: '#F59E0B', category: { cs: 'Bipolární porucha', en: 'Bipolar Disorder' } },
   cuditr: { name: 'CUDIT-R',  items: 8,   color: '#84CC16', category: { cs: 'Užívání konopí', en: 'Cannabis Use' } },
   audit:  { name: 'AUDIT',    items: 10,  color: '#EAB308', category: { cs: 'Užívání alkoholu', en: 'Alcohol Use' } },
+  dast10: { name: 'DAST-10',  items: 10,  color: '#EF4444', category: { cs: 'Užívání drog', en: 'Drug Use' } },
+  itq:    { name: 'ITQ',      items: 18,  color: '#D946EF', category: { cs: 'CPTSD (ICD-11)', en: 'CPTSD (ICD-11)' } },
 };
 
 /**
@@ -764,6 +943,18 @@ export function getTestStatus(history, lang = 'cs') {
       else if (s >= 16) { status = 'elevated'; label = lang === 'cs' ? 'Škodlivé pití' : 'Harmful'; }
       else if (s >= AUDIT_CUTOFF) { status = 'warning'; label = lang === 'cs' ? 'Rizikové pití' : 'Hazardous'; }
       else { status = 'ok'; label = lang === 'cs' ? 'Nízké riziko' : 'Low Risk'; }
+    } else if (h.type === 'dast10') {
+      const s = h.score ?? 0;
+      if (s >= 9) { status = 'critical'; label = lang === 'cs' ? 'Závažné problémy' : 'Severe'; }
+      else if (s >= 6) { status = 'elevated'; label = lang === 'cs' ? 'Podstatné problémy' : 'Substantial'; }
+      else if (s >= DAST10_CUTOFF) { status = 'warning'; label = lang === 'cs' ? 'Střední problémy' : 'Moderate'; }
+      else if (s >= 1) { status = 'ok'; label = lang === 'cs' ? 'Nízké riziko' : 'Low Risk'; }
+      else { status = 'ok'; label = lang === 'cs' ? 'Bez problémů' : 'No Problems'; }
+    } else if (h.type === 'itq') {
+      const dx = h.diagnosis ?? h.fullData?.diagnosis ?? 'none';
+      if (dx === 'cptsd') { status = 'critical'; label = lang === 'cs' ? 'Komplexní PTSD' : 'Complex PTSD'; }
+      else if (dx === 'ptsd') { status = 'elevated'; label = 'PTSD'; }
+      else { status = 'ok'; label = lang === 'cs' ? 'Pod prahem' : 'Below Threshold'; }
     } else if (h.type === 'cati') {
       const s = h.score ?? 0;
       if (s >= 151) { status = 'critical'; label = lang === 'cs' ? 'Vysoké autistické rysy' : 'High Autistic Traits'; }
