@@ -301,7 +301,9 @@ export function exportPid5AnswerSheet(answers, questions, lang = 'cs') {
   const rows = questions.map((q, i) => {
     const a = answers[i];
     const val = a !== undefined && a !== null ? a : unanswered;
-    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${val === unanswered ? '#4b5563' : val >= 2 ? '#fb923c' : '#4ade80'}">${val}</td></tr>`;
+    const ansColors = { 0: '#4ade80', 1: '#a3e635', 2: '#fbbf24', 3: '#f87171' };
+    const ansColor = val === unanswered ? '#4b5563' : (ansColors[val] || '#94a3b8');
+    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${ansColor};background:${ansColor}11;border-radius:4px">${val}</td></tr>`;
   }).join('');
 
   const html = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -320,7 +322,7 @@ table{width:100%;border-collapse:collapse}
 <h1>${title}</h1>
 <p style="color:#64748b;font-size:.85rem;margin-bottom:.25rem">${subtitle}</p>
 <p style="color:#4b5563;font-size:.75rem">${date} · ${Object.keys(answers).length}/220 ${lang === 'cs' ? 'odpovědí' : 'answers'}</p>
-<div class="scale-box"><strong style="font-size:.85rem;color:#c084fc">${scaleTitle}:</strong><br/>${labels.map(l => `<span>${l}</span>`).join('')}</div>
+<div class="scale-box"><strong style="font-size:.85rem;color:#c084fc">${scaleTitle}:</strong><br/>${labels.map((l, i) => { const c = ['#4ade80','#a3e635','#fbbf24','#f87171'][i]; return `<span style="color:${c}">● ${l}</span>`; }).join('')}</div>
 <table><thead><tr><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">#</th><th style="text-align:left;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${qLabel}</th><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${aLabel}</th></tr></thead><tbody>${rows}</tbody></table>
 </body></html>`;
   downloadHtml(html, `PID5_${lang === 'cs' ? 'odpovedi' : 'answers'}_${new Date().toISOString().slice(0,10)}.html`);
@@ -344,7 +346,9 @@ export function exportLpfsAnswerSheet(answers, questions, lang = 'cs') {
   const rows = questions.map((q, i) => {
     const a = answers[i];
     const val = a !== undefined && a !== null ? a : unanswered;
-    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${val === unanswered ? '#4b5563' : val >= 3 ? '#fb923c' : '#4ade80'}">${val}</td></tr>`;
+    const ansColors = { 1: '#4ade80', 2: '#a3e635', 3: '#fbbf24', 4: '#f87171' };
+    const ansColor = val === unanswered ? '#4b5563' : (ansColors[val] || '#94a3b8');
+    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${ansColor};background:${ansColor}11;border-radius:4px">${val}</td></tr>`;
   }).join('');
 
   const html = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -363,7 +367,7 @@ table{width:100%;border-collapse:collapse}
 <h1>${title}</h1>
 <p style="color:#64748b;font-size:.85rem;margin-bottom:.25rem">${subtitle}</p>
 <p style="color:#4b5563;font-size:.75rem">${date} · ${Object.keys(answers).length}/80 ${lang === 'cs' ? 'odpovědí' : 'answers'}</p>
-<div class="scale-box"><strong style="font-size:.85rem;color:#60a5fa">${scaleTitle}:</strong><br/>${labels.map(l => `<span>${l}</span>`).join('')}</div>
+<div class="scale-box"><strong style="font-size:.85rem;color:#60a5fa">${scaleTitle}:</strong><br/>${labels.map((l, i) => { const c = ['#4ade80','#a3e635','#fbbf24','#f87171'][i]; return `<span style="color:${c}">● ${l}</span>`; }).join('')}</div>
 <table><thead><tr><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">#</th><th style="text-align:left;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${qLabel}</th><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${aLabel}</th></tr></thead><tbody>${rows}</tbody></table>
 </body></html>`;
   downloadHtml(html, `LPFS_${lang === 'cs' ? 'odpovedi' : 'answers'}_${new Date().toISOString().slice(0,10)}.html`);

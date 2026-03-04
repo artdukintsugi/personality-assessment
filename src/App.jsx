@@ -5,7 +5,7 @@ import { SOURCES, FACET_META, DOMAIN_META, SCORING_INFO } from './lib/scoring-me
 import { getQuestionHint, getDiagExplanation, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson, exportPid5AnswerSheet, exportLpfsAnswerSheet } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
-import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
+import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES, DIAG_DETAILS } from './data';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
@@ -129,6 +129,7 @@ export default function App() {
     if (p === '/history') return 'history';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
     if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
+    if (p.startsWith('/diag/')) return 'diag_detail';
     return 'menu';
   }, [location.pathname]);
 
@@ -606,6 +607,129 @@ export default function App() {
     </div>
   );
 
+  // ── DIAGNOSTIC DETAIL PAGE ──
+  if (mode === "diag_detail") {
+    const diagId = location.pathname.split('/diag/')[1];
+    const profile = DIAG_PROFILES.find(p => p.id === diagId);
+    const detail = DIAG_DETAILS[diagId];
+    const d = detail?.[lang] || detail?.cs;
+    const displayName = profile ? diagName(profile.id, profile.name, lang) : diagId;
+    const diagScore = diagnostics.find(x => x.id === diagId);
+
+    if (!d) return (
+      <div className="min-h-screen bg-gray-950 text-white p-8 font-sans flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">{lang === 'cs' ? 'Detail pro tuto diagnózu není k dispozici.' : 'Detail not available for this diagnosis.'}</p>
+          <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm transition-all">{t('back')}</button>
+        </div>
+      </div>
+    );
+
+    return (
+      <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-300 text-sm transition-colors">{t('diagBackToResults')}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          </div>
+
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              {profile && <div className="w-5 h-5 rounded-full ring-2 ring-offset-2 ring-offset-gray-950" style={{background: profile.color, ringColor: profile.color + '60'}} />}
+              <h1 className="text-2xl md:text-3xl font-bold" style={{color: profile?.color || '#E5E7EB'}}>{displayName.split('(')[0].trim()}</h1>
+            </div>
+            {displayName.includes('(') && <div className="text-sm text-gray-500 mb-2 ml-8">{displayName.match(/\(([^)]+)\)/)?.[1]}</div>}
+            <p className="text-xs text-gray-600 ml-8">{d.fullName}</p>
+            {diagScore && (
+              <div className="mt-4 ml-8 inline-flex items-center gap-3 px-4 py-2 rounded-xl border" style={{borderColor: profile?.color + '30', background: profile?.color + '08'}}>
+                <span className="text-sm text-gray-400">{lang === 'cs' ? 'Vaše skóre:' : 'Your score:'}</span>
+                <span className="text-xl font-bold font-mono" style={{color: profile?.color}}>{diagScore.score.toFixed(2)}</span>
+                <span className="text-xs px-2 py-0.5 rounded-full" style={{background: diagScore.flag ? (profile?.color + '25') : '#374151', color: diagScore.flag ? profile?.color : '#9CA3AF'}}>{diagScore.flag ? `⚠ ${t('sevElevated')}` : diagScore.score >= 1.0 ? t('sevMild') : t('sevLow')}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Summary */}
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+            <p className="text-gray-300 leading-relaxed">{d.summary}</p>
+          </div>
+
+          {/* Key Traits */}
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+            <h3 className="text-lg font-semibold mb-4" style={{color: profile?.color || '#E5E7EB'}}>📋 {t('diagKeyTraits')}</h3>
+            <ul className="space-y-2">
+              {d.keyTraits.map((trait, i) => (
+                <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
+                  <span className="mt-1 w-1.5 h-1.5 rounded-full shrink-0" style={{background: profile?.color || '#6B7280'}} />
+                  <span>{trait}</span>
+                </li>
+              ))}
+            </ul>
+            {/* Facet scores if available */}
+            {profile && diagScore && (
+              <div className="mt-5 pt-4 border-t border-gray-800/60">
+                <div className="text-xs text-gray-500 mb-3">{lang === 'cs' ? 'Vaše skóre v relevantních facetech:' : 'Your scores on relevant facets:'}</div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                  {profile.facets.map(f => {
+                    const fv = facetScores[f] || 0;
+                    return (
+                      <div key={f} className="flex items-center gap-2">
+                        <div className="flex-1 text-xs text-gray-400 truncate">{facetName(f, lang)}</div>
+                        <div className="w-16 bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                          <div className="h-full rounded-full" style={{width: `${(fv/3)*100}%`, background: SEV_CLR(fv)}} />
+                        </div>
+                        <div className="text-xs font-mono w-8 text-right" style={{color: SEV_CLR(fv)}}>{fv.toFixed(2)}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* How it manifests */}
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+            <h3 className="text-lg font-semibold text-gray-200 mb-3">🔍 {t('diagHowManifests')}</h3>
+            <p className="text-sm text-gray-300 leading-relaxed">{d.howItManifests}</p>
+          </div>
+
+          {/* Relationships + Work side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-5 backdrop-blur-xl">
+              <h3 className="text-base font-semibold text-pink-300 mb-3">💗 {t('diagRelationships')}</h3>
+              <p className="text-sm text-gray-300 leading-relaxed">{d.relationships}</p>
+            </div>
+            <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-5 backdrop-blur-xl">
+              <h3 className="text-base font-semibold text-blue-300 mb-3">💼 {t('diagWorkLife')}</h3>
+              <p className="text-sm text-gray-300 leading-relaxed">{d.workLife}</p>
+            </div>
+          </div>
+
+          {/* Treatment */}
+          <div className="bg-green-950/20 rounded-2xl border border-green-500/15 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-green-300 mb-3">🩺 {t('diagTreatment')}</h3>
+            <p className="text-sm text-gray-300 leading-relaxed">{d.treatment}</p>
+          </div>
+
+          {/* Important note */}
+          <div className="bg-amber-950/20 rounded-2xl border border-amber-500/20 p-6 mb-8">
+            <h3 className="text-base font-semibold text-amber-300 mb-2">📌 {t('diagImportantNote')}</h3>
+            <p className="text-sm text-gray-300 leading-relaxed">{d.note}</p>
+          </div>
+
+          {/* Disclaimer */}
+          <p className="text-amber-400/80 text-xs p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-8">{t('summaryNote')}</p>
+
+          <div className="flex gap-3 mb-12">
+            <button onClick={() => navigate(-1)} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('diagBackToResults')}</button>
+            <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── PID-5 RESULTS ──
   if (mode === "pid5_results" || mode === "shared_pid5") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
@@ -728,7 +852,7 @@ export default function App() {
                         <div className="w-4 h-4 rounded-full ring-2 ring-offset-2 ring-offset-gray-950" style={{background: d.color, ringColor: d.color + '60'}} />
                         <div className="flex-1 min-w-0">
                           <HoverTip text={explanation} wide>
-                            <div className="text-base font-bold cursor-help truncate" style={{color: d.color}}>{displayName.split('(')[0].trim()}</div>
+                            <div onClick={() => navigate(`/diag/${d.id}`)} className="text-base font-bold cursor-pointer truncate hover:underline underline-offset-2" style={{color: d.color}}>{displayName.split('(')[0].trim()}</div>
                           </HoverTip>
                           {displayName.includes('(') && <div className="text-[10px] text-gray-500">{displayName.match(/\(([^)]+)\)/)?.[1]}</div>}
                         </div>
@@ -751,6 +875,7 @@ export default function App() {
                           );
                         })}
                       </div>
+                      <button onClick={() => navigate(`/diag/${d.id}`)} className="mt-3 text-xs font-medium hover:underline underline-offset-2 transition-colors" style={{color: d.color + 'CC'}}>→ {t('diagLearnMore')}</button>
                     </div>
                   );
                 })}
@@ -768,7 +893,7 @@ export default function App() {
                   const displayName = diagName(d.id, d.name, lang);
                   return (
                     <HoverTip key={d.id} text={explanation} wide block>
-                      <div className="cursor-help group rounded-xl border border-gray-700/40 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/30 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
+                      <div onClick={() => navigate(`/diag/${d.id}`)} className="cursor-pointer group rounded-xl border border-gray-700/40 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/30 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-3 h-3 rounded-full" style={{background: d.color, opacity: 0.6}} />
                           <div className="text-sm font-medium text-gray-300 group-hover:text-gray-100 truncate transition-colors flex-1">{displayName.split('(')[0].trim()}</div>
@@ -779,7 +904,10 @@ export default function App() {
                           </div>
                           <span className="text-sm font-mono font-bold text-gray-400">{d.score.toFixed(2)}</span>
                         </div>
-                        <div className="mt-2 text-[10px] font-medium px-2 py-0.5 rounded-full inline-block" style={{background: '#374151', color: '#9CA3AF'}}>{t('sevMild')}</div>
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block" style={{background: '#374151', color: '#9CA3AF'}}>{t('sevMild')}</div>
+                          <span className="text-[10px] text-gray-600 group-hover:text-gray-400 transition-colors">→ {t('diagLearnMore')}</span>
+                        </div>
                       </div>
                     </HoverTip>
                   );
@@ -796,9 +924,9 @@ export default function App() {
                 const displayName = diagName(d.id, d.name, lang);
                 return (
                   <HoverTip key={d.id} text={getDiagExplanation(d.id, lang)} wide block>
-                    <div className="cursor-help group flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-lg hover:bg-gray-800/40 transition-all">
+                    <div onClick={() => navigate(`/diag/${d.id}`)} className="cursor-pointer group flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-lg hover:bg-gray-800/40 transition-all">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
-                      <div className="flex-1 text-sm truncate min-w-0 group-hover:text-gray-200 transition-colors" style={{ color: d.flag ? d.color : '#6B7280' }}>{displayName.split('(')[0].trim()}</div>
+                      <div className="flex-1 text-sm truncate min-w-0 group-hover:text-gray-200 group-hover:underline underline-offset-2 transition-colors" style={{ color: d.flag ? d.color : '#6B7280' }}>{displayName.split('(')[0].trim()}</div>
                       <div className="flex-1 max-w-[120px] bg-gray-800/60 rounded-full h-1.5 overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${(d.score/3)*100}%`, background: d.color, opacity: d.flag ? 1 : 0.4 }} />
                       </div>

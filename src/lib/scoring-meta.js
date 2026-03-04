@@ -61,11 +61,11 @@ export const FACET_META = {
     desc: { cs: "Intenzivní pocity nervozity, napětí nebo paniky; obavy z nejistoty; strach z rozpadu.", en: "Intense feelings of nervousness, tension, or panic; worry about uncertainty; fear of falling apart." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
-  "Vyhášení pozornosti": {
+  "Vyhledávání pozornosti": {
     en: "Attention Seeking", domain: "Antagonismus",
     items: [13, 42, 73, 110, 112, 172, 190, 210],
     get itemCount() { return this.items.length; },
-    formulaExact: "Vyhášení pozornosti = (Q14 + Q43 + Q74 + Q111 + Q113 + Q173 + Q191 + Q211) / 8",
+    formulaExact: "Vyhledávání pozornosti = (Q14 + Q43 + Q74 + Q111 + Q113 + Q173 + Q191 + Q211) / 8",
     formulaMath: "= Σ odpovědí na 8 položek / 8",
     desc: { cs: "Jednání zaměřené na přitahování pozornosti; snaha být středem zájmu.", en: "Behavior aimed at attracting attention; striving to be the center of interest." },
     source: "apaPid5", scoringSource: "apaPid5",
@@ -295,7 +295,7 @@ export const DOMAIN_META = {
   "Antagonismus": {
     en: "Antagonism",
     coreFacets: ["Manipulativnost", "Klamavost", "Grandiozita"],
-    allFacets: ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhášení pozornosti", "Bezcitnost"],
+    allFacets: ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhledávání pozornosti", "Bezcitnost"],
     formulaExact: "Antagonismus = (Manipulativnost + Klamavost + Grandiozita) / 3",
     formulaOfficial: "APA oficiální = (Manipulativnost + Klamavost + Grandiozita) / 3",
     desc: { cs: "Chování stavějící osobu do konfliktu s druhými; přehnané pocity vlastní důležitosti.", en: "Behavior that puts the person in conflict with others; exaggerated sense of self-importance." },

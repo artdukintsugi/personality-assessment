@@ -42,7 +42,7 @@ export const REVERSE_SCORED = new Set([
 export const FM = {
   "Anhedonie":              [0, 22, 25, 29, 123, 154, 156, 188],        // 8 items (Q1, Q23, Q26, Q30R, Q124, Q155R, Q157, Q189)
   "Úzkostnost":             [78, 92, 94, 95, 108, 109, 129, 140, 173],  // 9 items (Q79, Q93, Q95, Q96R, Q109, Q110, Q130, Q141, Q174)
-  "Vyhášení pozornosti":    [13, 42, 73, 110, 112, 172, 190, 210],      // 8 items
+  "Vyhledávání pozornosti":    [13, 42, 73, 110, 112, 172, 190, 210],      // 8 items
   "Bezcitnost":             [10, 12, 18, 53, 71, 72, 89, 152, 165, 182, 197, 199, 206, 207], // 14 items (Q90R)
   "Klamavost":              [40, 52, 55, 75, 125, 133, 141, 205, 213, 217],  // 10 items (Q142R)
   "Depresivita":            [26, 60, 65, 80, 85, 103, 118, 147, 150, 162, 167, 168, 177, 211], // 14 items
@@ -87,7 +87,7 @@ export const DF = {
 export const DF_ALL = {
   "Negativní afektivita": ["Emoční labilita", "Úzkostnost", "Separační nejistota", "Hostilita", "Perseverace", "Submisivita", "Restriktivní afektivita"],
   "Odtažitost": ["Stažení", "Vyhýbání se intimitě", "Anhedonie", "Depresivita", "Restriktivní afektivita", "Podezřívavost"],
-  "Antagonismus": ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhášení pozornosti", "Bezcitnost"],
+  "Antagonismus": ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhledávání pozornosti", "Bezcitnost"],
   "Disinhibice": ["Nezodpovědnost", "Impulzivita", "Roztříštěnost", "Riskování", "Rigidita"],
   "Psychoticismus": ["Neobvyklé přesvědčení", "Excentricita", "Percepční dysregulace"],
 };

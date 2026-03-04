@@ -9,7 +9,7 @@ export const FACET_HINTS = {
     cs: { hint: "Otázky se zaměřují na míru vašich obav, nervozity a starostí.", example: "Např. zda se často obáváte budoucnosti, nemůžete přestat myslet na problémy..." },
     en: { hint: "Questions focus on the extent of your worries, nervousness, and concerns.", example: "E.g., whether you often worry about the future, can't stop thinking about problems..." },
   },
-  "Vyhášení pozornosti": {
+  "Vyhledávání pozornosti": {
     cs: { hint: "Otázky zjišťují, jak moc chcete být středem pozornosti.", example: "Např. zda rádi upoutáváte ostatní, mluvíte o svých úspěších..." },
     en: { hint: "Questions assess how much you want to be the center of attention.", example: "E.g., whether you like to attract others' notice, talk about your achievements..." },
   },
