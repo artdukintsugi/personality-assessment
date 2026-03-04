@@ -27,6 +27,7 @@ import ASRSResults from './components/ASRSResults';
 import EAT26Results from './components/EAT26Results';
 import MDQResults from './components/MDQResults';
 import CUDITRResults from './components/CUDITRResults';
+import PatientProfile from './components/PatientProfile';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
@@ -341,6 +342,7 @@ export default function App() {
     if (p === '/mdq/results') return 'mdq_results';
     if (p === '/cuditr/results') return 'cuditr_results';
     if (p === '/history') return 'history';
+    if (p === '/profile') return 'profile';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
     if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
     if (p.startsWith('/diag/')) return 'diag_detail';
@@ -348,7 +350,7 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', history: '/history' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', history: '/history', profile: '/profile' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
@@ -820,6 +822,22 @@ export default function App() {
           )}
         </div>
 
+        {/* Patient Profile Button */}
+        {history.length > 0 && (
+          <button onClick={() => setMode('profile')} className="w-full mb-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-purple-900/20 border border-cyan-500/20 hover:border-cyan-400/40 transition-all text-left group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🏥</span>
+                <div>
+                  <div className="text-lg font-semibold text-cyan-300 group-hover:text-cyan-200 transition-colors">{lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{lang === 'cs' ? 'Přehled výsledků, cross-reference a historie' : 'Results overview, cross-references & history'}</div>
+                </div>
+              </div>
+              <span className="text-gray-600 group-hover:text-gray-400 text-lg">→</span>
+            </div>
+          </button>
+        )}
+
         {/* ═══ Personality Assessment ═══ */}
         <div className="mb-2">
           <div className="flex items-center gap-3 mb-3 px-1">
@@ -1138,6 +1156,18 @@ export default function App() {
         </div>
       </div>
     </div>
+  );
+
+  // ── PATIENT PROFILE ──
+  if (mode === "profile") return (
+    <PatientProfile
+      history={history}
+      lang={lang}
+      toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      onGoToTest={(test) => setMode(test)}
+      onViewResult={(h) => viewSavedResult(h)}
+    />
   );
 
   // ── DIAGNOSTIC DETAIL PAGE ──
