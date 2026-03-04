@@ -4,12 +4,12 @@ import { SOURCES, FACET_META, DOMAIN_META, SCORING_INFO } from './lib/scoring-me
 import { getQuestionHint, DIAG_EXPLANATIONS, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
-import { Q, LPFS_Q, FM, DF, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
+import { Q, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
 Object.entries(FM).forEach(([f, items]) => items.forEach(i => { if(!REVERSE[i]) REVERSE[i]=[]; REVERSE[i].push(f); }));
-function facetDomain(f) { for (const [d, fs] of Object.entries(DF)) { if (fs.includes(f)) return d; } return null; }
+function facetDomain(f) { for (const [d, fs] of Object.entries(DF_ALL)) { if (fs.includes(f)) return d; } return null; }
 
 /**
  * Score PID-5 facets with REVERSE SCORING support.
@@ -119,24 +119,21 @@ export default function App() {
     }
   }, [auth?.user]);
 
-  useEffect(() => {
-    if (mode === 'pid5_results' && Object.keys(answers).length === 220) {
-      const recent = history[0];
-      if (!recent || recent.type !== 'pid5' || Date.now() - recent.id > 60000) {
-        const diags = scoreDiagnostics(scoreFacets(answers));
-        saveToHistory('pid5', { topDiags: diags.filter(d => d.flag).map(d => ({ name: d.name, score: d.score, color: d.color })), fullData: { domeny: scoreDomains(scoreFacets(answers)), facety: scoreFacets(answers), diagnostika: diags.map(d => ({id:d.id,name:d.name,score:d.score,flag:d.flag})), odpovedi: answers } });
-      }
-    }
-    if (mode === 'lpfs_results' && Object.keys(lpfsAns).length === 80) {
-      const recent = history[0];
-      if (!recent || recent.type !== 'lpfs' || Date.now() - recent.id > 60000) {
-        const vals = Object.values(lpfsAns);
-        const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
-        saveToHistory('lpfs', { score: avg, fullData: { prumer: avg, subskaly: scoreLpfsSubscales(lpfsAns), odpovedi: lpfsAns } });
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, saveToHistory]);
+  // Manual save functions — called only when user clicks "Uložit výsledek"
+  const savePid5Result = useCallback(() => {
+    const fScores = scoreFacets(answers);
+    const diags = scoreDiagnostics(fScores);
+    saveToHistory('pid5', {
+      topDiags: diags.filter(d => d.flag).map(d => ({ name: d.name, score: d.score, color: d.color })),
+      fullData: { domeny: scoreDomains(fScores), facety: fScores, diagnostika: diags.map(d => ({id:d.id,name:d.name,score:d.score,flag:d.flag})), odpovedi: answers }
+    });
+  }, [answers, saveToHistory]);
+
+  const saveLpfsResult = useCallback(() => {
+    const vals = Object.values(lpfsAns);
+    const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
+    saveToHistory('lpfs', { score: avg, fullData: { prumer: avg, subskaly: scoreLpfsSubscales(lpfsAns), odpovedi: lpfsAns } });
+  }, [lpfsAns, saveToHistory]);
 
   const curAns = mode === "pid5" ? answers : lpfsAns;
   const answered = Object.keys(curAns).length;
@@ -406,7 +403,7 @@ export default function App() {
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">Facety — Detail</h3>
           <div className="space-y-2">
-            {Object.entries(DF).map(([domain, facetList]) => (
+            {Object.entries(DF_ALL).map(([domain, facetList]) => (
               <div key={domain} className="mb-4">
                 <div className="text-xs uppercase tracking-wider mb-2 font-semibold" style={{color: DC[domain]}}>{domain}</div>
                 {facetList.map(f => {
@@ -457,7 +454,7 @@ export default function App() {
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">�� Export výsledků</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button onClick={() => exportPid5Report(domainScores, facetScores, diagnostics, DF)} className="p-4 rounded-xl bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all text-left">
+            <button onClick={() => exportPid5Report(domainScores, facetScores, diagnostics, DF_ALL)} className="p-4 rounded-xl bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all text-left">
               <div className="text-sm font-semibold text-purple-300">📄 Plný report</div>
               <div className="text-xs text-gray-500 mt-1">HTML s tiskem do PDF</div>
             </button>
@@ -465,7 +462,7 @@ export default function App() {
               <div className="text-sm font-semibold text-pink-300">📱 Insta Story</div>
               <div className="text-xs text-gray-500 mt-1">1080×1920 vizuální karta</div>
             </button>
-            <button onClick={() => exportQuickSummary(domainScores, facetScores, diagnostics, DF)} className="p-4 rounded-xl bg-amber-900/40 border border-amber-500/30 hover:border-amber-400/60 transition-all text-left">
+            <button onClick={() => exportQuickSummary(domainScores, facetScores, diagnostics, DF_ALL)} className="p-4 rounded-xl bg-amber-900/40 border border-amber-500/30 hover:border-amber-400/60 transition-all text-left">
               <div className="text-sm font-semibold text-amber-300">⚡ Rychlý přehled</div>
               <div className="text-xs text-gray-500 mt-1">Kompaktní shrnutí</div>
             </button>
@@ -476,7 +473,10 @@ export default function App() {
           </div>
         </div>
 
-        <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all mb-12">← Menu</button>
+        <div className="flex gap-3 mb-12">
+          <button onClick={() => { savePid5Result(); alert('✅ Výsledek uložen do historie!'); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">💾 Uložit výsledek</button>
+          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">← Menu</button>
+        </div>
       </div>
     </div>
   );
@@ -525,7 +525,10 @@ export default function App() {
             </button>
           </div>
         </div>
-        <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">← Menu</button>
+        <div className="flex gap-3">
+          <button onClick={() => { saveLpfsResult(); alert('✅ Výsledek uložen do historie!'); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">💾 Uložit výsledek</button>
+          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">← Menu</button>
+        </div>
       </div>
     </div>
   );
@@ -563,7 +566,8 @@ export default function App() {
       </div>
 
       <div className="flex-1 flex justify-center p-4 gap-4">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4">
+        <div className="w-full lg:w-1/2 lg:max-w-lg">
           {/* Domain / subscale tag */}
           {isPid && domain && (
             <div className="flex gap-2 mb-3 flex-wrap">
@@ -799,6 +803,7 @@ export default function App() {
           {answered >= (isPid ? Q.length : LPFS_Q.length) && (
             <button onClick={() => setMode(isPid ? 'pid5_results' : 'lpfs_results')} className={`w-full mt-6 p-4 rounded-xl font-semibold text-lg transition-all ${isPid ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'}`}>Zobrazit výsledky</button>
           )}
+        </div>
         </div>
       </div>
     </div>
