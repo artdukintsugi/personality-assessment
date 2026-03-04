@@ -174,6 +174,19 @@ const translations = {
     summaryLpfsIntro: 'Na základě vašich odpovědí v dotazníku LPFS-SR (80 položek) bylo vaše celkové skóre úrovně fungování osobnosti:',
     summaryLpfsHigh: 'Vaše skóre přesahuje klinický práh (≥ 1.5), což naznačuje možné obtíže v oblasti fungování osobnosti. Nejvíce se to projevuje v oblastech:',
     summaryLpfsOk: 'Vaše skóre je pod klinickým prahem, což naznačuje přiměřenou úroveň fungování osobnosti.',
+    summaryDomainExplain: 'Doména měří obecný trend — nemusí to nutně znamenat problém, ale ukazuje oblasti, kde vaše odpovědi naznačují výraznější rysy. Skóre pod 1.0 je v normě, 1.0–1.5 je mírně zvýšené, a nad 1.5 je klinicky významné.',
+    summaryFacetDetail: 'Konkrétní facety (podrysy) ukazují přesnější obraz — zatímco celková doména může být v normě, některé dílčí facety mohou být výrazně zvýšené.',
+    summaryElevatedExplain: 'Zvýšené diagnostické profily znamenají, že kombinace vašich odpovědí odpovídá vzorcům popsaným v DSM-5 alternativním modelu pro poruchy osobnosti. To neznamená, že máte poruchu osobnosti — pouze že určité rysy jsou výraznější než u většiny populace. Mnoho lidí má zvýšené rysy v některých oblastech, aniž by to ovlivnilo jejich fungování.',
+    summaryWhatNext: 'Co s výsledky?',
+    summaryWhatNextText: 'Pokud vás výsledky znepokojují nebo chcete lépe porozumět svým osobnostním rysům, doporučujeme konzultaci s klinickým psychologem nebo psychiatrem. PID-5 je screeningový nástroj — není sám o sobě dostatečný pro stanovení diagnózy.',
+    summaryLpfsExplain: 'LPFS-SR měří čtyři klíčové oblasti fungování osobnosti: schopnost mít stabilní identitu a sebeobraz (Identita), schopnost stanovovat a sledovat životní cíle (Sebe-řízení), schopnost porozumět perspektivě druhých (Empatie) a schopnost udržovat blízké a smysluplné vztahy (Intimita).',
+    summaryLpfsHighExplain: 'Zvýšené skóre naznačuje potíže v základním fungování osobnosti — to se může projevovat jako pocit ztráty identity, obtíže s motivací, problémy v porozumění druhým nebo neschopnost udržovat stabilní blízké vztahy.',
+    summaryLpfsOkExplain: 'Vaše fungování osobnosti se zdá být přiměřené. To znamená, že máte poměrně stabilní pocit vlastní identity, dokážete si stanovovat a sledovat cíle, rozumíte perspektivě druhých lidí a jste schopni udržovat blízké vztahy.',
+    answerSheet: 'Arch odpovědí',
+    answerSheetDesc: 'Pro oficiální dotazník',
+    shareResult: '🔗 Sdílet',
+    shareLink: 'Odkaz zkopírován!',
+    viewingSharedResult: 'Sdílený výsledek',
     history: 'Historie',
     navPid5: 'PID-5 Test',
     navLpfs: 'LPFS-SR Test',
@@ -280,6 +293,19 @@ const translations = {
     summaryLpfsIntro: 'Based on your answers to the LPFS-SR questionnaire (80 items), your overall level of personality functioning score was:',
     summaryLpfsHigh: 'Your score exceeds the clinical threshold (≥ 1.5), suggesting possible difficulties in personality functioning. This is most evident in the areas of:',
     summaryLpfsOk: 'Your score is below the clinical threshold, suggesting adequate personality functioning.',
+    summaryDomainExplain: 'A domain score measures a general trend — it doesn\'t necessarily indicate a problem, but highlights areas where your responses suggest more prominent traits. Scores below 1.0 are normal, 1.0–1.5 are mildly elevated, and above 1.5 are clinically significant.',
+    summaryFacetDetail: 'Specific facets (sub-traits) provide a more precise picture — while the overall domain may be normal, some individual facets may be significantly elevated.',
+    summaryElevatedExplain: 'Elevated diagnostic profiles mean that the combination of your responses matches patterns described in the DSM-5 Alternative Model for Personality Disorders. This does NOT mean you have a personality disorder — only that certain traits are more prominent than in most of the population. Many people have elevated traits in some areas without it affecting their functioning.',
+    summaryWhatNext: 'What to do with the results?',
+    summaryWhatNextText: 'If the results concern you or you want to better understand your personality traits, we recommend consulting a clinical psychologist or psychiatrist. PID-5 is a screening tool — it is not sufficient on its own for making a diagnosis.',
+    summaryLpfsExplain: 'The LPFS-SR measures four key areas of personality functioning: the ability to have a stable identity and self-image (Identity), the ability to set and pursue life goals (Self-Direction), the ability to understand others\' perspectives (Empathy), and the ability to maintain close and meaningful relationships (Intimacy).',
+    summaryLpfsHighExplain: 'Elevated scores suggest difficulties in basic personality functioning — this may manifest as a sense of lost identity, motivation difficulties, problems understanding others, or inability to maintain stable close relationships.',
+    summaryLpfsOkExplain: 'Your personality functioning appears adequate. This means you have a relatively stable sense of identity, can set and pursue goals, understand others\' perspectives, and are capable of maintaining close relationships.',
+    answerSheet: 'Answer Sheet',
+    answerSheetDesc: 'For official questionnaire',
+    shareResult: '🔗 Share',
+    shareLink: 'Link copied!',
+    viewingSharedResult: 'Shared result',
     history: 'History',
     navPid5: 'PID-5 Test',
     navLpfs: 'LPFS-SR Test',
@@ -332,6 +358,13 @@ export function diagName(id, csName, lang) {
 
 /** Translate a diagnostic profile description (bilingual object or plain string) */
 export function diagDesc(desc, lang) {
+  if (!desc) return '';
+  if (typeof desc === 'string') return desc;
+  return desc[lang] || desc.cs || '';
+}
+
+/** Translate a metadata desc field (bilingual object or plain string) — used for FACET_META.desc, DOMAIN_META.desc */
+export function metaDesc(desc, lang) {
   if (!desc) return '';
   if (typeof desc === 'string') return desc;
   return desc[lang] || desc.cs || '';

@@ -49,7 +49,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Anhedonie = (Q1 + Q23 + Q26 + Q30R + Q124 + Q155R + Q157 + Q189) / 8",
     formulaMath: "= Σ odpovědí na 8 položek / 8",
-    desc: "Neschopnost prožívat nebo nemít zájem o zážitky; nedostatek potěšení z životních aktivit.",
+    desc: { cs: "Neschopnost prožívat nebo nemít zájem o zážitky; nedostatek potěšení z životních aktivit.", en: "Inability to experience or lack of interest in experiences; deficit of pleasure from life activities." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Úzkostnost": {
@@ -58,7 +58,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Úzkostnost = (Q79 + Q93 + Q95 + Q96R + Q109 + Q110 + Q130 + Q141 + Q174) / 9",
     formulaMath: "= Σ odpovědí na 9 položek / 9",
-    desc: "Intenzivní pocity nervozity, napětí nebo paniky; obavy z nejistoty; strach z rozpadu.",
+    desc: { cs: "Intenzivní pocity nervozity, napětí nebo paniky; obavy z nejistoty; strach z rozpadu.", en: "Intense feelings of nervousness, tension, or panic; worry about uncertainty; fear of falling apart." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Vyhášení pozornosti": {
@@ -67,7 +67,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Vyhášení pozornosti = (Q14 + Q43 + Q74 + Q111 + Q113 + Q173 + Q191 + Q211) / 8",
     formulaMath: "= Σ odpovědí na 8 položek / 8",
-    desc: "Jednání zaměřené na přitahování pozornosti; snaha být středem zájmu.",
+    desc: { cs: "Jednání zaměřené na přitahování pozornosti; snaha být středem zájmu.", en: "Behavior aimed at attracting attention; striving to be the center of interest." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Bezcitnost": {
@@ -76,7 +76,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Bezcitnost = (Q11 + Q13 + Q19 + Q54 + Q72 + Q73 + Q90R + Q153 + Q166 + Q183 + Q198 + Q200 + Q207 + Q208) / 14",
     formulaMath: "= Σ odpovědí na 14 položek / 14",
-    desc: "Nedostatek zájmu o pocity a problémy druhých; nedostatek viny či výčitek svědomí.",
+    desc: { cs: "Nedostatek zájmu o pocity a problémy druhých; nedostatek viny či výčitek svědomí.", en: "Lack of concern for others' feelings and problems; lack of guilt or remorse." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Klamavost": {
@@ -85,7 +85,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Klamavost = (Q41 + Q53 + Q56 + Q76 + Q126 + Q134 + Q142R + Q206 + Q214 + Q218) / 10",
     formulaMath: "= Σ odpovědí na 10 položek / 10",
-    desc: "Nečestnost a podvádění; zkreslování sebe sama; přikrašlování nebo vymýšlení událostí.",
+    desc: { cs: "Nečestnost a podvádění; zkreslování sebe sama; přikrašlování nebo vymýšlení událostí.", en: "Dishonesty and cheating; distorting self-presentation; embellishing or fabricating events." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Depresivita": {
@@ -94,7 +94,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Depresivita = (Q27 + Q61 + Q66 + Q81 + Q86 + Q104 + Q119 + Q148 + Q151 + Q163 + Q168 + Q169 + Q178 + Q212) / 14",
     formulaMath: "= Σ odpovědí na 14 položek / 14",
-    desc: "Časté pocity smutku, beznaděje; sebekritičnost; sebevražedné myšlenky nebo chování.",
+    desc: { cs: "Časté pocity smutku, beznaděje; sebekritičnost; sebevražedné myšlenky nebo chování.", en: "Frequent feelings of sadness, hopelessness; self-criticism; suicidal thoughts or behavior." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Roztříštěnost": {
@@ -103,7 +103,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Roztříštěnost = (Q6 + Q29 + Q47 + Q68 + Q88 + Q118 + Q132 + Q144 + Q199) / 9",
     formulaMath: "= Σ odpovědí na 9 položek / 9",
-    desc: "Obtíže se soustředěním; snadné rozptýlení vnějšími podněty.",
+    desc: { cs: "Obtíže se soustředěním; snadné rozptýlení vnějšími podněty.", en: "Difficulty concentrating; easily distracted by external stimuli." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Excentricita": {
@@ -112,7 +112,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Excentricita = (Q5 + Q21 + Q24 + Q25 + Q33 + Q52 + Q55 + Q70 + Q71 + Q152 + Q172 + Q185 + Q205) / 13",
     formulaMath: "= Σ odpovědí na 13 položek / 13",
-    desc: "Divné, neobvyklé nebo bizarní chování, vzhled nebo řeč; zvláštní a nepředvídatelné myšlenky.",
+    desc: { cs: "Divné, neobvyklé nebo bizarní chování, vzhled nebo řeč; zvláštní a nepředvídatelné myšlenky.", en: "Odd, unusual, or bizarre behavior, appearance, or speech; strange and unpredictable thoughts." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Emoční labilita": {
@@ -121,7 +121,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Emoční labilita = (Q18 + Q62 + Q102 + Q122 + Q138 + Q165 + Q181) / 7",
     formulaMath: "= Σ odpovědí na 7 položek / 7",
-    desc: "Nestabilita emočních prožitků a nálad; emoce se snadno vyvolají, jsou intenzivní.",
+    desc: { cs: "Nestabilita emočních prožitků a nálad; emoce se snadno vyvolají, jsou intenzivní.", en: "Instability of emotional experiences and moods; emotions are easily triggered and intense." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Grandiozita": {
@@ -130,7 +130,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Grandiozita = (Q40 + Q65 + Q114 + Q179 + Q187 + Q197) / 6",
     formulaMath: "= Σ odpovědí na 6 položek / 6",
-    desc: "Přesvědčení, že je člověk nadřazen druhým a zaslouží si zvláštní zacházení.",
+    desc: { cs: "Přesvědčení, že je člověk nadřazen druhým a zaslouží si zvláštní zacházení.", en: "Belief that one is superior to others and deserves special treatment." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Hostilita": {
@@ -139,7 +139,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Hostilita = (Q28 + Q32 + Q38 + Q85 + Q92 + Q116 + Q158 + Q170 + Q188 + Q216) / 10",
     formulaMath: "= Σ odpovědí na 10 položek / 10",
-    desc: "Přetrvávající nebo časté pocity hněvu; podrážděnost v reakci na drobné urážky.",
+    desc: { cs: "Přetrvávající nebo časté pocity hněvu; podrážděnost v reakci na drobné urážky.", en: "Persistent or frequent feelings of anger; irritability in response to minor slights." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Impulzivita": {
@@ -148,7 +148,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Impulzivita = (Q4 + Q16 + Q17 + Q22 + Q58R + Q204) / 6",
     formulaMath: "= Σ odpovědí na 6 položek / 6",
-    desc: "Jednání na základě momentálního impulzu; obtížná schopnost následovat plán.",
+    desc: { cs: "Jednání na základě momentálního impulzu; obtížná schopnost následovat plán.", en: "Acting on momentary impulse; difficulty following through on plans." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Vyhýbání se intimitě": {
@@ -157,7 +157,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Vyhýbání se intimitě = (Q89 + Q97R + Q108 + Q120 + Q145 + Q203) / 6",
     formulaMath: "= Σ odpovědí na 6 položek / 6",
-    desc: "Vyhýbání se blízkým nebo romantickým vztahům a intimnímu kontaktu.",
+    desc: { cs: "Vyhýbání se blízkým nebo romantickým vztahům a intimnímu kontaktu.", en: "Avoidance of close or romantic relationships and intimate contact." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Nezodpovědnost": {
@@ -166,7 +166,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Nezodpovědnost = (Q31 + Q129 + Q156 + Q160 + Q171 + Q201 + Q210R) / 7",
     formulaMath: "= Σ odpovědí na 7 položek / 7",
-    desc: "Nedodržování finančních a jiných závazků; neplnění dohod a slibů.",
+    desc: { cs: "Nedodržování finančních a jiných závazků; neplnění dohod a slibů.", en: "Failure to honor financial and other obligations; not fulfilling agreements and promises." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Manipulativnost": {
@@ -175,7 +175,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Manipulativnost = (Q107 + Q125 + Q162 + Q180 + Q219) / 5",
     formulaMath: "= Σ odpovědí na 5 položek / 5",
-    desc: "Používání lstivosti k ovlivňování nebo kontrole druhých; svádění, šarm, výřečnost.",
+    desc: { cs: "Používání lstivosti k ovlivňování nebo kontrole druhých; svádění, šarm, výřečnost.", en: "Using cunning to influence or control others; seduction, charm, eloquence." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Percepční dysregulace": {
@@ -184,7 +184,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Percepční dysregulace = (Q36 + Q37 + Q42 + Q44 + Q59 + Q77 + Q83 + Q154 + Q192 + Q193 + Q213 + Q217) / 12",
     formulaMath: "= Σ odpovědí na 12 položek / 12",
-    desc: "Zvláštní smyslové zážitky; smíšení reality a fantazie; depersonalizace a derealizace.",
+    desc: { cs: "Zvláštní smyslové zážitky; smíšení reality a fantazie; depersonalizace a derealizace.", en: "Unusual sensory experiences; blending of reality and fantasy; depersonalization and derealization." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Perseverace": {
@@ -193,7 +193,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Perseverace = (Q46 + Q51 + Q60 + Q78 + Q80 + Q100 + Q121 + Q128 + Q137) / 9",
     formulaMath: "= Σ odpovědí na 9 položek / 9",
-    desc: "Setrvávání u nefunkčních přístupů; obtížná změna chování navzdory opakovaným neúspěchům.",
+    desc: { cs: "Setrvávání u nefunkčních přístupů; obtížná změna chování navzdory opakovaným neúspěchům.", en: "Persisting with dysfunctional approaches; difficulty changing behavior despite repeated failures." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Restriktivní afektivita": {
@@ -202,7 +202,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Restriktivní afektivita = (Q8 + Q45 + Q84 + Q91 + Q101 + Q167 + Q184) / 7",
     formulaMath: "= Σ odpovědí na 7 položek / 7",
-    desc: "Malá reakce na emocionálně stimulující situace; omezené prožívání i projevování emocí.",
+    desc: { cs: "Malá reakce na emocionálně stimulující situace; omezené prožívání i projevování emocí.", en: "Little reaction to emotionally stimulating situations; limited experience and expression of emotions." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Riskování": {
@@ -211,7 +211,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Riskování = (Q3 + Q7R + Q35R + Q39 + Q48 + Q67 + Q69 + Q87R + Q98R + Q112 + Q159 + Q164R + Q195 + Q215R) / 14",
     formulaMath: "= Σ odpovědí na 14 položek / 14",
-    desc: "Účast na nebezpečných aktivitách bez ohledu na důsledky. ⚠ Na úrovni domény invertováno (pól kompulzivity).",
+    desc: { cs: "Účast na nebezpečných aktivitách bez ohledu na důsledky. ⚠ Na úrovni domény invertováno (pól kompulzivity).", en: "Engaging in dangerous activities without regard for consequences. ⚠ Inverted at domain level (compulsivity pole)." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Separační nejistota": {
@@ -220,7 +220,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Separační nejistota = (Q12 + Q50 + Q57 + Q64 + Q127 + Q149 + Q175) / 7",
     formulaMath: "= Σ odpovědí na 7 položek / 7",
-    desc: "Strach z odmítnutí nebo oddělení od významných druhých; obavy ze ztráty.",
+    desc: { cs: "Strach z odmítnutí nebo oddělení od významných druhých; obavy ze ztráty.", en: "Fear of rejection or separation from significant others; fear of loss." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Submisivita": {
@@ -229,7 +229,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Submisivita = (Q9 + Q15 + Q63 + Q202) / 4",
     formulaMath: "= Σ odpovědí na 4 položek / 4",
-    desc: "Přizpůsobení se přáním a potřebám druhých; podřizování vlastního jednání.",
+    desc: { cs: "Přizpůsobení se přáním a potřebám druhých; podřizování vlastního jednání.", en: "Adapting to others' wishes and needs; subordinating one's own behavior." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Podezřívavost": {
@@ -238,7 +238,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Podezřívavost = (Q2 + Q103 + Q117 + Q131R + Q133 + Q177R + Q190) / 7",
     formulaMath: "= Σ odpovědí na 7 položek / 7",
-    desc: "Očekávání zlomyslnosti od druhých; pochybování o loajalitě.",
+    desc: { cs: "Očekávání zlomyslnosti od druhých; pochybování o loajalitě.", en: "Expecting malice from others; doubting their loyalty." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Neobvyklé přesvědčení": {
@@ -247,7 +247,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Neobvyklé přesvědčení = (Q94 + Q99 + Q106 + Q139 + Q143 + Q150 + Q194 + Q209) / 8",
     formulaMath: "= Σ odpovědí na 8 položek / 8",
-    desc: "Přesvědčení o nadpřirozených schopnostech; neobvyklé zážitky s realitou.",
+    desc: { cs: "Přesvědčení o nadpřirozených schopnostech; neobvyklé zážitky s realitou.", en: "Beliefs about supernatural abilities; unusual experiences with reality." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Stažení": {
@@ -256,7 +256,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Stažení = (Q10 + Q20 + Q75 + Q82 + Q136 + Q146 + Q147 + Q161 + Q182 + Q186) / 10",
     formulaMath: "= Σ odpovědí na 10 položek / 10",
-    desc: "Preference pro samotu; rezervovanost v sociálních situacích.",
+    desc: { cs: "Preference pro samotu; rezervovanost v sociálních situacích.", en: "Preference for solitude; reserve in social situations." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
   "Rigidita": {
@@ -265,7 +265,7 @@ export const FACET_META = {
     get itemCount() { return this.items.length; },
     formulaExact: "Rigidita = (Q34 + Q49 + Q105 + Q115 + Q123 + Q135 + Q140 + Q176 + Q196 + Q220) / 10",
     formulaMath: "= Σ odpovědí na 10 položek / 10",
-    desc: "Přísné trvání na dokonalosti; rigidní dodržování pravidel. ⚠ Na úrovni domény invertováno.",
+    desc: { cs: "Přísné trvání na dokonalosti; rigidní dodržování pravidel. ⚠ Na úrovni domény invertováno.", en: "Strict insistence on perfection; rigid adherence to rules. ⚠ Inverted at domain level." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
 };
@@ -278,7 +278,7 @@ export const DOMAIN_META = {
     allFacets: ["Emoční labilita", "Úzkostnost", "Separační nejistota", "Hostilita", "Perseverace", "Submisivita", "Restriktivní afektivita"],
     formulaExact: "Neg. afektivita = (Emoční labilita + Úzkostnost + Separační nejistota) / 3",
     formulaOfficial: "APA oficiální = (Emoční labilita + Úzkostnost + Separační nejistota) / 3",
-    desc: "Časté a intenzivní prožívání negativních emocí a projevů chování z nich vyplývajících.",
+    desc: { cs: "Časté a intenzivní prožívání negativních emocí a projevů chování z nich vyplývajících.", en: "Frequent and intense experience of negative emotions and resulting behavioral manifestations." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
@@ -288,7 +288,7 @@ export const DOMAIN_META = {
     allFacets: ["Stažení", "Vyhýbání se intimitě", "Anhedonie", "Depresivita", "Restriktivní afektivita", "Podezřívavost"],
     formulaExact: "Odtažitost = (Stažení + Anhedonie + Vyhýbání se intimitě) / 3",
     formulaOfficial: "APA oficiální = (Stažení + Anhedonie + Vyhýbání se intimitě) / 3",
-    desc: "Stažení z mezilidských interakcí; omezený prožitek a projev emocí.",
+    desc: { cs: "Stažení z mezilidských interakcí; omezený prožitek a projev emocí.", en: "Withdrawal from interpersonal interactions; limited experience and expression of emotions." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
@@ -298,7 +298,7 @@ export const DOMAIN_META = {
     allFacets: ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhášení pozornosti", "Bezcitnost"],
     formulaExact: "Antagonismus = (Manipulativnost + Klamavost + Grandiozita) / 3",
     formulaOfficial: "APA oficiální = (Manipulativnost + Klamavost + Grandiozita) / 3",
-    desc: "Chování stavějící osobu do konfliktu s druhými; přehnané pocity vlastní důležitosti.",
+    desc: { cs: "Chování stavějící osobu do konfliktu s druhými; přehnané pocity vlastní důležitosti.", en: "Behavior that puts the person in conflict with others; exaggerated sense of self-importance." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
@@ -308,7 +308,7 @@ export const DOMAIN_META = {
     allFacets: ["Nezodpovědnost", "Impulzivita", "Roztříštěnost", "Riskování", "Rigidita"],
     formulaExact: "Disinhibice = (Nezodpovědnost + Impulzivita + Roztříštěnost) / 3",
     formulaOfficial: "APA oficiální = (Nezodpovědnost + Impulzivita + Roztříštěnost) / 3",
-    desc: "Orientace na okamžité uspokojení; impulzivní chování bez ohledu na následky.",
+    desc: { cs: "Orientace na okamžité uspokojení; impulzivní chování bez ohledu na následky.", en: "Orientation toward immediate gratification; impulsive behavior without regard for consequences." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },
@@ -318,7 +318,7 @@ export const DOMAIN_META = {
     allFacets: ["Neobvyklé přesvědčení", "Excentricita", "Percepční dysregulace"],
     formulaExact: "Psychoticismus = (Neobvyklé přesvědčení + Excentricita + Percepční dysregulace) / 3",
     formulaOfficial: "APA oficiální = (Neobvyklé přesvědčení + Excentricita + Percepční dysregulace) / 3",
-    desc: "Široké spektrum kulturně inkongruentních, zvláštních chování a myšlení.",
+    desc: { cs: "Široké spektrum kulturně inkongruentních, zvláštních chování a myšlení.", en: "A wide range of culturally incongruent, odd behaviors and cognitions." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",
   },

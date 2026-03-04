@@ -281,3 +281,90 @@ export function exportRawJson(data, filename) {
   a.click();
   URL.revokeObjectURL(a.href);
 }
+
+/**
+ * Export PID-5 answer sheet — numbered list of answers only
+ * for transferring to the official paper questionnaire
+ */
+export function exportPid5AnswerSheet(answers, questions, lang = 'cs') {
+  const date = new Date().toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  const labels = lang === 'cs'
+    ? ['0 — Zcela nepravdivé', '1 — Částečně nepravdivé', '2 — Částečně pravdivé', '3 — Zcela pravdivé']
+    : ['0 — Very false/often false', '1 — Sometimes/somewhat false', '2 — Sometimes/somewhat true', '3 — Very true/often true'];
+  const title = lang === 'cs' ? 'PID-5 — Arch odpovědí' : 'PID-5 — Answer Sheet';
+  const subtitle = lang === 'cs' ? 'Pro přepis do oficiálního dotazníku' : 'For transfer to the official questionnaire';
+  const scaleTitle = lang === 'cs' ? 'Škála odpovědí' : 'Response Scale';
+  const qLabel = lang === 'cs' ? 'Otázka' : 'Question';
+  const aLabel = lang === 'cs' ? 'Odpověď' : 'Answer';
+  const unanswered = lang === 'cs' ? '—' : '—';
+
+  const rows = questions.map((q, i) => {
+    const a = answers[i];
+    const val = a !== undefined && a !== null ? a : unanswered;
+    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${val === unanswered ? '#4b5563' : val >= 2 ? '#fb923c' : '#4ade80'}">${val}</td></tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title} — ${date}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0f;color:#e2e8f0;line-height:1.5;padding:2rem;max-width:800px;margin:0 auto}
+@media print{body{background:#fff;color:#1a1a2e;padding:.5rem}table{border-color:#e2e8f0!important}td{border-color:#e2e8f0!important;color:#1a1a2e!important}h1{color:#1a1a2e!important;background:none!important;-webkit-text-fill-color:initial!important}.scale-box{border-color:#e2e8f0!important;background:#f8fafc!important}.scale-box span{color:#1a1a2e!important}}
+h1{font-size:1.5rem;font-weight:700;background:linear-gradient(to right,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem}
+.scale-box{background:rgba(15,23,42,.6);border:1px solid #1e293b;border-radius:.75rem;padding:1rem;margin:1rem 0 1.5rem}
+.scale-box span{display:block;font-size:.8rem;color:#94a3b8;margin-bottom:.25rem}
+table{width:100%;border-collapse:collapse}
+</style>
+</head><body>
+<h1>${title}</h1>
+<p style="color:#64748b;font-size:.85rem;margin-bottom:.25rem">${subtitle}</p>
+<p style="color:#4b5563;font-size:.75rem">${date} · ${Object.keys(answers).length}/220 ${lang === 'cs' ? 'odpovědí' : 'answers'}</p>
+<div class="scale-box"><strong style="font-size:.85rem;color:#c084fc">${scaleTitle}:</strong><br/>${labels.map(l => `<span>${l}</span>`).join('')}</div>
+<table><thead><tr><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">#</th><th style="text-align:left;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${qLabel}</th><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${aLabel}</th></tr></thead><tbody>${rows}</tbody></table>
+</body></html>`;
+  downloadHtml(html, `PID5_${lang === 'cs' ? 'odpovedi' : 'answers'}_${new Date().toISOString().slice(0,10)}.html`);
+}
+
+/**
+ * Export LPFS answer sheet
+ */
+export function exportLpfsAnswerSheet(answers, questions, lang = 'cs') {
+  const date = new Date().toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  const labels = lang === 'cs'
+    ? ['1 — Zcela nepravdivé', '2 — Trochu pravdivé', '3 — Převážně pravdivé', '4 — Zcela pravdivé']
+    : ['1 — Totally false', '2 — Somewhat true', '3 — Mostly true', '4 — Totally true'];
+  const title = lang === 'cs' ? 'LPFS-SR — Arch odpovědí' : 'LPFS-SR — Answer Sheet';
+  const subtitle = lang === 'cs' ? 'Pro přepis do oficiálního dotazníku' : 'For transfer to the official questionnaire';
+  const scaleTitle = lang === 'cs' ? 'Škála odpovědí' : 'Response Scale';
+  const qLabel = lang === 'cs' ? 'Otázka' : 'Question';
+  const aLabel = lang === 'cs' ? 'Odpověď' : 'Answer';
+  const unanswered = '—';
+
+  const rows = questions.map((q, i) => {
+    const a = answers[i];
+    const val = a !== undefined && a !== null ? a : unanswered;
+    return `<tr><td style="text-align:center;font-weight:600;color:#94a3b8;width:50px;padding:4px 8px;border-bottom:1px solid #1e293b">${i+1}</td><td style="padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${escapeHtml(q)}</td><td style="text-align:center;font-weight:700;font-size:16px;width:60px;padding:4px 8px;border-bottom:1px solid #1e293b;color:${val === unanswered ? '#4b5563' : val >= 3 ? '#fb923c' : '#4ade80'}">${val}</td></tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title} — ${date}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0f;color:#e2e8f0;line-height:1.5;padding:2rem;max-width:800px;margin:0 auto}
+@media print{body{background:#fff;color:#1a1a2e;padding:.5rem}table{border-color:#e2e8f0!important}td{border-color:#e2e8f0!important;color:#1a1a2e!important}h1{color:#1a1a2e!important;background:none!important;-webkit-text-fill-color:initial!important}.scale-box{border-color:#e2e8f0!important;background:#f8fafc!important}.scale-box span{color:#1a1a2e!important}}
+h1{font-size:1.5rem;font-weight:700;background:linear-gradient(to right,#60a5fa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem}
+.scale-box{background:rgba(15,23,42,.6);border:1px solid #1e293b;border-radius:.75rem;padding:1rem;margin:1rem 0 1.5rem}
+.scale-box span{display:block;font-size:.8rem;color:#94a3b8;margin-bottom:.25rem}
+table{width:100%;border-collapse:collapse}
+</style>
+</head><body>
+<h1>${title}</h1>
+<p style="color:#64748b;font-size:.85rem;margin-bottom:.25rem">${subtitle}</p>
+<p style="color:#4b5563;font-size:.75rem">${date} · ${Object.keys(answers).length}/80 ${lang === 'cs' ? 'odpovědí' : 'answers'}</p>
+<div class="scale-box"><strong style="font-size:.85rem;color:#60a5fa">${scaleTitle}:</strong><br/>${labels.map(l => `<span>${l}</span>`).join('')}</div>
+<table><thead><tr><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">#</th><th style="text-align:left;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${qLabel}</th><th style="text-align:center;padding:6px;border-bottom:2px solid #374151;color:#94a3b8;font-size:.75rem">${aLabel}</th></tr></thead><tbody>${rows}</tbody></table>
+</body></html>`;
+  downloadHtml(html, `LPFS_${lang === 'cs' ? 'odpovedi' : 'answers'}_${new Date().toISOString().slice(0,10)}.html`);
+}

@@ -3,10 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
 import { SOURCES, FACET_META, DOMAIN_META, SCORING_INFO } from './lib/scoring-meta';
 import { getQuestionHint, getDiagExplanation, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
-import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
+import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson, exportPid5AnswerSheet, exportLpfsAnswerSheet } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
 import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
-import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort } from './lib/i18n';
+import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
@@ -32,6 +32,44 @@ function scoreFacets(answers) {
 }
 function scoreDomains(facetScores) { const r = {}; Object.entries(DF).forEach(([d, fs]) => { const vals = fs.map(f => facetScores[f] || 0); r[d] = vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : 0; }); return r; }
 const SEV_CLR = (v) => v < 0.5 ? "#4ADE80" : v < 1.0 ? "#FBBF24" : v < 2.0 ? "#FB923C" : "#F87171";
+
+/** Compress answers to a URL-safe base64 string */
+function compressAnswers(answers, type) {
+  // For PID-5: 220 answers (0-3), 2 bits each = 55 bytes
+  // For LPFS: 80 answers (1-4), 2 bits each = 20 bytes
+  const count = type === 'pid5' ? 220 : 80;
+  const offset = type === 'pid5' ? 0 : 1; // LPFS starts at 1
+  const bytes = [];
+  for (let i = 0; i < count; i += 4) {
+    let byte = 0;
+    for (let j = 0; j < 4 && (i + j) < count; j++) {
+      const val = (answers[i + j] !== undefined ? answers[i + j] - offset : 0) & 0x3;
+      byte |= (val << (j * 2));
+    }
+    bytes.push(byte);
+  }
+  // Convert to URL-safe base64
+  const bin = String.fromCharCode(...bytes);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/** Decompress answers from URL-safe base64 string */
+function decompressAnswers(encoded, type) {
+  const count = type === 'pid5' ? 220 : 80;
+  const offset = type === 'pid5' ? 0 : 1;
+  const padded = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(padded);
+  const bytes = Array.from(bin).map(c => c.charCodeAt(0));
+  const answers = {};
+  for (let i = 0; i < count; i++) {
+    const byteIdx = Math.floor(i / 4);
+    const bitOffset = (i % 4) * 2;
+    if (byteIdx < bytes.length) {
+      answers[i] = ((bytes[byteIdx] >> bitOffset) & 0x3) + offset;
+    }
+  }
+  return answers;
+}
 
 function scoreLpfsSubscales(lpfsAns) {
   const r = {};
@@ -89,6 +127,8 @@ export default function App() {
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/history') return 'history';
+    if (p.startsWith('/r/pid5/')) return 'shared_pid5';
+    if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
     return 'menu';
   }, [location.pathname]);
 
@@ -114,6 +154,7 @@ export default function App() {
   const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result in full-page mode
   const [viewingSource, setViewingSource] = useState(null); // 'local' | 'cloud' — indicates we're viewing saved data
   const [lang, setLang] = useState(() => lsGet(LS_KEYS.lang, 'cs')); // 'cs' | 'en'
+  const [shareToast, setShareToast] = useState(false);
   const t = useMemo(() => createT(lang), [lang]);
   const SEV = useCallback((v) => sevLabel(v, lang), [lang]);
 
@@ -123,6 +164,54 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.lpfsAns, lpfsAns); }, [lpfsAns]);
   useEffect(() => { lsSet(LS_KEYS.lpfsIdx, lpfsIdx); }, [lpfsIdx]);
   useEffect(() => { lsSet(LS_KEYS.history, history); }, [history]);
+
+  // Load shared result from URL
+  useEffect(() => {
+    const p = location.pathname;
+    if (p.startsWith('/r/pid5/')) {
+      try {
+        const encoded = p.slice('/r/pid5/'.length);
+        const decoded = decompressAnswers(encoded, 'pid5');
+        if (Object.keys(decoded).length > 0) {
+          setAnswers(decoded);
+          setIdx(219);
+          setViewingResult({ date: null });
+          setViewingSource('shared');
+        }
+      } catch (e) { console.error('Failed to decode shared PID-5 result:', e); }
+    } else if (p.startsWith('/r/lpfs/')) {
+      try {
+        const encoded = p.slice('/r/lpfs/'.length);
+        const decoded = decompressAnswers(encoded, 'lpfs');
+        if (Object.keys(decoded).length > 0) {
+          setLpfsAns(decoded);
+          setLpfsIdx(79);
+          setViewingResult({ date: null });
+          setViewingSource('shared');
+        }
+      } catch (e) { console.error('Failed to decode shared LPFS result:', e); }
+    }
+  }, []);  // only on mount
+
+  const shareCurrentResult = useCallback((type) => {
+    const ans = type === 'pid5' ? answers : lpfsAns;
+    const encoded = compressAnswers(ans, type);
+    const url = `${window.location.origin}/r/${type}/${encoded}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2000);
+    }).catch(() => {
+      // Fallback
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2000);
+    });
+  }, [answers, lpfsAns]);
 
   // Load cloud results when user signs in
   useEffect(() => {
@@ -297,7 +386,7 @@ export default function App() {
             return (
               <div key={f}>
                 <div className="flex items-center justify-between mb-0.5">
-                  <HoverTip text={meta?.desc}>
+                  <HoverTip text={metaDesc(meta?.desc, lang)}>
                     <div className="text-xs text-gray-400 truncate cursor-help">↳ {facetName(f, lang)}</div>
                   </HoverTip>
                   <div className="text-xs font-mono text-gray-400 shrink-0">{v.toFixed(2)}</div>
@@ -518,7 +607,7 @@ export default function App() {
   );
 
   // ── PID-5 RESULTS ──
-  if (mode === "pid5_results") return (
+  if (mode === "pid5_results" || mode === "shared_pid5") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
@@ -527,6 +616,12 @@ export default function App() {
         </div>
         <h2 className="text-3xl font-bold text-purple-300 mb-2">{t('pid5ResultsHeading')}</h2>
         <p className="text-gray-400 mb-4">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
+        {viewingSource === 'shared' && (
+          <div className="mb-6 p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-center justify-between">
+            <span className="text-xs text-cyan-400">🔗 {t('viewingSharedResult')}</span>
+            <button onClick={() => { setViewingResult(null); setViewingSource(null); setMode('menu'); }} className="text-xs text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-800 transition-all">{t('close')}</button>
+          </div>
+        )}
         {viewingSource === 'saved' && viewingResult && (
           <div className="mb-6 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-center justify-between">
             <span className="text-xs text-amber-400">📋 {lang === 'cs' ? 'Prohlížíte uložený výsledek' : 'Viewing saved result'}{viewingResult.date ? ` — ${new Date(viewingResult.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}` : ''}</span>
@@ -552,7 +647,7 @@ export default function App() {
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('domainsOverview')}</h3>
           {Object.entries(domainScores).map(([d, v]) => (
-            <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide block>
+            <HoverTip key={d} text={metaDesc(DOMAIN_META[d]?.desc, lang)} wide block>
               <div className="cursor-help mb-3">
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-sm font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
@@ -585,7 +680,7 @@ export default function App() {
                   const meta = FACET_META[f];
                   const sevColor = SEV_CLR(v);
                   return (
-                    <HoverTip key={f} text={meta?.desc} wide block>
+                    <HoverTip key={f} text={metaDesc(meta?.desc, lang)} wide block>
                       <div className="cursor-help group rounded-xl border border-gray-800/60 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/40 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
                         <div className="flex items-start justify-between mb-3">
                           <div className="min-w-0 flex-1">
@@ -717,34 +812,71 @@ export default function App() {
           </div>
         </div>
 
-        {/* ═══ SUMMARY PARAGRAPH ═══ */}
+        {/* ═══ SUMMARY PARAGRAPH — EXPANDED ═══ */}
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('summaryTitle')}</h3>
-          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-3">
+          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-4">
             <p>{t('summaryIntro')}</p>
+
+            {/* Domain analysis */}
             {(() => {
               const elevated = Object.entries(domainScores).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]);
               const mild = Object.entries(domainScores).filter(([, v]) => v >= 1.0 && v < 1.5);
               if (elevated.length > 0) {
-                return <p>{t('summaryDomains')} <strong>{elevated.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong>{mild.length > 0 ? `, ${lang === 'cs' ? 'a mírně zvýšené' : 'with mildly elevated'}: ${mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}` : ''}.</p>;
+                return <>
+                  <p>{t('summaryDomains')} <strong>{elevated.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong>{mild.length > 0 ? `, ${lang === 'cs' ? 'a mírně zvýšené' : 'with mildly elevated'}: ${mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}` : ''}.</p>
+                  <p className="text-gray-400">{t('summaryDomainExplain')}</p>
+                </>;
               }
               if (mild.length > 0) {
-                return <p>{t('summaryDomains')} <strong>{mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong> ({lang === 'cs' ? 'mírná úroveň' : 'mild level'}).</p>;
+                return <>
+                  <p>{t('summaryDomains')} <strong>{mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong> ({lang === 'cs' ? 'mírná úroveň' : 'mild level'}).</p>
+                  <p className="text-gray-400">{t('summaryDomainExplain')}</p>
+                </>;
               }
               return null;
             })()}
+
+            {/* Top elevated facets */}
+            {(() => {
+              const topFacets = Object.entries(facetScores).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]).slice(0, 5);
+              if (topFacets.length > 0) {
+                return <div className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30">
+                  <p className="font-medium text-gray-200 mb-2">{lang === 'cs' ? '🔍 Nejvýraznější facety:' : '🔍 Most prominent facets:'}</p>
+                  <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                    {topFacets.map(([f, v]) => (
+                      <li key={f}><strong>{facetName(f, lang)}</strong> ({v.toFixed(2)}) — <span className="text-gray-400">{metaDesc(FACET_META[f]?.desc, lang)}</span></li>
+                    ))}
+                  </ul>
+                  <p className="text-gray-500 text-xs mt-2">{t('summaryFacetDetail')}</p>
+                </div>;
+              }
+              return null;
+            })()}
+
+            {/* Diagnostic profiles explanation */}
             {diagnostics.filter(d => d.flag).length > 0 ? (
-              <p>{t('summaryElevated')} <strong>{diagnostics.filter(d => d.flag).map(d => diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()).join(', ')}</strong>.</p>
+              <>
+                <p>{t('summaryElevated')} <strong>{diagnostics.filter(d => d.flag).map(d => diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()).join(', ')}</strong>.</p>
+                <p className="text-gray-400">{t('summaryElevatedExplain')}</p>
+              </>
             ) : (
               <p className="text-green-400/80">{t('summaryNoElevated')}</p>
             )}
+
+            {/* What to do next */}
+            <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/15">
+              <p className="font-semibold text-purple-300 mb-2">💡 {t('summaryWhatNext')}</p>
+              <p className="text-gray-300">{t('summaryWhatNextText')}</p>
+            </div>
+
             <p className="text-amber-400/80 text-xs mt-4 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">{t('summaryNote')}</p>
           </div>
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">📦 {t('exportResults')}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <button onClick={() => exportPid5Report(domainScores, facetScores, diagnostics, DF_ALL)} className="p-4 rounded-xl bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all text-left">
               <div className="text-sm font-semibold text-purple-300">{t('fullReport')}</div>
               <div className="text-xs text-gray-500 mt-1">{t('fullReportDesc')}</div>
@@ -757,12 +889,25 @@ export default function App() {
               <div className="text-sm font-semibold text-amber-300">{t('quickSummary')}</div>
               <div className="text-xs text-gray-500 mt-1">{t('quickSummaryDesc')}</div>
             </button>
+            <button onClick={() => exportPid5AnswerSheet(answers, lang === 'en' ? Q_EN : Q, lang)} className="p-4 rounded-xl bg-green-900/40 border border-green-500/30 hover:border-green-400/60 transition-all text-left">
+              <div className="text-sm font-semibold text-green-300">📋 {t('answerSheet')}</div>
+              <div className="text-xs text-gray-500 mt-1">{t('answerSheetDesc')}</div>
+            </button>
             <button onClick={() => exportRawJson({ domeny: domainScores, facety: facetScores, diagnostika: diagnostics.map(d => ({id:d.id,name:d.name,score:d.score,flag:d.flag})), odpovedi: answers }, 'pid5_vysledky.json')} className="p-4 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left">
               <div className="text-sm font-semibold text-gray-300">{t('json')}</div>
               <div className="text-xs text-gray-500 mt-1">{t('jsonDesc')}</div>
             </button>
+            <button onClick={() => shareCurrentResult('pid5')} className="p-4 rounded-xl bg-cyan-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all text-left relative">
+              <div className="text-sm font-semibold text-cyan-300">{t('shareResult')}</div>
+              <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Unikátní odkaz' : 'Unique link'}</div>
+            </button>
           </div>
         </div>
+
+        {/* Share toast */}
+        {shareToast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-medium shadow-xl animate-bounce">{t('shareLink')}</div>
+        )}
 
         <div className="flex gap-3 mb-12">
           <button onClick={() => { savePid5Result(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
@@ -773,7 +918,7 @@ export default function App() {
   );
 
   // ── LPFS RESULTS ──
-  if (mode === "lpfs_results") return (
+  if (mode === "lpfs_results" || mode === "shared_lpfs") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
@@ -781,6 +926,12 @@ export default function App() {
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
         <h2 className="text-3xl font-bold text-blue-300 mb-2">{t('lpfsResultsHeading')}</h2>
+        {viewingSource === 'shared' && (
+          <div className="mb-6 p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-center justify-between">
+            <span className="text-xs text-cyan-400">🔗 {t('viewingSharedResult')}</span>
+            <button onClick={() => { setViewingResult(null); setViewingSource(null); setMode('menu'); }} className="text-xs text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-800 transition-all">{t('close')}</button>
+          </div>
+        )}
         {viewingSource === 'saved' && viewingResult && (
           <div className="mb-6 p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-300 text-sm flex items-center justify-between">
             <span>📂 {lang === 'cs' ? 'Zobrazujete uložený výsledek' : 'Viewing saved result'}{viewingResult.created_at ? ` (${new Date(viewingResult.created_at).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US')})` : ''}</span>
@@ -812,39 +963,68 @@ export default function App() {
             <span className="text-pink-400">{t('interpersonal')}: {((lpfsSubscaleScores.empathy + lpfsSubscaleScores.intimacy) / 2).toFixed(2)}</span>
           </div>
         </div>
-        {/* ═══ LPFS SUMMARY ═══ */}
+        {/* ═══ LPFS SUMMARY — EXPANDED ═══ */}
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('summaryTitle')}</h3>
-          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-3">
+          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-4">
+            <p>{t('summaryLpfsExplain')}</p>
             <p>{t('summaryLpfsIntro')} <strong className="text-xl" style={{color: SEV_CLR(lpfsTotal)}}>{lpfsTotal.toFixed(2)}</strong> ({SEV(lpfsTotal)})</p>
             {lpfsTotal >= 1.5 ? (
               <>
                 <p>{t('summaryLpfsHigh')}</p>
                 <ul className="list-disc pl-5 space-y-1">
                   {Object.entries(lpfsSubscaleScores).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]).map(([sub, v]) => (
-                    <li key={sub}><strong>{lpfsSubName(sub, lang)}</strong>: {v.toFixed(2)}</li>
+                    <li key={sub}><strong>{lpfsSubName(sub, lang)}</strong>: {v.toFixed(2)} — <span className="text-gray-400">{(() => {
+                      const hints = { identity: { cs: 'Stabilita sebeobrazu, sebeúcta a emoční regulace', en: 'Self-image stability, self-esteem, and emotional regulation' }, selfDirection: { cs: 'Schopnost stanovovat si cíle a řídit svůj život', en: 'Ability to set goals and direct your own life' }, empathy: { cs: 'Schopnost chápat perspektivu a pocity druhých', en: 'Ability to understand others\' perspectives and feelings' }, intimacy: { cs: 'Schopnost vytvářet a udržovat blízké vztahy', en: 'Ability to form and maintain close relationships' } };
+                      return hints[sub]?.[lang] || hints[sub]?.cs || '';
+                    })()}</span></li>
                   ))}
                 </ul>
+                <p className="text-gray-400">{t('summaryLpfsHighExplain')}</p>
               </>
             ) : (
-              <p className="text-green-400/80">{t('summaryLpfsOk')}</p>
+              <>
+                <p className="text-green-400/80">{t('summaryLpfsOk')}</p>
+                <p className="text-gray-400">{t('summaryLpfsOkExplain')}</p>
+              </>
             )}
+
+            {/* What to do next */}
+            <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/15">
+              <p className="font-semibold text-blue-300 mb-2">💡 {t('summaryWhatNext')}</p>
+              <p className="text-gray-300">{t('summaryWhatNextText')}</p>
+            </div>
+
             <p className="text-amber-400/80 text-xs mt-4 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">{t('summaryNote')}</p>
           </div>
         </div>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">{t('exportResults')}</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <button onClick={() => exportLpfsReport(lpfsTotal, lpfsAns, lpfsSubscaleScores)} className="p-3 rounded-xl bg-blue-900/40 border border-blue-500/30 hover:border-blue-400/60 transition-all text-left">
               <div className="text-sm font-semibold text-blue-300">{t('report')}</div>
               <div className="text-xs text-gray-500">{t('reportDesc')}</div>
+            </button>
+            <button onClick={() => exportLpfsAnswerSheet(lpfsAns, LPFS_Q, lang)} className="p-3 rounded-xl bg-green-900/40 border border-green-500/30 hover:border-green-400/60 transition-all text-left">
+              <div className="text-sm font-semibold text-green-300">📋 {t('answerSheet')}</div>
+              <div className="text-xs text-gray-500">{t('answerSheetDesc')}</div>
             </button>
             <button onClick={() => exportRawJson({ prumer: lpfsTotal, subskaly: lpfsSubscaleScores, odpovedi: lpfsAns }, 'lpfs_vysledky.json')} className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left">
               <div className="text-sm font-semibold text-gray-300">{t('json')}</div>
               <div className="text-xs text-gray-500">{t('jsonDesc')}</div>
             </button>
+            <button onClick={() => shareCurrentResult('lpfs')} className="p-3 rounded-xl bg-cyan-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all text-left">
+              <div className="text-sm font-semibold text-cyan-300">{t('shareResult')}</div>
+              <div className="text-xs text-gray-500">{lang === 'cs' ? 'Unikátní odkaz' : 'Unique link'}</div>
+            </button>
           </div>
         </div>
+
+        {/* Share toast */}
+        {shareToast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-medium shadow-xl animate-bounce">{t('shareLink')}</div>
+        )}
+
         <div className="flex gap-3">
           <button onClick={() => { saveLpfsResult(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
           <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
@@ -899,7 +1079,7 @@ export default function App() {
             {isPid && domain && (
               <div className="flex gap-2 mb-3 flex-wrap">
                 {facets.map(f => (
-                  <HoverTip key={f} text={FACET_META[f]?.desc}>
+                  <HoverTip key={f} text={metaDesc(FACET_META[f]?.desc, lang)}>
                     <span className="text-xs px-2.5 py-1 rounded-full border cursor-help" style={{borderColor: DC[domain] + '60', color: DC[domain], background: DC[domain] + '15'}}>{facetName(f, lang)}</span>
                   </HoverTip>
                 ))}
@@ -982,7 +1162,7 @@ export default function App() {
                     const base = domainScores[d] || 0;
                     const diff = hoveredVal !== null ? v - base : 0;
                     return (
-                      <HoverTip key={d} text={DOMAIN_META[d]?.desc} block>
+                      <HoverTip key={d} text={metaDesc(DOMAIN_META[d]?.desc, lang)} block>
                         <div className="flex items-center gap-2 cursor-help">
                           <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
                           <div className="flex-1 bg-gray-800/60 rounded-full h-1.5 overflow-hidden relative">
@@ -1005,7 +1185,7 @@ export default function App() {
                       const base = facetScores[f] || 0;
                       const diff = hoveredVal !== null ? v - base : 0;
                       return (
-                        <HoverTip key={f} text={FACET_META[f]?.desc} block>
+                        <HoverTip key={f} text={metaDesc(FACET_META[f]?.desc, lang)} block>
                           <div className="flex items-center gap-2 cursor-help">
                             <div className="w-28 text-xs text-gray-400 truncate">↳ {facetName(f, lang)}</div>
                             <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
