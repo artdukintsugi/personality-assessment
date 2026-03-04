@@ -2370,36 +2370,76 @@ export default function App() {
             <button onClick={() => setMode('menu')} className="px-4 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">{t('menu')}</button>
           </div>
         </div>
-        <p className="text-gray-400 text-sm mb-6">{lang === 'cs'
-          ? 'Tento nástroj využívá následující validované psychodiagnostické instrumenty. Všechny dotazníky jsou použity v souladu s jejich původními publikacemi.'
-          : 'This tool uses the following validated psychodiagnostic instruments. All questionnaires are used in accordance with their original publications.'
-        }</p>
-        <div className="space-y-4">
+
+        {/* Main data spreadsheet */}
+        <div className="mb-8 p-5 rounded-2xl bg-purple-900/20 border border-purple-500/30">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">📊</span>
+            <h2 className="font-bold text-purple-300">{lang === 'cs' ? 'Hlavní datový zdroj' : 'Primary Data Source'}</h2>
+          </div>
+          <p className="text-sm text-gray-400 mb-3">{lang === 'cs'
+            ? 'Kompletní tabulka s položkami, skórováním, cut-offy a normami pro všechny použité nástroje:'
+            : 'Complete spreadsheet with items, scoring, cut-offs and norms for all instruments:'
+          }</p>
+          <a href="https://docs.google.com/spreadsheets/d/1zn-o0o_qLqDu5ib2BCmJQ4unEaBBseULkDT2uei_ano/edit?gid=2088090629#gid=2088090629" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/30 border border-purple-500/40 text-purple-300 text-sm hover:bg-purple-600/50 transition-all">
+            📋 Google Sheets — {lang === 'cs' ? 'Otevřít tabulku' : 'Open Spreadsheet'} ↗
+          </a>
+        </div>
+
+        {/* Scoring & interpretation tools */}
+        <h2 className="text-lg font-bold text-gray-300 mb-3">{lang === 'cs' ? '🔧 Nástroje pro skórování a interpretaci' : '🔧 Scoring & Interpretation Tools'}</h2>
+        <div className="space-y-3 mb-8">
           {[
-            { title: 'PID-5', desc: 'Personality Inventory for DSM-5', ref: 'Krueger RF, Derringer J, Markon KE, Watson D, Skodol AE. (2012). Initial construction of a maladaptive personality trait model and inventory for DSM-5. Psychological Medicine, 42(9), 1879-1890.' },
-            { title: 'LPFS-SR', desc: 'Level of Personality Functioning Scale – Self Report', ref: 'Morey LC. (2017). Development and initial evaluation of a self-report form of the DSM-5 Level of Personality Functioning Scale. Psychological Assessment, 29(10), 1302-1308.' },
-            { title: 'PHQ-9', desc: 'Patient Health Questionnaire-9', ref: 'Kroenke K, Spitzer RL, Williams JBW. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine, 16(9), 606-613.' },
-            { title: 'GAD-7', desc: 'Generalized Anxiety Disorder 7-item scale', ref: 'Spitzer RL, Kroenke K, Williams JBW, Löwe B. (2006). A brief measure for assessing generalized anxiety disorder: the GAD-7. Archives of Internal Medicine, 166(10), 1092-1097.' },
-            { title: 'DASS-42', desc: 'Depression Anxiety Stress Scales', ref: 'Lovibond SH, Lovibond PF. (1995). Manual for the Depression Anxiety Stress Scales (2nd ed.). Psychology Foundation of Australia.' },
-            { title: 'PCL-5', desc: 'PTSD Checklist for DSM-5', ref: 'Weathers FW, Litz BT, Keane TM, Palmieri PA, Marx BP, Schnurr PP. (2013). The PTSD Checklist for DSM-5 (PCL-5). National Center for PTSD.' },
-            { title: 'CATI', desc: 'Comprehensive Autistic Trait Inventory', ref: 'English MCW, Gignac GE, Visser TAW, Whitehouse AJO, Maybery MT. (2021). A comprehensive psychometric analysis of autism-spectrum quotient factor models using two large samples. Autism Research, 14(10), 2183-2200.' },
-            { title: 'ISI', desc: 'Insomnia Severity Index', ref: 'Bastien CH, Vallières A, Morin CM. (2001). Validation of the Insomnia Severity Index as an outcome measure for insomnia research. Sleep Medicine, 2(4), 297-307.' },
-            { title: 'ASRS v1.1', desc: 'Adult ADHD Self-Report Scale', ref: 'Kessler RC, Adler L, Ames M, et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): a short screening scale for use in the general population. Psychological Medicine, 35(2), 245-256.' },
-            { title: 'EAT-26', desc: 'Eating Attitudes Test', ref: 'Garner DM, Olmsted MP, Bohr Y, Garfinkel PE. (1982). The Eating Attitudes Test: psychometric features and clinical correlates. Psychological Medicine, 12(4), 871-878.' },
-            { title: 'MDQ', desc: 'Mood Disorder Questionnaire', ref: 'Hirschfeld RMA, Williams JBW, Spitzer RL, et al. (2000). Development and Validation of a Screening Instrument for Bipolar Spectrum Disorder: The Mood Disorder Questionnaire. American Journal of Psychiatry, 157(11), 1873-1875.' },
-            { title: 'CUDIT-R', desc: 'Cannabis Use Disorder Identification Test – Revised', ref: 'Adamson SJ, Kay-Lambkin FJ, Baker AL, et al. (2010). An improved brief measure of cannabis misuse: The Cannabis Use Disorders Identification Test-Revised (CUDIT-R). Drug and Alcohol Dependence, 110(1-2), 137-143.' },
-            { title: 'AUDIT', desc: 'Alcohol Use Disorders Identification Test', ref: 'Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction, 88(6), 791-804.' },
+            { title: 'APA — PID-5 Full Version (Adult)', desc: lang === 'cs' ? 'Oficiální formulář s pokyny ke skórování, volně stažitelné PDF od APA' : 'Official form with scoring instructions, freely downloadable PDF from APA', url: 'https://www.psychiatry.org/getmedia/594673a6-1b9b-4298-8b52-c4c652c4a4e2/APA-DSM5TR-ThePersonalityInventoryForDSM5FullVersionAdult.pdf' },
+            { title: 'NovoPsych — PID-5-SF', desc: lang === 'cs' ? 'Přehled skórování, interpretace a psychometrie PID-5' : 'Scoring overview, interpretation and psychometrics for PID-5', url: 'https://novopsych.com/assessments/diagnosis/personality-inventory-for-dsm-5-short-form-pid-5-sf/' },
+            { title: 'Lloyd & Preece Psychometric Auto-Scorer v1.4', desc: lang === 'cs' ? 'Volně stažitelný Excel s automatickým skórováním PID-5 a dalších testů (Psychology Centre of Western Australia)' : 'Free downloadable Excel with automatic PID-5 scoring (Psychology Centre of Western Australia)', url: 'https://psychologywa.com/psychometric/' },
+          ].map((tool, i) => (
+            <a key={i} href={tool.url} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-gray-900/60 border border-gray-800/60 hover:border-gray-600/60 transition-all">
+              <div className="font-semibold text-sm text-blue-400 mb-1">{tool.title} ↗</div>
+              <p className="text-xs text-gray-500">{tool.desc}</p>
+            </a>
+          ))}
+        </div>
+
+        {/* Original publications per instrument */}
+        <h2 className="text-lg font-bold text-gray-300 mb-3">{lang === 'cs' ? '📄 Původní publikace' : '📄 Original Publications'}</h2>
+        <p className="text-gray-500 text-xs mb-4">{lang === 'cs'
+          ? 'Reference k původním článkům, ze kterých jsou převzaty položky, škály a cut-off skóry.'
+          : 'References to original articles from which items, scales and cut-off scores are derived.'
+        }</p>
+        <div className="space-y-3 mb-8">
+          {[
+            { title: 'PID-5', color: '#A855F7', ref: 'American Psychiatric Association (2013). Diagnostic and Statistical Manual of Mental Disorders (5th ed.), Section III: Alternative DSM-5 Model for Personality Disorders (AMPD), pp. 773–781.', ref2: 'Krueger RF, Derringer J, Markon KE, Watson D, Skodol AE. (2012). Initial construction of a maladaptive personality trait model and inventory for DSM-5. Psychological Medicine, 42(9), 1879–1890.' },
+            { title: 'LPFS-SR', color: '#3B82F6', ref: 'Morey LC. (2017). Development and initial evaluation of a self-report form of the DSM-5 Level of Personality Functioning Scale. Psychological Assessment, 29(10), 1302–1308. doi:10.1037/pas0000450' },
+            { title: 'PHQ-9', color: '#10B981', ref: 'Kroenke K, Spitzer RL, Williams JBW. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine, 16(9), 606–613.' },
+            { title: 'GAD-7', color: '#14B8A6', ref: 'Spitzer RL, Kroenke K, Williams JBW, Löwe B. (2006). A brief measure for assessing generalized anxiety disorder: the GAD-7. Archives of Internal Medicine, 166(10), 1092–1097.' },
+            { title: 'DASS-42', color: '#F97316', ref: 'Lovibond SH & Lovibond PF. (1995). Manual for the Depression Anxiety Stress Scales (2nd ed.). Psychology Foundation of Australia.' },
+            { title: 'PCL-5', color: '#F43F5E', ref: 'Weathers FW, Litz BT, Keane TM, Palmieri PA, Marx BP, Schnurr PP. (2013). The PTSD Checklist for DSM-5 (PCL-5). National Center for PTSD.' },
+            { title: 'CATI', color: '#8B5CF6', ref: 'English MCW, Gignac GE, Visser TAW, Whitehouse AJO, Maybery MT. (2021). Comprehensive Autistic Trait Inventory (CATI). 42 items, 6 subscales.' },
+            { title: 'ISI', color: '#6366F1', ref: 'Morin CM. (1993). Insomnia Severity Index. 7 items, scale 0–4, total 0–28.' },
+            { title: 'ASRS v1.1', color: '#0EA5E9', ref: 'Kessler RC, Adler L, Ames M, et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS). Psychological Medicine, 35(2), 245–256.' },
+            { title: 'EAT-26', color: '#EC4899', ref: 'Garner DM, Olmsted MP, Bohr Y, Garfinkel PE. (1982). The Eating Attitudes Test: psychometric features and clinical correlates. Psychological Medicine, 12(4), 871–878.' },
+            { title: 'MDQ', color: '#F59E0B', ref: 'Hirschfeld RMA, Williams JBW, Spitzer RL, et al. (2000). Development and Validation of a Screening Instrument for Bipolar Spectrum Disorder: The Mood Disorder Questionnaire. Am J Psychiatry, 157(11), 1873–1875.' },
+            { title: 'CUDIT-R', color: '#84CC16', ref: 'Adamson SJ, Kay-Lambkin FJ, Baker AL, Lewin TJ, Thornton L, Kelly BJ, Sellman JD. (2010). An Improved Brief Measure of Cannabis Misuse: The Cannabis Use Disorders Identification Test–Revised (CUDIT-R). Drug and Alcohol Dependence, 110, 137–143.' },
+            { title: 'AUDIT', color: '#EAB308', ref: 'Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction, 88(6), 791–804.' },
           ].map((src, i) => (
-            <div key={i} className="p-4 rounded-xl bg-gray-900/60 border border-gray-800/60">
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="font-bold text-white">{src.title}</span>
-                <span className="text-xs text-gray-500">{src.desc}</span>
-              </div>
+            <div key={i} className="p-4 rounded-xl bg-gray-900/60 border border-gray-800/60" style={{ borderLeftWidth: 3, borderLeftColor: src.color }}>
+              <div className="font-bold text-sm mb-1" style={{ color: src.color }}>{src.title}</div>
               <p className="text-xs text-gray-400 leading-relaxed">{src.ref}</p>
+              {src.ref2 && <p className="text-xs text-gray-500 leading-relaxed mt-1">{src.ref2}</p>}
             </div>
           ))}
         </div>
-        <div className="mt-8 p-4 rounded-xl bg-gray-900/40 border border-gray-800/40">
+
+        {/* DSM-5 base reference */}
+        <h2 className="text-lg font-bold text-gray-300 mb-3">{lang === 'cs' ? '📘 Základní reference' : '📘 Base Reference'}</h2>
+        <div className="p-4 rounded-xl bg-gray-900/40 border border-gray-800/40 mb-8">
+          <p className="text-xs text-gray-400 leading-relaxed">American Psychiatric Association (2013). <em>Diagnostic and Statistical Manual of Mental Disorders</em> (5th ed.). Washington, DC: APA Publishing.</p>
+          <a href="https://www.psychiatry.org/psychiatrists/practice/dsm" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:text-blue-400 mt-1 inline-block">psychiatry.org/psychiatrists/practice/dsm ↗</a>
+        </div>
+
+        <div className="p-4 rounded-xl bg-gray-900/40 border border-gray-800/40">
           <p className="text-xs text-gray-500 leading-relaxed">
             {lang === 'cs'
               ? '⚠️ Disclaimer: Tento nástroj je určen pouze pro edukační a screeningové účely. Nenahrazuje odborné klinické vyšetření. Výsledky by měly být interpretovány kvalifikovaným odborníkem.'

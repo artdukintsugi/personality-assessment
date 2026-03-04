@@ -31,3 +31,5 @@ npm-debug.log*
 
 # large binary files
 *.pdf
+.vercel
+.env*.local
