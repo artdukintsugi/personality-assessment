@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CompareModal from './CompareModal';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, scoreCUDITR, Q8_SCORE_MAP } from '../data/cuditr';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -14,6 +15,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
     try { const v = localStorage.getItem('cuditr_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
   });
   useEffect(() => { try { localStorage.setItem('cuditr_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showCompare, setShowCompare] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
@@ -21,10 +23,15 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">CUDIT-R — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <div className="flex items-center gap-2">
+          <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
           <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
           <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
         </div>
       </div>
+
+      {showCompare && (
+        <CompareModal onClose={() => setShowCompare(false)} current={(typeof total !== 'undefined') ? total : answers} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
+      )}
 
       {/* Total score */}
       {showLive && (

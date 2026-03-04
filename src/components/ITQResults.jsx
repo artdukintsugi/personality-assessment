@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CompareModal from './CompareModal';
 import { ITQ_QUESTIONS, ITQ_SCALE, ITQ_CLUSTERS, ITQ_SEVERITY, scoreITQ, scoreITQCluster, diagnoseITQ, ITQ_PTSD_ITEMS, ITQ_DSO_ITEMS } from '../data/itq';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -14,6 +15,8 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
     try { const v = localStorage.getItem('itq_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
   });
   useEffect(() => { try { localStorage.setItem('itq_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
+  const [showCompare, setShowCompare] = useState(false);
 
   const ptsdTotal = ITQ_PTSD_ITEMS.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
   const dsoTotal = ITQ_DSO_ITEMS.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
@@ -33,10 +36,15 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">ITQ — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <div className="flex items-center gap-2">
+          <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
           <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
           <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
         </div>
       </div>
+
+      {showCompare && (
+        <CompareModal onClose={() => setShowCompare(false)} current={(typeof total !== 'undefined') ? total : answers} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
+      )}
 
       {/* Diagnosis badge */}
       {showLive && (

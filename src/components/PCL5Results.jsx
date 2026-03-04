@@ -2,6 +2,7 @@
  * PCL-5 Results page
  */
 import { useMemo, useState, useEffect } from 'react';
+import CompareModal from './CompareModal';
 import { PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from '../data/pcl5';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -59,6 +60,8 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
   });
   useEffect(() => { try { localStorage.setItem('pcl5_showLiveResults', showLive); } catch (e) {} }, [showLive]);
 
+  const [showCompare, setShowCompare] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
       <div className="max-w-2xl mx-auto px-4 py-6">
@@ -67,10 +70,15 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-rose-400">PCL-5 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <div className="flex items-center gap-2">
+            <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
             <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
             <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
           </div>
         </div>
+
+        {showCompare && (
+          <CompareModal onClose={() => setShowCompare(false)} current={(typeof total !== 'undefined') ? total : (typeof clusterScores !== 'undefined' ? clusterScores : answers)} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
+        )}
 
         {/* Total score + threshold */}
         {showLive && (

@@ -2098,6 +2098,7 @@ export default function App() {
   // ═══ PHQ-9 QUESTIONNAIRE ═══
   if (mode === 'phq9') return (
     <QuestionnaireScreen
+      testId="phq9"
       title="PHQ-9"
       questions={PHQ9_QUESTIONS[lang]}
       scaleLabels={PHQ9_SCALE[lang]}
@@ -2120,6 +2121,7 @@ export default function App() {
   // ═══ GAD-7 QUESTIONNAIRE ═══
   if (mode === 'gad7') return (
     <QuestionnaireScreen
+      testId="gad7"
       title="GAD-7"
       questions={GAD7_QUESTIONS[lang]}
       scaleLabels={GAD7_SCALE[lang]}
@@ -2137,6 +2139,7 @@ export default function App() {
   // ═══ DASS-42 QUESTIONNAIRE ═══
   if (mode === 'dass42') return (
     <QuestionnaireScreen
+      testId="dass42"
       title="DASS-42"
       questions={DASS42_QUESTIONS[lang]}
       scaleLabels={DASS42_SCALE[lang]}
@@ -2160,6 +2163,7 @@ export default function App() {
   // ═══ PCL-5 QUESTIONNAIRE ═══
   if (mode === 'pcl5') return (
     <QuestionnaireScreen
+      testId="pcl5"
       title="PCL-5"
       questions={PCL5_QUESTIONS[lang]}
       scaleLabels={PCL5_SCALE[lang]}
@@ -2204,6 +2208,7 @@ export default function App() {
   // ═══ CATI QUESTIONNAIRE ═══
   if (mode === 'cati') return (
     <QuestionnaireScreen
+      testId="cati"
       title="CATI"
       questions={CATI_QUESTIONS[lang]}
       scaleLabels={CATI_SCALE[lang]}
@@ -2233,6 +2238,7 @@ export default function App() {
   // ═══ ISI QUESTIONNAIRE ═══
   if (mode === 'isi') return (
     <QuestionnaireScreen
+      testId="isi"
       title="ISI"
       questions={ISI_QUESTIONS[lang]}
       scaleLabels={ISI_SCALE_SIMPLE[lang]}
@@ -2260,6 +2266,7 @@ export default function App() {
   // ═══ ASRS QUESTIONNAIRE ═══
   if (mode === 'asrs') return (
     <QuestionnaireScreen
+      testId="asrs"
       title="ASRS v1.1"
       questions={ASRS_QUESTIONS[lang]}
       scaleLabels={ASRS_SCALE[lang]}
@@ -2287,6 +2294,7 @@ export default function App() {
   // ═══ EAT-26 QUESTIONNAIRE ═══
   if (mode === 'eat26') return (
     <QuestionnaireScreen
+      testId="eat26"
       title="EAT-26"
       questions={EAT26_QUESTIONS[lang]}
       scaleLabels={EAT26_SCALE[lang]}
@@ -2333,6 +2341,7 @@ export default function App() {
 
     return (
       <QuestionnaireScreen
+        testId="mdq"
         title="MDQ"
         questions={mdqAllQuestions}
         scaleLabels={scaleLabels}
@@ -2362,6 +2371,7 @@ export default function App() {
 
     return (
       <QuestionnaireScreen
+        testId="cuditr"
         title="CUDIT-R"
         questions={CUDITR_QUESTIONS[lang]}
         scaleLabels={cuditrScaleLabels}
@@ -2391,6 +2401,7 @@ export default function App() {
 
     return (
       <QuestionnaireScreen
+        testId="audit"
         title="AUDIT"
         questions={AUDIT_QUESTIONS[lang]}
         scaleLabels={auditScaleLabels}
@@ -2427,6 +2438,7 @@ export default function App() {
     const dast10ScaleLabels = DAST10_SCALE[lang] || DAST10_SCALE.cs;
     return (
       <QuestionnaireScreen
+        testId="dast10"
         title="DAST-10"
         questions={DAST10_QUESTIONS[lang]}
         scaleLabels={dast10ScaleLabels}
@@ -2452,6 +2464,7 @@ export default function App() {
     const itqScaleLabels = ITQ_SCALE[lang] || ITQ_SCALE.cs;
     return (
       <QuestionnaireScreen
+        testId="itq"
         title="ITQ"
         questions={ITQ_QUESTIONS[lang]}
         scaleLabels={itqScaleLabels}

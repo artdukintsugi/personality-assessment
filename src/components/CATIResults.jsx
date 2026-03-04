@@ -2,6 +2,7 @@
  * CATI Results page — Camouflaging Autistic Traits Questionnaire
  */
 import { useMemo, useState, useEffect } from 'react';
+import CompareModal from './CompareModal';
 import { CATI_SUBSCALES, CATI_SUBSCALE_ITEMS, CATI_REVERSE_ITEMS, CATI_SEVERITY, scoreCATI } from '../data/cati';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -14,6 +15,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
     try { const v = localStorage.getItem('cati_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
   });
   useEffect(() => { try { localStorage.setItem('cati_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showCompare, setShowCompare] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
@@ -23,10 +25,15 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-violet-400">CATI — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <div className="flex items-center gap-2">
+            <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
             <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
             <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
           </div>
         </div>
+
+        {showCompare && (
+          <CompareModal onClose={() => setShowCompare(false)} current={(typeof total !== 'undefined') ? total : (typeof subscales !== 'undefined' ? subscales : answers)} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
+        )}
 
         {/* Total score */}
         {showLive && (

@@ -3,6 +3,7 @@
  * Used by PHQ-9, GAD-7, DASS-42, PCL-5, CATI, ISI, ASRS, EAT-26, MDQ, CUDIT-R
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import QuestionReportButton from './QuestionReportButton';
 
 /**
  * Questionnaire filling screen
@@ -13,6 +14,7 @@ export function QuestionnaireScreen({
   color, lang, t, toggleLang, onBack,
   instruction,
   liveScoreConfig, // { severityLevels, maxScore, label, scoreFn? }
+  testId, // for inline question reporting
 }) {
   const total = questions.length;
   const answered = Object.keys(answers).length;
@@ -72,7 +74,10 @@ export function QuestionnaireScreen({
         {/* Question */}
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <div className="text-xs text-gray-600 mb-2">{lang === 'cs' ? 'Otázka' : 'Question'} {idx + 1}/{total}</div>
-          <p className="text-lg text-gray-100 leading-relaxed mb-6">{q}</p>
+          <p className="text-lg text-gray-100 leading-relaxed mb-6">
+            {q}
+            <QuestionReportButton questionIndex={idx} questionText={q} testId={testId} lang={lang} />
+          </p>
 
           {/* Answer buttons */}
           <div className="space-y-2">
