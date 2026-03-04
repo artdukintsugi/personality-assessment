@@ -89,6 +89,179 @@ function scoreDiagnostics(fScores) {
   }).sort((a, b) => b.score - a.score);
 }
 
+/**
+ * ═══ VALIDITY ASSESSMENT ═══
+ * Checks response patterns for indicators of invalid or questionable data.
+ * Based on psychometric best practices for PID-5 and self-report measures.
+ */
+function checkPid5Validity(answers) {
+  const checks = [];
+  const total = 220;
+  const answered = Object.keys(answers).length;
+  const vals = Object.values(answers);
+  
+  // 1. Completeness
+  const completeness = answered / total;
+  if (completeness < 1) {
+    checks.push({ id: 'completeness', status: completeness < 0.8 ? 'fail' : 'warn', value: Math.round(completeness * 100) });
+  } else {
+    checks.push({ id: 'completeness', status: 'pass', value: 100 });
+  }
+  
+  // 2. Straight-lining (same answer > 80%)
+  const freq = [0, 0, 0, 0];
+  vals.forEach(v => { if (v >= 0 && v <= 3) freq[v]++; });
+  const maxFreq = Math.max(...freq);
+  const maxPct = answered > 0 ? maxFreq / answered : 0;
+  const dominantVal = freq.indexOf(maxFreq);
+  if (maxPct > 0.80) {
+    checks.push({ id: 'straightLining', status: 'fail', value: Math.round(maxPct * 100), detail: dominantVal });
+  } else if (maxPct > 0.60) {
+    checks.push({ id: 'straightLining', status: 'warn', value: Math.round(maxPct * 100), detail: dominantVal });
+  } else {
+    checks.push({ id: 'straightLining', status: 'pass', value: Math.round(maxPct * 100) });
+  }
+  
+  // 3. Response variability (standard deviation)
+  const mean = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  const variance = vals.length ? vals.reduce((a, v) => a + (v - mean) ** 2, 0) / vals.length : 0;
+  const sd = Math.sqrt(variance);
+  if (sd < 0.4) {
+    checks.push({ id: 'variability', status: 'fail', value: sd.toFixed(2) });
+  } else if (sd < 0.6) {
+    checks.push({ id: 'variability', status: 'warn', value: sd.toFixed(2) });
+  } else {
+    checks.push({ id: 'variability', status: 'pass', value: sd.toFixed(2) });
+  }
+  
+  // 4. Reverse-item consistency
+  // Check if reverse-scored items are answered consistently with their facet direction
+  let inconsistentPairs = 0;
+  let totalPairs = 0;
+  for (const item of REVERSE_SCORED) {
+    const facets = REVERSE[item];
+    if (!facets) continue;
+    for (const f of facets) {
+      const fItems = FM[f];
+      if (!fItems) continue;
+      const regularItems = fItems.filter(i => !REVERSE_SCORED.has(i) && answers[i] !== undefined);
+      if (regularItems.length === 0 || answers[item] === undefined) continue;
+      const reversedVal = 3 - answers[item];
+      const regularMean = regularItems.reduce((a, i) => a + answers[i], 0) / regularItems.length;
+      totalPairs++;
+      if (Math.abs(reversedVal - regularMean) > 2.0) inconsistentPairs++;
+    }
+  }
+  const inconsistencyRate = totalPairs > 0 ? inconsistentPairs / totalPairs : 0;
+  if (inconsistencyRate > 0.5) {
+    checks.push({ id: 'reverseConsistency', status: 'fail', value: Math.round(inconsistencyRate * 100) });
+  } else if (inconsistencyRate > 0.25) {
+    checks.push({ id: 'reverseConsistency', status: 'warn', value: Math.round(inconsistencyRate * 100) });
+  } else {
+    checks.push({ id: 'reverseConsistency', status: 'pass', value: Math.round(inconsistencyRate * 100) });
+  }
+  
+  // 5. Over-reporting (mean > 2.3 on 0-3 scale → almost everything "true")
+  if (mean > 2.3) {
+    checks.push({ id: 'overReporting', status: 'fail', value: mean.toFixed(2) });
+  } else if (mean > 2.0) {
+    checks.push({ id: 'overReporting', status: 'warn', value: mean.toFixed(2) });
+  } else {
+    checks.push({ id: 'overReporting', status: 'pass', value: mean.toFixed(2) });
+  }
+  
+  // 6. Under-reporting (mean < 0.3 → almost everything "false")
+  if (mean < 0.3) {
+    checks.push({ id: 'underReporting', status: 'fail', value: mean.toFixed(2) });
+  } else if (mean < 0.5) {
+    checks.push({ id: 'underReporting', status: 'warn', value: mean.toFixed(2) });
+  } else {
+    checks.push({ id: 'underReporting', status: 'pass', value: mean.toFixed(2) });
+  }
+  
+  // Overall verdict
+  const fails = checks.filter(c => c.status === 'fail').length;
+  const warns = checks.filter(c => c.status === 'warn').length;
+  let verdict = 'valid';
+  if (fails >= 2 || checks.some(c => c.id === 'straightLining' && c.status === 'fail')) verdict = 'invalid';
+  else if (fails >= 1 || warns >= 2) verdict = 'questionable';
+  else if (warns >= 1) verdict = 'acceptable';
+  
+  return { checks, verdict, mean: mean.toFixed(2), sd: sd.toFixed(2) };
+}
+
+function checkLpfsValidity(lpfsAns) {
+  const checks = [];
+  const total = 80;
+  const answered = Object.keys(lpfsAns).length;
+  const vals = Object.values(lpfsAns);
+  
+  // 1. Completeness
+  const completeness = answered / total;
+  if (completeness < 1) {
+    checks.push({ id: 'completeness', status: completeness < 0.8 ? 'fail' : 'warn', value: Math.round(completeness * 100) });
+  } else {
+    checks.push({ id: 'completeness', status: 'pass', value: 100 });
+  }
+  
+  // 2. Straight-lining (LPFS scale 1-4)
+  const freq = [0, 0, 0, 0, 0]; // index 0 unused, 1-4 used
+  vals.forEach(v => { if (v >= 1 && v <= 4) freq[v]++; });
+  const maxFreq = Math.max(freq[1], freq[2], freq[3], freq[4]);
+  const maxPct = answered > 0 ? maxFreq / answered : 0;
+  const dominantVal = freq.indexOf(maxFreq);
+  if (maxPct > 0.80) {
+    checks.push({ id: 'straightLining', status: 'fail', value: Math.round(maxPct * 100), detail: dominantVal });
+  } else if (maxPct > 0.60) {
+    checks.push({ id: 'straightLining', status: 'warn', value: Math.round(maxPct * 100), detail: dominantVal });
+  } else {
+    checks.push({ id: 'straightLining', status: 'pass', value: Math.round(maxPct * 100) });
+  }
+  
+  // 3. Response variability
+  const mean = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  const variance = vals.length ? vals.reduce((a, v) => a + (v - mean) ** 2, 0) / vals.length : 0;
+  const sd = Math.sqrt(variance);
+  if (sd < 0.35) {
+    checks.push({ id: 'variability', status: 'fail', value: sd.toFixed(2) });
+  } else if (sd < 0.55) {
+    checks.push({ id: 'variability', status: 'warn', value: sd.toFixed(2) });
+  } else {
+    checks.push({ id: 'variability', status: 'pass', value: sd.toFixed(2) });
+  }
+  
+  // 4. Subscale consistency — check if subscale scores are wildly different (not an invalidity per se, but worth noting)
+  // Skip for validity, just use variability
+  
+  // 5. Over-reporting (mean > 3.3 on 1-4 scale)
+  if (mean > 3.3) {
+    checks.push({ id: 'overReporting', status: 'fail', value: mean.toFixed(2) });
+  } else if (mean > 3.0) {
+    checks.push({ id: 'overReporting', status: 'warn', value: mean.toFixed(2) });
+  } else {
+    checks.push({ id: 'overReporting', status: 'pass', value: mean.toFixed(2) });
+  }
+  
+  // 6. Under-reporting (mean < 1.3 on 1-4 scale)
+  if (mean < 1.3) {
+    checks.push({ id: 'underReporting', status: 'fail', value: mean.toFixed(2) });
+  } else if (mean < 1.5) {
+    checks.push({ id: 'underReporting', status: 'warn', value: mean.toFixed(2) });
+  } else {
+    checks.push({ id: 'underReporting', status: 'pass', value: mean.toFixed(2) });
+  }
+  
+  // Overall verdict
+  const fails = checks.filter(c => c.status === 'fail').length;
+  const warns = checks.filter(c => c.status === 'warn').length;
+  let verdict = 'valid';
+  if (fails >= 2 || checks.some(c => c.id === 'straightLining' && c.status === 'fail')) verdict = 'invalid';
+  else if (fails >= 1 || warns >= 2) verdict = 'questionable';
+  else if (warns >= 1) verdict = 'acceptable';
+  
+  return { checks, verdict, mean: mean.toFixed(2), sd: sd.toFixed(2) };
+}
+
 // ═══ TOOLTIP COMPONENT ═══
 function HoverTip({ children, text, wide, block }) {
   const [show, setShow] = useState(false);
@@ -1002,6 +1175,63 @@ export default function App() {
           </div>
         </div>
 
+        {/* ═══ VALIDITY ASSESSMENT ═══ */}
+        {(() => {
+          const v = checkPid5Validity(answers);
+          const ico = { pass: '✅', warn: '⚠️', fail: '❌' };
+          const clr = { pass: 'text-green-400', warn: 'text-amber-400', fail: 'text-red-400' };
+          const bg = { pass: 'bg-green-950/20 border-green-500/20', warn: 'bg-amber-950/20 border-amber-500/20', fail: 'bg-red-950/20 border-red-500/20' };
+          const verdictColors = { valid: 'text-green-400 bg-green-950/30 border-green-500/30', acceptable: 'text-cyan-400 bg-cyan-950/30 border-cyan-500/30', questionable: 'text-amber-400 bg-amber-950/30 border-amber-500/30', invalid: 'text-red-400 bg-red-950/30 border-red-500/30' };
+          const verdictIcons = { valid: '✅', acceptable: '🟢', questionable: '⚠️', invalid: '❌' };
+          const desc = (c) => {
+            const descs = {
+              completeness: { cs: `Zodpovězeno ${c.value}% položek (doporučeno 100%).`, en: `Answered ${c.value}% of items (100% recommended).` },
+              straightLining: { cs: `Nejběžnější odpověď '${c.detail}' použita v ${c.value}% případů.${c.status !== 'pass' ? ' Naznačuje možné nepozorné odpovídání.' : ''}`, en: `Most common answer '${c.detail}' used in ${c.value}% of items.${c.status !== 'pass' ? ' Suggests possible inattentive responding.' : ''}` },
+              variability: { cs: `Směrodatná odchylka ${c.value} (čím nižší, tím uniformnější odpovědi).`, en: `Standard deviation ${c.value} (lower = more uniform responses).` },
+              reverseConsistency: { cs: `Nekonzistence u ${c.value}% reverzních položek.${c.status !== 'pass' ? ' Naznačuje nepozornost nebo nepochopení.' : ''}`, en: `Inconsistency in ${c.value}% of reverse-scored items.${c.status !== 'pass' ? ' Suggests inattention or misunderstanding.' : ''}` },
+              overReporting: { cs: `Průměr odpovědí ${c.value}/3.${c.status !== 'pass' ? ' Nadměrně vysoký — vše označeno jako "pravdivé".' : ''}`, en: `Response mean ${c.value}/3.${c.status !== 'pass' ? ' Excessively high — almost everything marked as "true".' : ''}` },
+              underReporting: { cs: `Průměr odpovědí ${c.value}/3.${c.status !== 'pass' ? ' Nadměrně nízký — vše označeno jako "nepravdivé".' : ''}`, en: `Response mean ${c.value}/3.${c.status !== 'pass' ? ' Excessively low — almost everything marked as "false".' : ''}` },
+            };
+            return descs[c.id]?.[lang] || '';
+          };
+          return (
+            <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
+              <h3 className="text-lg font-semibold text-gray-300 mb-4">🔍 {t('validityTitle')}</h3>
+              
+              {/* Verdict badge */}
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border mb-5 ${verdictColors[v.verdict]}`}>
+                <span className="text-lg">{verdictIcons[v.verdict]}</span>
+                <div>
+                  <div className="font-semibold text-sm">{t('verdict_' + v.verdict)}</div>
+                  <div className="text-xs opacity-70">{t('verdictDesc_' + v.verdict)}</div>
+                </div>
+              </div>
+              
+              {/* Stats */}
+              <div className="flex gap-4 mb-5 text-xs text-gray-500">
+                <span>{t('validityMean')}: <strong className="text-gray-300 font-mono">{v.mean}</strong></span>
+                <span>{t('validitySD')}: <strong className="text-gray-300 font-mono">{v.sd}</strong></span>
+              </div>
+              
+              {/* Individual checks */}
+              <div className="space-y-2">
+                {v.checks.map(c => (
+                  <div key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border ${bg[c.status]}`}>
+                    <span className="text-base shrink-0">{ico[c.status]}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className={`text-sm font-medium ${clr[c.status]}`}>{t('validity_' + c.id)}</div>
+                      <div className="text-xs text-gray-500">{desc(c)}</div>
+                    </div>
+                    <div className={`text-sm font-mono shrink-0 ${clr[c.status]}`}>{c.value}{c.id === 'completeness' || c.id === 'straightLining' || c.id === 'reverseConsistency' ? '%' : ''}</div>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-gray-600 text-xs mt-4">{t('validityExplain')}</p>
+            </div>
+          );
+        })()}
+
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">📦 {t('exportResults')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -1126,6 +1356,60 @@ export default function App() {
             <p className="text-amber-400/80 text-xs mt-4 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">{t('summaryNote')}</p>
           </div>
         </div>
+
+        {/* ═══ LPFS VALIDITY ASSESSMENT ═══ */}
+        {(() => {
+          const v = checkLpfsValidity(lpfsAns);
+          const ico = { pass: '✅', warn: '⚠️', fail: '❌' };
+          const clr = { pass: 'text-green-400', warn: 'text-amber-400', fail: 'text-red-400' };
+          const bg = { pass: 'bg-green-950/20 border-green-500/20', warn: 'bg-amber-950/20 border-amber-500/20', fail: 'bg-red-950/20 border-red-500/20' };
+          const verdictColors = { valid: 'text-green-400 bg-green-950/30 border-green-500/30', acceptable: 'text-cyan-400 bg-cyan-950/30 border-cyan-500/30', questionable: 'text-amber-400 bg-amber-950/30 border-amber-500/30', invalid: 'text-red-400 bg-red-950/30 border-red-500/30' };
+          const verdictIcons = { valid: '✅', acceptable: '🟢', questionable: '⚠️', invalid: '❌' };
+          const desc = (c) => {
+            const descs = {
+              completeness: { cs: `Zodpovězeno ${c.value}% položek (doporučeno 100%).`, en: `Answered ${c.value}% of items (100% recommended).` },
+              straightLining: { cs: `Nejběžnější odpověď '${c.detail}' použita v ${c.value}% případů.${c.status !== 'pass' ? ' Naznačuje možné nepozorné odpovídání.' : ''}`, en: `Most common answer '${c.detail}' used in ${c.value}% of items.${c.status !== 'pass' ? ' Suggests possible inattentive responding.' : ''}` },
+              variability: { cs: `Směrodatná odchylka ${c.value} (čím nižší, tím uniformnější odpovědi).`, en: `Standard deviation ${c.value} (lower = more uniform responses).` },
+              overReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně vysoký — vše označeno jako „zcela pravdivé".' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively high — almost everything marked as "completely true".' : ''}` },
+              underReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně nízký — vše označeno jako „zcela nepravdivé".' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively low — almost everything marked as "completely false".' : ''}` },
+            };
+            return descs[c.id]?.[lang] || '';
+          };
+          return (
+            <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
+              <h3 className="text-lg font-semibold text-gray-300 mb-4">🔍 {t('validityTitle')}</h3>
+              
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border mb-5 ${verdictColors[v.verdict]}`}>
+                <span className="text-lg">{verdictIcons[v.verdict]}</span>
+                <div>
+                  <div className="font-semibold text-sm">{t('verdict_' + v.verdict)}</div>
+                  <div className="text-xs opacity-70">{t('verdictDesc_' + v.verdict)}</div>
+                </div>
+              </div>
+              
+              <div className="flex gap-4 mb-5 text-xs text-gray-500">
+                <span>{t('validityMean')}: <strong className="text-gray-300 font-mono">{v.mean}</strong></span>
+                <span>{t('validitySD')}: <strong className="text-gray-300 font-mono">{v.sd}</strong></span>
+              </div>
+              
+              <div className="space-y-2">
+                {v.checks.map(c => (
+                  <div key={c.id} className={`flex items-center gap-3 p-3 rounded-xl border ${bg[c.status]}`}>
+                    <span className="text-base shrink-0">{ico[c.status]}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className={`text-sm font-medium ${clr[c.status]}`}>{t('validity_' + c.id)}</div>
+                      <div className="text-xs text-gray-500">{desc(c)}</div>
+                    </div>
+                    <div className={`text-sm font-mono shrink-0 ${clr[c.status]}`}>{c.value}{c.id === 'completeness' || c.id === 'straightLining' ? '%' : ''}</div>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-gray-600 text-xs mt-4">{t('validityExplain')}</p>
+            </div>
+          );
+        })()}
+
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">{t('exportResults')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
