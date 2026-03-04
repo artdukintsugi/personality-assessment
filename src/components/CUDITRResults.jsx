@@ -1,11 +1,11 @@
 import React from 'react';
-import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF } from '../data/cuditr';
+import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, scoreCUDITR, Q8_SCORE_MAP } from '../data/cuditr';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
 export default function CUDITRResults({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const q = CUDITR_QUESTIONS[lang] || CUDITR_QUESTIONS.cs;
   const scales = CUDITR_SCALES[lang] || CUDITR_SCALES.cs;
-  const total = (answers || []).reduce((s, v) => s + (v ?? 0), 0);
+  const total = scoreCUDITR(answers);
   const maxScore = 32;
   const validity = checkSimpleValidity(answers, 8, 0, 4, lang);
   const aboveCutoff = total >= CUDITR_CUTOFF;
@@ -41,12 +41,14 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
           {q.map((text, i) => {
             const v = answers?.[i];
             const itemLabels = scales[i];
+            // For Q8 (index 7), display the actual score (0/2/4) not the answer index
+            const displayScore = (v !== undefined && v !== null) ? (i === 7 ? (Q8_SCORE_MAP[v] ?? v) : v) : null;
             return (
               <div key={i} className="text-sm">
                 <div className="flex items-start gap-2 mb-1">
                   <span className="text-gray-500 w-6 shrink-0">{i + 1}.</span>
                   <span className="text-gray-300 flex-1">{text}</span>
-                  <span className="text-emerald-300 font-mono w-8 text-right">{v ?? '–'}</span>
+                  <span className="text-emerald-300 font-mono w-8 text-right">{displayScore ?? '–'}</span>
                 </div>
                 {v !== undefined && v !== null && itemLabels?.[v] && (
                   <div className="ml-8 text-gray-500 text-xs">{itemLabels[v]}</div>

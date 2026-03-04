@@ -15,7 +15,7 @@ import { ISI_QUESTIONS, ISI_SCALE_SIMPLE, ISI_SEVERITY } from './data/isi';
 import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY } from './data/asrs';
 import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, scoreEAT26 } from './data/eat26';
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from './data/mdq';
-import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE } from './data/cuditr';
+import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE, scoreCUDITR } from './data/cuditr';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
@@ -557,7 +557,7 @@ export default function App() {
   }, [mdqAns, saveToHistory]);
 
   const saveCuditrResult = useCallback(() => {
-    const total = Object.values(cuditrAns).reduce((a,b) => a+b, 0);
+    const total = scoreCUDITR(cuditrAns);
     const sev = CUDITR_SEVERITY.find(s => total >= s.min && total <= s.max);
     saveToHistory('cuditr', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: cuditrAns } });
   }, [cuditrAns, saveToHistory]);
@@ -698,7 +698,7 @@ export default function App() {
   const fillSampleAsrs = useCallback(() => { const s = {}; for (let i = 0; i < 6; i++) s[i] = Math.floor(Math.random() * 5); setAsrsAns(s); setAsrsIdx(5); setMode("asrs_results"); }, []);
   const fillSampleEat26 = useCallback(() => { const s = {}; for (let i = 0; i < 26; i++) s[i] = Math.floor(Math.random() * 6); setEat26Ans(s); setEat26Idx(25); setMode("eat26_results"); }, []);
   const fillSampleMdq = useCallback(() => { const s = {}; for (let i = 0; i < 13; i++) s[i] = Math.random() > 0.5 ? 0 : 1; s[13] = Math.random() > 0.5 ? 0 : 1; s[14] = Math.floor(Math.random() * 4); setMdqAns(s); setMdqIdx(14); setMode("mdq_results"); }, []);
-  const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 8; i++) s[i] = Math.floor(Math.random() * 5); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
+  const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); s[7] = Math.floor(Math.random() * 3); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -2013,21 +2013,29 @@ export default function App() {
   );
 
   // ═══ CUDIT-R QUESTIONNAIRE ═══
-  if (mode === 'cuditr') return (
-    <QuestionnaireScreen
-      title="CUDIT-R"
-      questions={CUDITR_QUESTIONS[lang]}
-      scaleLabels={CUDITR_SCALE_SIMPLE[lang]}
-      scaleMin={0} scaleMax={4}
-      answers={cuditrAns} setAnswers={setCuditrAns}
-      idx={cuditrIdx} setIdx={setCuditrIdx}
-      onComplete={() => setMode('cuditr_results')}
-      color="#84CC16" lang={lang} t={t} toggleLang={toggleLang}
-      onBack={() => setMode('menu')}
-      instruction={lang === 'cs' ? 'Odpovězte na otázky o vašem užívání konopí za posledních 6 měsíců.' : 'Answer questions about your cannabis use over the past 6 months.'}
-      liveScoreConfig={{ severityLevels: CUDITR_SEVERITY, maxScore: 32, label: 'CUDIT-R' }}
-    />
-  );
+  if (mode === 'cuditr') {
+    // CUDIT-R Q8 (index 7) has only 3 options (scored 0/2/4) while Q1-7 have 5 options (scored 0-4)
+    const cuditrScales = CUDITR_SCALES[lang] || CUDITR_SCALES.cs;
+    const isQ8 = cuditrIdx === 7;
+    const cuditrScaleLabels = cuditrScales[cuditrIdx] || cuditrScales[0];
+    const cuditrScaleMax = isQ8 ? 2 : 4;
+
+    return (
+      <QuestionnaireScreen
+        title="CUDIT-R"
+        questions={CUDITR_QUESTIONS[lang]}
+        scaleLabels={cuditrScaleLabels}
+        scaleMin={0} scaleMax={cuditrScaleMax}
+        answers={cuditrAns} setAnswers={setCuditrAns}
+        idx={cuditrIdx} setIdx={setCuditrIdx}
+        onComplete={() => setMode('cuditr_results')}
+        color="#84CC16" lang={lang} t={t} toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        instruction={lang === 'cs' ? 'Odpovězte na otázky o vašem užívání konopí.' : 'Answer questions about your cannabis use.'}
+        liveScoreConfig={{ severityLevels: CUDITR_SEVERITY, maxScore: 32, label: 'CUDIT-R', scoreFn: scoreCUDITR }}
+      />
+    );
+  }
 
   // ═══ CUDIT-R RESULTS ═══
   if (mode === 'cuditr_results') return (
