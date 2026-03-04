@@ -5,6 +5,7 @@ import { getQuestionHint, DIAG_EXPLANATIONS, getLpfsSubscale, LPFS_SUBSCALE_NAME
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
 import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
+import { createT, sevLabel, lpfsSubName } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
@@ -29,7 +30,6 @@ function scoreFacets(answers) {
   return r;
 }
 function scoreDomains(facetScores) { const r = {}; Object.entries(DF).forEach(([d, fs]) => { const vals = fs.map(f => facetScores[f] || 0); r[d] = vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : 0; }); return r; }
-const SEV = (v) => v < 0.5 ? "Nízké" : v < 1.0 ? "Mírné" : v < 2.0 ? "Zvýšené" : "Vysoké";
 const SEV_CLR = (v) => v < 0.5 ? "#4ADE80" : v < 1.0 ? "#FBBF24" : v < 2.0 ? "#FB923C" : "#F87171";
 
 function scoreLpfsSubscales(lpfsAns) {
@@ -94,6 +94,8 @@ export default function App() {
   const [cloudResults, setCloudResults] = useState([]);
   const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result
   const [lang, setLang] = useState(() => lsGet(LS_KEYS.lang, 'cs')); // 'cs' | 'en'
+  const t = useMemo(() => createT(lang), [lang]);
+  const SEV = useCallback((v) => sevLabel(v, lang), [lang]);
 
   useEffect(() => { lsSet(LS_KEYS.lang, lang); }, [lang]);
   useEffect(() => { lsSet(LS_KEYS.answers, answers); }, [answers]);
@@ -231,7 +233,7 @@ export default function App() {
             <span className="font-semibold text-sm cursor-help" style={{ color: flag ? color : '#9CA3AF' }}>{name}</span>
           </HoverTip>
           <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ background: flag ? color + '20' : '#374151', color: flag ? color : '#6B7280' }}>
-            {score.toFixed(2)} — {flag ? 'Zvýšené' : score >= 1.0 ? 'Mírné' : 'Nízké'}
+            {score.toFixed(2)} — {flag ? t('sevElevated') : score >= 1.0 ? t('sevMild') : t('sevLow')}
           </span>
         </div>
         <p className="text-xs text-gray-500 mb-3">{desc}</p>
@@ -262,30 +264,30 @@ export default function App() {
   const AuthModal = () => authForm && (
     <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setAuthForm(null)}>
       <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">{authForm === 'login' ? '🔐 Přihlášení' : '📝 Registrace'}</h3>
+        <h3 className="text-lg font-semibold text-gray-200 mb-4">{authForm === 'login' ? t('loginTitle') : t('signupTitle')}</h3>
         {authError && <div className="text-red-400 text-xs mb-3 p-2 rounded-lg bg-red-950/30 border border-red-500/20">{authError}</div>}
         {/* Google OAuth */}
         <button onClick={async () => { setAuthError(''); const res = await auth.signInWithGoogle(); if (res?.error) setAuthError(res.error.message); }}
           className="w-full py-2.5 rounded-xl bg-white hover:bg-gray-100 text-gray-800 font-semibold text-sm mb-3 flex items-center justify-center gap-2 border border-gray-300 transition-all">
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Pokračovat přes Google
+          {t('continueWithGoogle')}
         </button>
         <div className="flex items-center gap-3 mb-3">
           <div className="flex-1 h-px bg-gray-700"></div>
-          <span className="text-xs text-gray-500">nebo</span>
+          <span className="text-xs text-gray-500">{t('or')}</span>
           <div className="flex-1 h-px bg-gray-700"></div>
         </div>
         {/* Email + heslo */}
-        <input type="email" placeholder="Email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+        <input type="email" placeholder={t('emailPlaceholder')} value={authEmail} onChange={e => setAuthEmail(e.target.value)}
           className="w-full mb-3 px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-sm text-gray-200 focus:outline-none focus:border-purple-500" />
-        <input type="password" placeholder="Heslo" value={authPass} onChange={e => setAuthPass(e.target.value)}
+        <input type="password" placeholder={t('passwordPlaceholder')} value={authPass} onChange={e => setAuthPass(e.target.value)}
           className="w-full mb-4 px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-sm text-gray-200 focus:outline-none focus:border-purple-500"
           onKeyDown={e => e.key === 'Enter' && handleAuth(authForm)} />
         <button onClick={() => handleAuth(authForm)} className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm mb-2">
-          {authForm === 'login' ? 'Přihlásit se' : 'Zaregistrovat se'}
+          {authForm === 'login' ? t('loginAction') : t('signupAction')}
         </button>
         <button onClick={() => setAuthForm(authForm === 'login' ? 'signup' : 'login')} className="w-full text-center text-xs text-gray-500 hover:text-gray-300">
-          {authForm === 'login' ? 'Nemáte účet? Registrace' : 'Máte účet? Přihlášení'}
+          {authForm === 'login' ? t('noAccount') : t('hasAccount')}
         </button>
       </div>
     </div>
@@ -298,8 +300,11 @@ export default function App() {
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-12">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">Diagnostický protokol</h1>
-          <p className="text-gray-500 text-sm">PID-5 & LPFS-SR — interaktivní vyplňování</p>
+          <div className="flex justify-end mb-4">
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">{t('appTitle')}</h1>
+          <p className="text-gray-500 text-sm">{t('appSubtitle')}</p>
         </div>
 
         {/* Auth bar */}
@@ -310,21 +315,21 @@ export default function App() {
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold shrink-0">{auth.user.email?.[0]?.toUpperCase()}</div>
                 <div className="min-w-0">
                   <div className="text-sm text-gray-200 truncate">{auth.user.email}</div>
-                  <div className="text-xs text-green-500/70">☁ Synchronizováno</div>
+                  <div className="text-xs text-green-500/70">{t('synced')}</div>
                 </div>
               </div>
-              <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">Odhlásit</button>
+              <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">{t('signOut')}</button>
             </div>
           ) : auth?.isConfigured ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <span className="text-xs text-gray-500">💾 Data jen lokálně</span>
+              <span className="text-xs text-gray-500">{t('localOnly')}</span>
               <div className="flex gap-2 shrink-0">
-                <button onClick={() => setAuthForm('login')} className="text-xs px-4 py-2 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all font-medium">Přihlásit</button>
-                <button onClick={() => setAuthForm('signup')} className="text-xs px-4 py-2 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-300 transition-all">Registrace</button>
+                <button onClick={() => setAuthForm('login')} className="text-xs px-4 py-2 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all font-medium">{t('login')}</button>
+                <button onClick={() => setAuthForm('signup')} className="text-xs px-4 py-2 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-300 transition-all">{t('signup')}</button>
               </div>
             </div>
           ) : (
-            <span className="text-xs text-gray-600">💾 Data se ukládají lokálně</span>
+            <span className="text-xs text-gray-600">{t('localSave')}</span>
           )}
         </div>
 
@@ -334,7 +339,7 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">PID-5</div>
-                <div className="text-xs text-gray-500 mt-1">220 otázek · 25 facet · 5 domén · 13 diagnostických profilů</div>
+                <div className="text-xs text-gray-500 mt-1">{t('pid5Desc')}</div>
               </div>
               <span className="text-gray-600 group-hover:text-gray-400 text-lg">→</span>
             </div>
@@ -349,7 +354,7 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-semibold text-blue-300 group-hover:text-blue-200 transition-colors">LPFS-SR</div>
-                <div className="text-xs text-gray-500 mt-1">80 otázek · úroveň fungování osobnosti</div>
+                <div className="text-xs text-gray-500 mt-1">{t('lpfsDesc')}</div>
               </div>
               <span className="text-gray-600 group-hover:text-gray-400 text-lg">→</span>
             </div>
@@ -364,15 +369,15 @@ export default function App() {
 
         {/* Quick result buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PID-5 výsledky</button>}
-          {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 LPFS výsledky</button>}
+          {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('pid5Results')}</button>}
+          {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('lpfsResults')}</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
         {(history.length > 0 || cloudResults.length > 0) && (
           <div className="mb-6">
             <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-900/40 border border-gray-800/60 hover:border-gray-700 transition-all">
-              <span className="text-sm text-gray-400 flex items-center gap-2">📋 Uložené výsledky <span className="text-xs text-gray-600">({history.length} lok.{cloudResults.length > 0 ? ` + ${cloudResults.length} cloud` : ''})</span></span>
+              <span className="text-sm text-gray-400 flex items-center gap-2">{t('savedResults')} <span className="text-xs text-gray-600">({history.length} {t('local')}{cloudResults.length > 0 ? ` + ${cloudResults.length} ${t('cloud')}` : ''})</span></span>
               <span className="text-xs text-gray-600">{showHistory ? '▾' : '▸'}</span>
             </button>
             {showHistory && (
@@ -383,7 +388,7 @@ export default function App() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${h.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{h.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
-                        <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString('cs-CZ')}</span>
+                        <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                       </div>
                     </div>
                     {h.type === 'pid5' && h.topDiags?.length > 0 && (
@@ -396,15 +401,15 @@ export default function App() {
                         ))}
                       </div>
                     )}
-                    {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">Průměr: {h.score?.toFixed(2)}</div>}
+                    {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
                     <div className="flex gap-2">
-                      <button onClick={() => setViewingResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">👁 Zobrazit</button>
+                      <button onClick={() => setViewingResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                       <button onClick={() => {
                         const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'});
                         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
                         a.download = `${h.type}_${h.date.slice(0,10)}.json`; a.click();
-                      }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">📥 Export</button>
-                      <button onClick={() => { if (confirm('Smazat tento výsledek?')) setHistory(prev => prev.filter(x => x.id !== h.id)); }}
+                      }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('export')}</button>
+                      <button onClick={() => { if (confirm(t('deleteResult'))) setHistory(prev => prev.filter(x => x.id !== h.id)); }}
                         className="text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-950/30 transition-all ml-auto">🗑</button>
                     </div>
                   </div>
@@ -418,20 +423,20 @@ export default function App() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${cr.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{cr.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
-                            <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString('cs-CZ')}</span>
+                            <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                             <span className="text-xs text-gray-700">☁</span>
                           </div>
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => setViewingResult({ type: cr.type, fullData: cr.data, date: cr.created_at })}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">👁 Zobrazit</button>
+                            className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                           <button onClick={() => {
                             const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
                             const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
                             a.download = `${cr.type}_cloud_${cr.created_at?.slice(0,10)}.json`; a.click();
-                          }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">📥 Export</button>
+                          }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('export')}</button>
                           <button onClick={async () => {
-                            if (confirm('Smazat z cloudu?')) {
+                            if (confirm(t('deleteFromCloud'))) {
                               await deleteResultFromCloud(auth.user, cr.id);
                               setCloudResults(prev => prev.filter(x => x.id !== cr.id));
                             }
@@ -459,14 +464,14 @@ export default function App() {
                 <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-2xl mb-12" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-purple-300">PID-5 Výsledky</h3>
-                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString('cs-CZ')}</span>
+                      <h3 className="text-lg font-semibold text-purple-300">{t('pid5ResultsTitle')}</h3>
+                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                     </div>
                     <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
                   </div>
                   {/* Domains */}
                   <div className="mb-6">
-                    <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">Domény</div>
+                    <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t('domains')}</div>
                     {Object.entries(vDomains).map(([d, v]) => (
                       <div key={d} className="flex items-center gap-3 mb-2">
                         <div className="w-36 text-sm font-medium" style={{color: DC[d]}}>{d}</div>
@@ -481,20 +486,20 @@ export default function App() {
                   {/* Top diagnostics */}
                   {vDiags.length > 0 && (
                     <div className="mb-4">
-                      <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">Diagnostické profily</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t('diagnosticProfiles')}</div>
                       <div className="space-y-1.5">
                         {vDiags.map(d => (
                           <div key={d.id} className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? (DIAG_PROFILES.find(p=>p.id===d.id)?.color || '#6B7280') : '#374151' }} />
                             <div className="flex-1 text-xs truncate" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.name}</div>
                             <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                            <div className="w-16 text-xs text-right" style={{ color: d.flag ? '#FB923C' : '#4B5563' }}>{d.flag ? '⚠ Zvýšené' : 'Nízké'}</div>
+                            <div className="w-16 text-xs text-right" style={{ color: d.flag ? '#FB923C' : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : t('sevLow')}</div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  <button onClick={() => setViewingResult(null)} className="w-full mt-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">Zavřít</button>
+                  <button onClick={() => setViewingResult(null)} className="w-full mt-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">{t('close')}</button>
                 </div>
               </div>
             );
@@ -505,8 +510,8 @@ export default function App() {
                 <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-blue-300">LPFS-SR Výsledky</h3>
-                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString('cs-CZ')}</span>
+                      <h3 className="text-lg font-semibold text-blue-300">{t('lpfsResultsTitle')}</h3>
+                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                     </div>
                     <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
                   </div>
@@ -516,14 +521,14 @@ export default function App() {
                   </div>
                   {fd.subskaly && Object.entries(fd.subskaly).map(([sub, v]) => (
                     <div key={sub} className="flex items-center gap-3 mb-2">
-                      <div className="w-28 text-sm text-blue-200/70">{LPFS_SUBSCALE_NAMES[sub] || sub}</div>
+                      <div className="w-28 text-sm text-blue-200/70">{lpfsSubName(sub, lang)}</div>
                       <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
                         <div className="h-full rounded-full bg-blue-500" style={{width: `${(v/4)*100}%`}} />
                       </div>
                       <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
                     </div>
                   ))}
-                  <button onClick={() => setViewingResult(null)} className="w-full mt-6 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">Zavřít</button>
+                  <button onClick={() => setViewingResult(null)} className="w-full mt-6 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">{t('close')}</button>
                 </div>
               </div>
             );
@@ -533,11 +538,11 @@ export default function App() {
 
         {/* Debug tools */}
         <div className="mt-6 pt-4 border-t border-gray-800/40">
-          <div className="text-xs text-gray-700 mb-2">🔧 Debug</div>
+          <div className="text-xs text-gray-700 mb-2">{t('debug')}</div>
           <div className="flex gap-2">
             <button onClick={fillSample} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
             <button onClick={fillSampleLpfs} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
-            <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); }} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">🗑 Reset</button>
+            <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); }} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')}</button>
           </div>
         </div>
       </div>
@@ -548,12 +553,12 @@ export default function App() {
   if (mode === "pid5_results") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
       <div className="max-w-4xl mx-auto">
-        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">← Zpět</button>
-        <h2 className="text-3xl font-bold text-purple-300 mb-2">PID-5 — Výsledky</h2>
-        <p className="text-gray-400 mb-8">Vyplněno {Object.keys(answers).length}/220 položek</p>
+        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">{t('back')}</button>
+        <h2 className="text-3xl font-bold text-purple-300 mb-2">{t('pid5ResultsHeading')}</h2>
+        <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-4">Domény — Radar</h3>
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('domainsRadar')}</h3>
           <div className="w-full" style={{height: 350}}>
             <ResponsiveContainer>
               <RadarChart data={radarData}>
@@ -568,7 +573,7 @@ export default function App() {
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-4">Domény — Přehled</h3>
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('domainsOverview')}</h3>
           {Object.entries(domainScores).map(([d, v]) => (
             <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide>
               <div className="cursor-help mb-3">
@@ -588,7 +593,7 @@ export default function App() {
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-4">Facety — Detail</h3>
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('facetsDetail')}</h3>
           <div className="space-y-2">
             {Object.entries(DF_ALL).map(([domain, facetList]) => (
               <div key={domain} className="mb-4">
@@ -619,8 +624,8 @@ export default function App() {
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-2">Diagnostické profily</h3>
-          <p className="text-xs text-gray-500 mb-6">Orientační mapování — nenahrazuje klinické hodnocení.</p>
+          <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('diagProfilesTitle')}</h3>
+          <p className="text-xs text-gray-500 mb-6">{t('diagDisclaimer')}</p>
           <div className="mb-6 p-4 rounded-xl bg-gray-800/40 border border-gray-700/30">
             <div className="space-y-2">
               {diagnostics.map(d => (
@@ -630,7 +635,7 @@ export default function App() {
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
                       <div className="text-xs font-medium truncate min-w-0 flex-1" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].trim()}</div>
                       <div className="text-xs font-mono shrink-0" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                      <div className="text-xs shrink-0 w-16 text-right" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? '⚠ Zvýšené' : d.score >= 1.0 ? 'Mírné' : 'Nízké'}</div>
+                      <div className="text-xs shrink-0 w-16 text-right" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : d.score >= 1.0 ? t('sevMild') : t('sevLow')}</div>
                     </div>
                     <div className="ml-5 bg-gray-800 rounded-full h-1.5 overflow-hidden">
                       <div className="h-full rounded-full" style={{ width: `${(d.score/3)*100}%`, background: d.color, opacity: d.flag ? 1 : 0.4 }} />
@@ -640,35 +645,35 @@ export default function App() {
               ))}
             </div>
           </div>
-          {diagnostics.filter(d => d.flag).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-400 mb-3">⚠ Zvýšené profily:</div>{diagnostics.filter(d => d.flag).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
-          {diagnostics.filter(d => !d.flag && d.score >= 0.8).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-500 mb-3">Subklinické:</div>{diagnostics.filter(d => !d.flag && d.score >= 0.8).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
+          {diagnostics.filter(d => d.flag).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-400 mb-3">{t('elevatedProfiles')}</div>{diagnostics.filter(d => d.flag).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
+          {diagnostics.filter(d => !d.flag && d.score >= 0.8).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-500 mb-3">{t('subclinical')}</div>{diagnostics.filter(d => !d.flag && d.score >= 0.8).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-4">�� Export výsledků</h3>
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">📦 {t('exportResults')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <button onClick={() => exportPid5Report(domainScores, facetScores, diagnostics, DF_ALL)} className="p-4 rounded-xl bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all text-left">
-              <div className="text-sm font-semibold text-purple-300">📄 Plný report</div>
-              <div className="text-xs text-gray-500 mt-1">HTML s tiskem do PDF</div>
+              <div className="text-sm font-semibold text-purple-300">{t('fullReport')}</div>
+              <div className="text-xs text-gray-500 mt-1">{t('fullReportDesc')}</div>
             </button>
             <button onClick={() => exportInstagramStory(domainScores, diagnostics)} className="p-4 rounded-xl bg-pink-900/40 border border-pink-500/30 hover:border-pink-400/60 transition-all text-left">
-              <div className="text-sm font-semibold text-pink-300">📱 Insta Story</div>
-              <div className="text-xs text-gray-500 mt-1">1080×1920 vizuální karta</div>
+              <div className="text-sm font-semibold text-pink-300">{t('instaStory')}</div>
+              <div className="text-xs text-gray-500 mt-1">{t('instaStoryDesc')}</div>
             </button>
             <button onClick={() => exportQuickSummary(domainScores, facetScores, diagnostics, DF_ALL)} className="p-4 rounded-xl bg-amber-900/40 border border-amber-500/30 hover:border-amber-400/60 transition-all text-left">
-              <div className="text-sm font-semibold text-amber-300">⚡ Rychlý přehled</div>
-              <div className="text-xs text-gray-500 mt-1">Kompaktní shrnutí</div>
+              <div className="text-sm font-semibold text-amber-300">{t('quickSummary')}</div>
+              <div className="text-xs text-gray-500 mt-1">{t('quickSummaryDesc')}</div>
             </button>
             <button onClick={() => exportRawJson({ domeny: domainScores, facety: facetScores, diagnostika: diagnostics.map(d => ({id:d.id,name:d.name,score:d.score,flag:d.flag})), odpovedi: answers }, 'pid5_vysledky.json')} className="p-4 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left">
-              <div className="text-sm font-semibold text-gray-300">🔧 JSON</div>
-              <div className="text-xs text-gray-500 mt-1">Surová data</div>
+              <div className="text-sm font-semibold text-gray-300">{t('json')}</div>
+              <div className="text-xs text-gray-500 mt-1">{t('jsonDesc')}</div>
             </button>
           </div>
         </div>
 
         <div className="flex gap-3 mb-12">
-          <button onClick={() => { savePid5Result(); alert('✅ Výsledek uložen do historie!'); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">💾 Uložit výsledek</button>
-          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">← Menu</button>
+          <button onClick={() => { savePid5Result(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
+          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>
@@ -678,22 +683,22 @@ export default function App() {
   if (mode === "lpfs_results") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
-        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">← Zpět</button>
-        <h2 className="text-3xl font-bold text-blue-300 mb-2">LPFS-SR — Výsledky</h2>
-        <p className="text-gray-400 mb-8">Vyplněno {Object.keys(lpfsAns).length}/80 položek</p>
+        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">{t('back')}</button>
+        <h2 className="text-3xl font-bold text-blue-300 mb-2">{t('lpfsResultsHeading')}</h2>
+        <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(lpfsAns).length}/80 {t('items')}</p>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
           <div className="text-center">
             <div className="text-6xl font-bold" style={{color: SEV_CLR(lpfsTotal)}}>{lpfsTotal.toFixed(2)}</div>
-            <div className="text-gray-400 mt-2">Průměrné skóre (škála 1–4)</div>
+            <div className="text-gray-400 mt-2">{t('averageScore')}</div>
             <div className="text-lg mt-1" style={{color: SEV_CLR(lpfsTotal)}}>{SEV(lpfsTotal)}</div>
           </div>
         </div>
         {/* Subscales */}
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
-          <h3 className="text-sm font-semibold text-blue-300 mb-4">Subškály</h3>
+          <h3 className="text-sm font-semibold text-blue-300 mb-4">{t('subscales')}</h3>
           {Object.entries(lpfsSubscaleScores).map(([sub, v]) => (
             <div key={sub} className="flex items-center gap-3 mb-3">
-              <div className="w-32 text-sm font-medium text-blue-200">{LPFS_SUBSCALE_NAMES[sub]}</div>
+              <div className="w-32 text-sm font-medium text-blue-200">{lpfsSubName(sub, lang)}</div>
               <div className="flex-1 bg-gray-800 rounded-full h-2.5 overflow-hidden">
                 <div className="h-full rounded-full bg-blue-500" style={{width: `${(v/4)*100}%`}} />
               </div>
@@ -701,26 +706,26 @@ export default function App() {
             </div>
           ))}
           <div className="border-t border-gray-700/30 pt-3 mt-3 flex gap-4 text-xs">
-            <span className="text-purple-400">Sebe-fungování: {((lpfsSubscaleScores.identity + lpfsSubscaleScores.selfDirection) / 2).toFixed(2)}</span>
-            <span className="text-pink-400">Interpersonální: {((lpfsSubscaleScores.empathy + lpfsSubscaleScores.intimacy) / 2).toFixed(2)}</span>
+            <span className="text-purple-400">{t('selfFunctioning')}: {((lpfsSubscaleScores.identity + lpfsSubscaleScores.selfDirection) / 2).toFixed(2)}</span>
+            <span className="text-pink-400">{t('interpersonal')}: {((lpfsSubscaleScores.empathy + lpfsSubscaleScores.intimacy) / 2).toFixed(2)}</span>
           </div>
         </div>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3">📥 Export</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">{t('exportResults')}</h3>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => exportLpfsReport(lpfsTotal, lpfsAns, lpfsSubscaleScores)} className="p-3 rounded-xl bg-blue-900/40 border border-blue-500/30 hover:border-blue-400/60 transition-all text-left">
-              <div className="text-sm font-semibold text-blue-300">📄 Report</div>
-              <div className="text-xs text-gray-500">HTML/PDF se subškálami</div>
+              <div className="text-sm font-semibold text-blue-300">{t('report')}</div>
+              <div className="text-xs text-gray-500">{t('reportDesc')}</div>
             </button>
             <button onClick={() => exportRawJson({ prumer: lpfsTotal, subskaly: lpfsSubscaleScores, odpovedi: lpfsAns }, 'lpfs_vysledky.json')} className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left">
-              <div className="text-sm font-semibold text-gray-300">🔧 JSON</div>
-              <div className="text-xs text-gray-500">Surová data</div>
+              <div className="text-sm font-semibold text-gray-300">{t('json')}</div>
+              <div className="text-xs text-gray-500">{t('jsonDesc')}</div>
             </button>
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => { saveLpfsResult(); alert('✅ Výsledek uložen do historie!'); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">💾 Uložit výsledek</button>
-          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">← Menu</button>
+          <button onClick={() => { saveLpfsResult(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
+          <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>
@@ -751,9 +756,9 @@ export default function App() {
       <div className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800/60 px-4 py-2.5">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-            <button onClick={() => setMode("menu")} className="hover:text-gray-300 transition-colors">← Menu</button>
+            <button onClick={() => setMode("menu")} className="hover:text-gray-300 transition-colors">{t('menu')}</button>
             <div className="flex items-center gap-3">
-              {isPid && <button onClick={toggleLang} className={`px-2 py-0.5 rounded text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`} title="Klávesa E">{lang === 'en' ? 'EN' : 'CZ'}</button>}
+              <button onClick={toggleLang} className={`px-2 py-0.5 rounded text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`} title={t('keyE')}>{lang === 'en' ? 'EN' : 'CZ'}</button>
               <span className="font-mono">{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
             </div>
           </div>
@@ -781,7 +786,7 @@ export default function App() {
             {!isPid && lpfsSub && (
               <div className="flex gap-2 mb-3">
                 <span className="text-xs px-2.5 py-1 rounded-full border border-blue-500/40 text-blue-300 bg-blue-500/10">
-                  {LPFS_SUBSCALE_NAMES[lpfsSub]}
+                  {lpfsSubName(lpfsSub, lang)}
                 </span>
               </div>
             )}
@@ -793,7 +798,7 @@ export default function App() {
               {questionHint && (
                 <div className="mb-4">
                   <button onClick={() => setShowHint(!showHint)} className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors">
-                    <span>💡</span> {showHint ? 'Skrýt nápovědu' : 'Nápověda k otázce'}
+                    <span>💡</span> {showHint ? t('hideHint') : t('showHint')}
                   </button>
                   {showHint && (
                     <div className="mt-2 p-3 rounded-xl bg-gray-800/30 border border-gray-700/20 text-xs" style={{animation: 'fadeIn .2s ease-out'}}>
@@ -823,7 +828,7 @@ export default function App() {
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-4 gap-2">
-              <button onClick={() => setCurI(Math.max(0, curI - 1))} disabled={curI === 0} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">← Předchozí</button>
+              <button onClick={() => setCurI(Math.max(0, curI - 1))} disabled={curI === 0} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">{t('previous')}</button>
               <div className="flex gap-1 flex-wrap justify-center">
                 {Array.from({length: Math.min(10, Math.ceil((curI+1)/10)*10) - Math.floor(curI/10)*10}, (_, j) => {
                   const n = Math.floor(curI / 10) * 10 + j;
@@ -832,11 +837,11 @@ export default function App() {
                   return <button key={n} onClick={() => setCurI(n)} className={`w-6 h-6 rounded-full text-xs flex items-center justify-center transition-all ${n === curI ? (isPid ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white') : has ? 'bg-gray-700 text-gray-300' : 'bg-gray-800/40 text-gray-600'}`}>{n+1}</button>;
                 })}
               </div>
-              <button onClick={() => setCurI(Math.min(curQ.length - 1, curI + 1))} disabled={curI >= curQ.length - 1} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">Další →</button>
+              <button onClick={() => setCurI(Math.min(curQ.length - 1, curI + 1))} disabled={curI >= curQ.length - 1} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">{t('next')}</button>
             </div>
 
             {answered >= (isPid ? Q.length : LPFS_Q.length) && (
-              <button onClick={() => setMode(isPid ? 'pid5_results' : 'lpfs_results')} className={`w-full mt-4 p-3.5 rounded-xl font-semibold transition-all ${isPid ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'}`}>Zobrazit výsledky</button>
+              <button onClick={() => setMode(isPid ? 'pid5_results' : 'lpfs_results')} className={`w-full mt-4 p-3.5 rounded-xl font-semibold transition-all ${isPid ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'}`}>{t('showResults')}</button>
             )}
           </div>
 
@@ -847,7 +852,7 @@ export default function App() {
             {isPid && (
               <div className="rounded-xl border border-purple-500/15 bg-purple-950/10 p-4">
                 <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
-                  <span className="flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />Průběžné skóry</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />{t('liveScores')}</span>
                   <span className="text-gray-600 font-mono">{Object.keys(answers).length}/220</span>
                 </div>
                 <div className="space-y-1.5">
@@ -871,7 +876,7 @@ export default function App() {
                 </div>
                 {facets.length > 0 && (
                   <div className="border-t border-gray-800/40 pt-2 mt-3 space-y-1">
-                    <div className="text-xs text-gray-600 mb-1">Facety otázky:</div>
+                    <div className="text-xs text-gray-600 mb-1">{t('questionFacets')}</div>
                     {facets.map(f => {
                       const displayScores = hoveredVal !== null ? previewFacetScores : facetScores;
                       const v = displayScores[f] || 0;
@@ -900,7 +905,7 @@ export default function App() {
             {isPid && (
               <div className="rounded-xl border border-gray-700/20 bg-gray-900/30 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs text-gray-500 flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />Diagnostické profily</div>
+                  <div className="text-xs text-gray-500 flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />{t('diagProfilesTitle')}</div>
                   <button onClick={() => setShowDiagLive(!showDiagLive)} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{showDiagLive ? '▾' : '▸'}</button>
                 </div>
                 {showDiagLive && (
@@ -934,13 +939,13 @@ export default function App() {
                 <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
                   <span className="flex items-center gap-2">
                     <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                    Průběžné skóry LPFS
+                    {t('liveScoresLpfs')}
                   </span>
                   <span className="text-gray-600 font-mono">{Object.keys(lpfsAns).length}/80</span>
                 </div>
                 {/* Total */}
                 <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-800/40">
-                  <div className="w-20 text-xs font-medium text-blue-300">Celkem</div>
+                  <div className="w-20 text-xs font-medium text-blue-300">{t('total')}</div>
                   <div className="flex-1 bg-gray-800/60 rounded-full h-2 overflow-hidden relative">
                     <div className="absolute inset-0 h-full rounded-full transition-all" style={{width: `${(lpfsTotal/4)*100}%`, background: SEV_CLR(lpfsTotal), opacity: previewLpfsTotal !== null ? 0.35 : 1}} />
                     {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(previewLpfsTotal/4)*100}%`, background: SEV_CLR(previewLpfsTotal)}} />}
@@ -954,7 +959,7 @@ export default function App() {
                   const diff = previewLpfsTotal !== null ? v - base : 0;
                   return (
                     <div key={sub} className="flex items-center gap-2 mb-1.5">
-                      <div className="w-24 text-xs text-blue-200/70 truncate">{LPFS_SUBSCALE_NAMES[sub]}</div>
+                      <div className="w-24 text-xs text-blue-200/70 truncate">{lpfsSubName(sub, lang)}</div>
                       <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
                         <div className="absolute inset-0 h-full rounded-full" style={{width: `${(base/4)*100}%`, background: '#60A5FA', opacity: previewLpfsTotal !== null ? 0.35 : 1}} />
                         {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/4)*100}%`, background: '#60A5FA'}} />}
@@ -972,28 +977,28 @@ export default function App() {
             {/* Scoring Info panel */}
             <div>
               <button onClick={() => setShowScoringInfo(!showScoringInfo)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs transition-all border ${showScoringInfo ? 'bg-amber-950/20 border-amber-500/20 text-amber-300' : 'bg-gray-900/30 border-gray-800/40 text-gray-600 hover:text-gray-400 hover:border-gray-700'}`}>
-                <span className="flex items-center gap-2"><span>{showScoringInfo ? '📖' : '📐'}</span>Zdroje & vzorečky</span>
+                <span className="flex items-center gap-2"><span>{showScoringInfo ? '📖' : '📐'}</span>{t('sourcesFormulas')}</span>
                 <span>{showScoringInfo ? '▾' : '▸'}</span>
               </button>
               {showScoringInfo && (
                 <div className="mt-2 rounded-xl border border-amber-500/15 bg-amber-950/10 p-4 space-y-3 text-xs">
                   <div>
-                    <div className="text-amber-300 font-semibold mb-1.5">📊 Skórování</div>
+                    <div className="text-amber-300 font-semibold mb-1.5">{t('scoring')}</div>
                     <div className="text-gray-400 space-y-1">
-                      <p>• <span className="text-gray-300">Škála:</span> {isPid ? SCORING_INFO.pid5.scale : SCORING_INFO.lpfs.scale}</p>
+                      <p>• <span className="text-gray-300">{t('scale')}</span> {isPid ? SCORING_INFO.pid5.scale : SCORING_INFO.lpfs.scale}</p>
                       {isPid ? <>
-                        <p>• <span className="text-gray-300">Faceta:</span> {SCORING_INFO.pid5.facetFormula}</p>
-                        <p>• <span className="text-gray-300">Doména:</span> {SCORING_INFO.pid5.domainFormula}</p>
-                        <p>• <span className="text-gray-300">Diagnostika:</span> {SCORING_INFO.pid5.diagFormula}</p>
+                        <p>• <span className="text-gray-300">{t('facet')}</span> {SCORING_INFO.pid5.facetFormula}</p>
+                        <p>• <span className="text-gray-300">{t('domain')}</span> {SCORING_INFO.pid5.domainFormula}</p>
+                        <p>• <span className="text-gray-300">{t('diagnostics')}</span> {SCORING_INFO.pid5.diagFormula}</p>
                       </> : <>
-                        <p>• <span className="text-gray-300">Celkem:</span> {SCORING_INFO.lpfs.totalFormula}</p>
-                        <p>• <span className="text-gray-300">Subškály:</span> {SCORING_INFO.lpfs.subscales}</p>
+                        <p>• <span className="text-gray-300">{t('totalLabel')}</span> {SCORING_INFO.lpfs.totalFormula}</p>
+                        <p>• <span className="text-gray-300">{t('subscalesLabel')}</span> {SCORING_INFO.lpfs.subscales}</p>
                       </>}
                     </div>
                   </div>
                   {isPid && facets.length > 0 && (
                     <div>
-                      <div className="text-amber-300 font-semibold mb-1.5">🧩 Facety otázky #{curI + 1}</div>
+                      <div className="text-amber-300 font-semibold mb-1.5">{t('questionFacetsInfo')} #{curI + 1}</div>
                       {facets.map(f => { const meta = FACET_META[f]; if (!meta) return null; const src = SOURCES[meta.source]; return (
                         <div key={f} className="mb-2 p-2 rounded-lg bg-gray-900/40 border border-gray-700/20">
                           <div className="font-semibold text-gray-200">{f} <span className="text-gray-600">({meta.en})</span></div>

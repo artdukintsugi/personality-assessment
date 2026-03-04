@@ -8,43 +8,36 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const mountedRef = useRef(true);
-  const sessionResolvedRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
     if (!isSupabaseConfigured()) { setLoading(false); return; }
 
-    // Listen for auth state changes FIRST — this catches the INITIAL_SESSION event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // 1. Get the initial session synchronously first
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (!mountedRef.current) return;
-      console.log('[auth]', event, session?.user?.email ?? 'no user');
-
-      // Only update user on meaningful events
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-        setUser(session?.user ?? null);
-        sessionResolvedRef.current = true;
-        setLoading(false);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setLoading(false);
-      }
+      if (error) console.warn('[auth] getSession error:', error.message);
+      console.log('[auth] initial getSession:', session?.user?.email ?? 'no session');
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
-    // Fallback: if onAuthStateChange hasn't fired INITIAL_SESSION within 2s, resolve loading
-    const timeout = setTimeout(() => {
-      if (!mountedRef.current || sessionResolvedRef.current) return;
-      console.log('[auth] fallback: resolving via getSession');
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (!mountedRef.current) return;
+    // 2. Listen for auth state changes (sign in, sign out, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mountedRef.current) return;
+      console.log('[auth] event:', event, session?.user?.email ?? 'no user');
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null);
-        setLoading(false);
-      });
-    }, 2000);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+      // Ignore INITIAL_SESSION — we already handle it via getSession above
+    });
 
     return () => {
       mountedRef.current = false;
       subscription.unsubscribe();
-      clearTimeout(timeout);
     };
   }, []);
 
