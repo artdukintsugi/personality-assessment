@@ -12,7 +12,7 @@
 export const DAST10_QUESTIONS = {
   cs: [
     'Užíval/a jste jiné drogy než ty, které jsou potřebné ze zdravotních důvodů?',
-    'Užíval/a jste návykové léky na předpis ve vyšších dávkách než předepsaných?',
+    'Užíváte více než jednu drogu najednou?',
     'Dokážete vždy přestat s užíváním drog, když chcete?', // REVERSE — "Ano" = 0, "Ne" = 1
     'Měl/a jste někdy „blackout" nebo „flashback" v důsledku užívání drog?',
     'Máte někdy špatný pocit nebo pocit viny kvůli užívání drog?',

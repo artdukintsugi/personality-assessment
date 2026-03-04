@@ -25,7 +25,7 @@ export const FACET_HINTS = {
     cs: { hint: "Otázky se zaměřují na pocity beznaděje, bezcennosti a smutku.", example: "Např. zda se cítíte zbytečný/á, máte pocit, že za nic nestojíte..." },
     en: { hint: "Questions focus on feelings of hopelessness, worthlessness, and sadness.", example: "E.g., whether you feel useless, worthless, like nothing matters..." },
   },
-  "Roztříštěnost": {
+  "Roztěkanost": {
     cs: { hint: "Otázky zjišťují, jak snadno se rozptýlíte a ztrácíte soustředění.", example: "Např. zda vás snadno vyruší šum, zapomínáte, co jste chtěli říct..." },
     en: { hint: "Questions assess how easily you get distracted and lose concentration.", example: "E.g., whether noise easily disturbs you, you forget what you wanted to say..." },
   },
@@ -97,7 +97,7 @@ export const FACET_HINTS = {
     cs: { hint: "Otázky se týkají sociální izolace a vyhýbání se lidem.", example: "Např. zda se vyhýbáte společenským akcím, preferujete samotu, nemáte zájem o přátelství..." },
     en: { hint: "Questions relate to social isolation and avoiding people.", example: "E.g., whether you avoid social events, prefer solitude, have no interest in friendships..." },
   },
-  "Rigidita": {
+  "Rigidní perfekcionismus": {
     cs: { hint: "Otázky zjišťují perfekcionismus a rigidní lpění na pravidlech.", example: "Např. zda trvám na přesném pořádku, kontroluji věci opakovaně, vyžaduji dokonalost..." },
     en: { hint: "Questions assess perfectionism and rigid adherence to rules.", example: "E.g., whether you insist on exact order, repeatedly check things, demand perfection..." },
   },
@@ -182,7 +182,7 @@ export const DIAG_EXPLANATIONS = {
     en: "Depressive personality traits include chronic sadness, pessimism, feelings of worthlessness, and low capacity for joy — as an enduring personality trait, not an episode.",
   },
   adhd: {
-    cs: "Toto NENÍ diagnóza ADHD z PID-5. Vysoké skóre v Disinhibici (roztříštěnost, impulzivita) koreluje s ADHD fenomény a může naznačovat potřebu dalšího vyšetření.",
+    cs: "Toto NENÍ diagnóza ADHD z PID-5. Vysoké skóre v Disinhibici (roztěkanost, impulzivita) koreluje s ADHD fenomény a může naznačovat potřebu dalšího vyšetření.",
     en: "This is NOT an ADHD diagnosis from PID-5. High Disinhibition scores (distractibility, impulsivity) correlate with ADHD phenomena and may suggest the need for further assessment.",
   },
   did: {

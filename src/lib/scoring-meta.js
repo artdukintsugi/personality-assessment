@@ -97,11 +97,11 @@ export const FACET_META = {
     desc: { cs: "Časté pocity smutku, beznaděje; sebekritičnost; sebevražedné myšlenky nebo chování.", en: "Frequent feelings of sadness, hopelessness; self-criticism; suicidal thoughts or behavior." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
-  "Roztříštěnost": {
+  "Roztěkanost": {
     en: "Distractibility", domain: "Disinhibice",
     items: [5, 28, 46, 67, 87, 117, 131, 143, 198],
     get itemCount() { return this.items.length; },
-    formulaExact: "Roztříštěnost = (Q6 + Q29 + Q47 + Q68 + Q88 + Q118 + Q132 + Q144 + Q199) / 9",
+    formulaExact: "Roztěkanost = (Q6 + Q29 + Q47 + Q68 + Q88 + Q118 + Q132 + Q144 + Q199) / 9",
     formulaMath: "= Σ odpovědí na 9 položek / 9",
     desc: { cs: "Obtíže se soustředěním; snadné rozptýlení vnějšími podněty.", en: "Difficulty concentrating; easily distracted by external stimuli." },
     source: "apaPid5", scoringSource: "apaPid5",
@@ -259,11 +259,11 @@ export const FACET_META = {
     desc: { cs: "Preference pro samotu; rezervovanost v sociálních situacích.", en: "Preference for solitude; reserve in social situations." },
     source: "apaPid5", scoringSource: "apaPid5",
   },
-  "Rigidita": {
+  "Rigidní perfekcionismus": {
     en: "Rigid Perfectionism", domain: "Disinhibice",
     items: [33, 48, 104, 114, 122, 134, 139, 175, 195, 219],
     get itemCount() { return this.items.length; },
-    formulaExact: "Rigidita = (Q34 + Q49 + Q105 + Q115 + Q123 + Q135 + Q140 + Q176 + Q196 + Q220) / 10",
+    formulaExact: "Rigidní perfekcionismus = (Q34 + Q49 + Q105 + Q115 + Q123 + Q135 + Q140 + Q176 + Q196 + Q220) / 10",
     formulaMath: "= Σ odpovědí na 10 položek / 10",
     desc: { cs: "Přísné trvání na dokonalosti; rigidní dodržování pravidel. ⚠ Na úrovni domény invertováno.", en: "Strict insistence on perfection; rigid adherence to rules. ⚠ Inverted at domain level." },
     source: "apaPid5", scoringSource: "apaPid5",
@@ -304,10 +304,10 @@ export const DOMAIN_META = {
   },
   "Disinhibice": {
     en: "Disinhibition",
-    coreFacets: ["Nezodpovědnost", "Impulzivita", "Roztříštěnost"],
-    allFacets: ["Nezodpovědnost", "Impulzivita", "Roztříštěnost", "Riskování", "Rigidita"],
-    formulaExact: "Disinhibice = (Nezodpovědnost + Impulzivita + Roztříštěnost) / 3",
-    formulaOfficial: "APA oficiální = (Nezodpovědnost + Impulzivita + Roztříštěnost) / 3",
+    coreFacets: ["Nezodpovědnost", "Impulzivita", "Roztěkanost"],
+    allFacets: ["Nezodpovědnost", "Impulzivita", "Roztěkanost", "Riskování", "Rigidní perfekcionismus"],
+    formulaExact: "Disinhibice = (Nezodpovědnost + Impulzivita + Roztěkanost) / 3",
+    formulaOfficial: "APA oficiální = (Nezodpovědnost + Impulzivita + Roztěkanost) / 3",
     desc: { cs: "Orientace na okamžité uspokojení; impulzivní chování bez ohledu na následky.", en: "Orientation toward immediate gratification; impulsive behavior without regard for consequences." },
     source: "apaPid5", cutoffSource: "novopsych",
     cutoffLabels: "< 1.0 Nízké · 1.0–1.5 Mírné · ≥ 1.5 Zvýšené · ≥ 2.0 Vysoké",

@@ -1,0 +1,70 @@
+,,
+Lloyd & Preece Psychometric Auto-Scorer,Version 1.4,
+© Lloyd & Preece (2023) | The Psychology Centre of Western Australia,https://psychologywa.com,
+,,
+About the Lloyd & Preece Psychometric Auto-Scorer,,
+The Lloyd & Preece Psychometric Auto-Scorer was developed by Erin M. Lloyd and Dr David A. Preece. It is a programmed Excel sheet that auto-scores a variety of common psychological questionnaires. We intend to continue updating the Lloyd & Preece Psychometric Auto-Scorer with new sets of measures.,,
+,,
+Technical Notes,,
+"For the best experience, we recommend downloading the Excel file and opening it on a computer; depending on software versions on some mobile or tablet devices, some Excel navigation features may not work.",,
+,,
+Terms and Conditions of Use,,
+"The Lloyd & Preece Psychometric Auto-Scorer is available to use for free, we hope you find it useful. The Lloyd & Preece Psychometric Auto-Scorer is intended to be used by licensed health care professionals. Any use of this tool is the sole risk and responsibility of the user. By using the Lloyd & Preece Psychometric Auto-Scorer, you agree to indemnify and hold blameless the developers and the Psychology Centre of Western Australia (and its directors, officers, affiliates, and employees) from any claims, damages, costs, actions, liabilities, or expenses arising from use of the Lloyd & Preece Psychometric Auto-Scorer. It is the sole responsibility of the user to check and interpret all measure scores, and ensure they are suitably trained in each measure being administered. The descriptive labels provided for measure scores are not diagnoses; these are not diagnostic instruments. Scores are intended to be interpreted by licensed health care professionals as part of a comprehensive assessment.",,
+,,
+The Measures that can be scored within the Lloyd & Preece Psychometric Auto-Scorer Include:,Sheet links,Questionnaire access links
+Psychopathology or Mental Health Symptoms,,
+"Depression Anxiety Stress Scales-21 (DASS-21; Lovibond & Lovibond, 1995)",,Download DASS-21 pdf
+"Depression Anxiety Stress Scales (DASS; Lovibond & Lovibond, 1995)",,Download DASS pdf
+"Kessler Psychological Distress Scale (K10; Kessler et al., 2003)",,Download K10 pdf
+"Generalised Anxiety Disorder Assessment (GAD-7; Spitzer et al., 2006)",,Download GAD-7 pdf
+"Patient Health Questionnaire (PHQ-9; Kroenke et al., 2001)",,Download PHQ-9 pdf
+"Beck Depression Inventory-II (BDI-II; Beck et al., 1996)",,See publisher website
+"Beck Anxiety Inventory (BAI; Beck et al., 1993)",,See publisher website
+"DSM-5-TR Self-Rated Level 1 Cross-Cutting Symptom Measure-Adult (DSM-5; American Psychiatric Association, 2013)",,Download DSM-5 questionnaire pdf
+"PTSD Checklist for DSM-5 (PCL-5; Weathers et al., 2013)",,Download PCL-5 pdf
+"Eating Disorder Examination Questionnaire (EDE-Q; Fairburn et al., 2008)",,Download EDE-Q pdf
+"Eating Disorder Examination Questionnaire-Short (EDE-QS; Gideon et al., 2016)",,Download EDE-QS pdf
+"Alcohol Use Disorders Identification Test (AUDIT; Babor et al., 1992)",,Download AUDIT pdf
+Emotional Functioning,,
+"Perth Alexithymia Questionnaire (PAQ; Preece et al., 2018a)",,Download PAQ pdf
+"Perth Alexithymia Questionnaire-Short Form (PAQ-S; Preece et al., 2023)",,Download PAQ-S pdf
+"Perth Emotion Regulation Competency Inventory (PERCI; Preece et al., 2018b)",,Download PERCI pdf
+"Perth Emotional Reactivity Scale (PERS; Becerra et al., 2019)",,Download PERS pdf
+"Perth Emotional Reactivity Scale-Short Form (PERS-S; Preece et al., 2019)",,Download PERS-S pdf
+"Emotion Beliefs Questionnaire (EBQ; Becerra et al., 2020)",,Download EBQ pdf
+"Emotion Regulation Questionnaire (ERQ; Gross & John, 2003)",,Download ERQ pdf
+"Process Model of Emotion Regulation Questionnaire (PMERQ; Olderbak et al., 2022)",,Download PMERQ pdf
+"Perth Empathy Scale (PES; Brett et al., 2022)",,Download PES pdf
+Neurodevelopmental Disorder Symptoms or Traits,,
+"Adult ADHD Self-Report Scale (ASRS; Kessler et al., 2005)",,Download ASRS pdf
+"Autism-Spectrum Quotient (AQ; Baron-Cohen et al., 2001)",,Download AQ pdf
+"Autism-Spectrum Quotient-10 (AQ-10; Allison et al., 2012)",,Download AQ-10 pdf
+"Comprehensive Autistic Trait Inventory (CATI; English et al., 2021)",,Download CATI pdf
+Personality or Personality-Related Constructs,,
+"Personality Inventory for DSM-5 (PID-5; Krueger et al., 2012)",,Download PID-5 pdf
+"The Personality Inventory for DSM-5 - Brief Form (PID-5-BF; Krueger et al., 2012)",,Download PID-5-BF pdf
+"Young Schema Questionnaire-Revised (YSQ-R; Yalcin et al., 2022)",,See publisher website
+,,
+How to Use,,
+"This excel file has a separate 'sheet' for each of the measures, which can be navigated between using the tabs at the bottom of the screen (you will need to use the arrows in the bottom left of screen to navigate/see across all the tabs) or navigated by clicking on the black buttons on each sheet (see example buttons to the right).",,
+"You can begin with the 'Client Details' sheet, inputting the details of your client, patient, or participant. We recommend saving a separate version of this Excel file for each client, and for each new administration (e.g., testing pre and post intervention).",,
+"On each sheet labelled with each measure's name, there is a space to input the item scores of that measure (i.e., input the number that the patient or participant circled on the Likert scale for that item in the ""ENTER item scores here"" column).",,
+"Based on these item scores, another table on that sheet will automatically display the calculated subscale and composite scores. Additionally, for ease of interpretation, the 'Profile Summary and Figures' tab (third tab from the left) provides a list of the scores for all the measures on one page, and profile graphs showing patterns of high/low scores. Do not enter scores into that 'Profile Summary and Figures' tab, it is purely for display and summary purposes.",,
+"To export a figure (graph) from the 'Profile Summary and Figures' tab for use in a word document or other document, click on the graph to select it and use the copy and paste commands on your computer. Similarly, you can select and copy across the desired cells of a table.",,
+"Please note: When inputting item scores within each 'measure' tab, a value needs to be inputted for all items in a measure for its subscale and composite scores to be calculated correctly. If a patient or participant has not answered some items, the mean score they gave for the other items in that subscale can be inputted as the value for the missing item(s). However, keep in mind that substituting item values in this way will reduce the confidence with which the subscale and composite scores can be interpreted (as it differs from the way the measure was validated).",,
+,,
+How to Interpret Scores,,
+The Lloyd & Preece Psychometric Auto-Scorer uses the standardised scoring and interpretation rules for each measure.,,
+"Some of the measures' scores are interpreted by comparisons with a relevant normative sample (i.e., a general community sample) (e.g., PAQ, PERCI, PERS, PERS-S, EBQ, ERQ, PES, PID-5, PID-5-BF). For these types of measures, the Lloyd & Preece Psychometric Auto-Scorer provides a 'z-score' (which indicates how many standard deviations [SDs] a client's score is from the mean [M] of the normative sample) and a description of whether this score is in the 'high', 'average', or 'low' range. Scores that are within 1SD of the mean are listed as 'average' range (i.e., z-scores between -.99 and .99), scores 1SD or more above the mean are listed as 'high' (i.e., z-scores of 1.0 or more), and scores 1SD or more below the mean are listed as 'low' (i.e., z-scores of -1.0 or less). For these calculations we have used, as the normative reference sample, data from a variety of community adult samples (see the sheet labeled 'Measure norms'). There may be other published data that are more appropriate reference samples for your purposes, and we encourage practitioners to consider this in their interpretation of scores.",,
+"For other measures, their standardised scoring procedure involves established cut-off scores for different levels of symptom severity (e.g., 'normal', 'mild', 'moderate', and 'severe' categories) (i.e., DASS, DASS-21, DSM-5, GAD-7, PHQ-9, AUDIT, ASRS, AQ, AQ-10, CATI). For these measures, no z-score is provided, we instead use these established cut-off scores and labels for score interpretations. For these measures, the z-score column will say 'NA'.",,
+,,
+More information and contacts,,
+The Lloyd & Preece Psychometric Auto-Scorer was developed by:,,
+"Erin M. Lloyd, BSc (Hons)",,
+"David A. Preece, PhD",,
+,,
+Questions and comments can be directed to us via email at david.preece@curtin.edu.au. You can also send us requests for new measures to be added.,,
+,,
+You can also visit our clinical psychology practice and research lab websites for more information: ,,
+The Psychology Centre of Western Australia,,
+"Perth Emotion & Psychopathology Lab, Curtin University & the University of Western Australia",,

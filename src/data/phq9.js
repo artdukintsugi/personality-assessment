@@ -36,11 +36,11 @@ export const PHQ9_SCALE = {
 };
 
 export const PHQ9_SEVERITY = [
-  { min: 0, max: 4, key: 'minimal', color: '#4ADE80' },
-  { min: 5, max: 9, key: 'mild', color: '#FBBF24' },
-  { min: 10, max: 14, key: 'moderate', color: '#FB923C' },
-  { min: 15, max: 19, key: 'moderatelySevere', color: '#F87171' },
-  { min: 20, max: 27, key: 'severe', color: '#EF4444' },
+  { min: 0, max: 4, key: 'minimal', color: '#4ADE80', cs: 'Minimální deprese', en: 'Minimal depression' },
+  { min: 5, max: 9, key: 'mild', color: '#FBBF24', cs: 'Mírná deprese', en: 'Mild depression' },
+  { min: 10, max: 14, key: 'moderate', color: '#FB923C', cs: 'Středně těžká deprese', en: 'Moderate depression' },
+  { min: 15, max: 19, key: 'moderatelySevere', color: '#F87171', cs: 'Středně těžká až těžká deprese', en: 'Moderately severe depression' },
+  { min: 20, max: 27, key: 'severe', color: '#EF4444', cs: 'Těžká deprese', en: 'Severe depression' },
 ];
 
 export const PHQ9_FUNCTIONAL = {

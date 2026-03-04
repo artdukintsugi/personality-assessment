@@ -1,5 +1,5 @@
 /**
- * CATI — CAT-Q Informant (Camouflaging Autistic Traits Questionnaire)
+ * CATI — Comprehensive Autistic Trait Inventory (English et al., 2021)
  * CATI v1.1 — 42 items, 6 subscales × 7 items each
  * Scale: 1-5 (Definitely Disagree to Definitely Agree)
  * Reverse-scored items: 8, 15, 19, 23, 28 (1-indexed)

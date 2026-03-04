@@ -46,7 +46,7 @@ export const FM = {
   "Bezcitnost":             [10, 12, 18, 53, 71, 72, 89, 152, 165, 182, 197, 199, 206, 207], // 14 items (Q90R)
   "Klamavost":              [40, 52, 55, 75, 125, 133, 141, 205, 213, 217],  // 10 items (Q142R)
   "Depresivita":            [26, 60, 65, 80, 85, 103, 118, 147, 150, 162, 167, 168, 177, 211], // 14 items
-  "Roztříštěnost":          [5, 28, 46, 67, 87, 117, 131, 143, 198],    // 9 items
+  "Roztěkanost":             [5, 28, 46, 67, 87, 117, 131, 143, 198],    // 9 items
   "Excentricita":           [4, 20, 23, 24, 32, 51, 54, 69, 70, 151, 171, 184, 204], // 13 items
   "Emoční labilita":        [17, 61, 101, 121, 137, 164, 180],          // 7 items
   "Grandiozita":            [39, 64, 113, 178, 186, 196],               // 6 items
@@ -64,7 +64,7 @@ export const FM = {
   "Podezřívavost":          [1, 102, 116, 130, 132, 176, 189],          // 7 items (Q131R, Q177R)
   "Neobvyklé přesvědčení":  [93, 98, 105, 138, 142, 149, 193, 208],    // 8 items
   "Stažení":                [9, 19, 74, 81, 135, 145, 146, 160, 181, 185], // 10 items
-  "Rigidita":               [33, 48, 104, 114, 122, 134, 139, 175, 195, 219], // 10 items
+  "Rigidní perfekcionismus": [33, 48, 104, 114, 122, 134, 139, 175, 195, 219], // 10 items
 };
 
 /**
@@ -75,7 +75,7 @@ export const DF = {
   "Negativní afektivita": ["Emoční labilita", "Úzkostnost", "Separační nejistota"],
   "Odtažitost": ["Stažení", "Anhedonie", "Vyhýbání se intimitě"],
   "Antagonismus": ["Manipulativnost", "Klamavost", "Grandiozita"],
-  "Disinhibice": ["Nezodpovědnost", "Impulzivita", "Roztříštěnost"],
+  "Disinhibice": ["Nezodpovědnost", "Impulzivita", "Roztěkanost"],
   "Psychoticismus": ["Neobvyklé přesvědčení", "Excentricita", "Percepční dysregulace"],
 };
 
@@ -88,7 +88,7 @@ export const DF_ALL = {
   "Negativní afektivita": ["Emoční labilita", "Úzkostnost", "Separační nejistota", "Hostilita", "Perseverace", "Submisivita", "Restriktivní afektivita"],
   "Odtažitost": ["Stažení", "Vyhýbání se intimitě", "Anhedonie", "Depresivita", "Restriktivní afektivita", "Podezřívavost"],
   "Antagonismus": ["Manipulativnost", "Klamavost", "Grandiozita", "Vyhledávání pozornosti", "Bezcitnost"],
-  "Disinhibice": ["Nezodpovědnost", "Impulzivita", "Roztříštěnost", "Riskování", "Rigidita"],
+  "Disinhibice": ["Nezodpovědnost", "Impulzivita", "Roztěkanost", "Riskování", "Rigidní perfekcionismus"],
   "Psychoticismus": ["Neobvyklé přesvědčení", "Excentricita", "Percepční dysregulace"],
 };
 

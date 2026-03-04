@@ -32,10 +32,10 @@ export const GAD7_SCALE = {
 };
 
 export const GAD7_SEVERITY = [
-  { min: 0, max: 4, key: 'minimal', color: '#4ADE80' },
-  { min: 5, max: 9, key: 'mild', color: '#FBBF24' },
-  { min: 10, max: 14, key: 'moderate', color: '#FB923C' },
-  { min: 15, max: 21, key: 'severe', color: '#F87171' },
+  { min: 0, max: 4, key: 'minimal', color: '#4ADE80', cs: 'Minimální úzkost', en: 'Minimal anxiety' },
+  { min: 5, max: 9, key: 'mild', color: '#FBBF24', cs: 'Mírná úzkost', en: 'Mild anxiety' },
+  { min: 10, max: 14, key: 'moderate', color: '#FB923C', cs: 'Středně těžká úzkost', en: 'Moderate anxiety' },
+  { min: 15, max: 21, key: 'severe', color: '#F87171', cs: 'Těžká úzkost', en: 'Severe anxiety' },
 ];
 
 export const GAD7_FUNCTIONAL = {

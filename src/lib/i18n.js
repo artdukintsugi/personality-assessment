@@ -31,7 +31,7 @@ const FACET_NAMES = {
     'Bezcitnost': 'Callousness',
     'Klamavost': 'Deceitfulness',
     'Depresivita': 'Depressivity',
-    'Roztříštěnost': 'Distractibility',
+    'Roztěkanost': 'Distractibility',
     'Excentricita': 'Eccentricity',
     'Emoční labilita': 'Emotional Lability',
     'Grandiozita': 'Grandiosity',
@@ -49,7 +49,7 @@ const FACET_NAMES = {
     'Podezřívavost': 'Suspiciousness',
     'Neobvyklé přesvědčení': 'Unusual Beliefs',
     'Stažení': 'Withdrawal',
-    'Rigidita': 'Rigid Perfectionism',
+    'Rigidní perfekcionismus': 'Rigid Perfectionism',
   },
 };
 

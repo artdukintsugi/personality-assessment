@@ -40,6 +40,14 @@ const SUBSCALE_DESC = {
 
 export default function DASS42Results({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const [showDass21, setShowDass21] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+  const [compareType, setCompareType] = useState(null);
+  const [otherScores, setOtherScores] = useState(null);
+  const [otherLabel, setOtherLabel] = useState('');
+    // Reference averages (example values, replace with real data if available)
+    const POP_AVG = { depression: 4, anxiety: 3, stress: 6 };
+    const MDD_AVG = { depression: 18, anxiety: 10, stress: 14 };
+    const GAD_AVG = { depression: 10, anxiety: 16, stress: 12 };
   const validity = useMemo(() => checkSimpleValidity(answers, questions.length, 0, 3, lang), [answers, questions.length, lang]);
 
   // Score DASS-42 subscales
@@ -74,6 +82,87 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
           <span className="text-sm font-semibold text-orange-400">DASS-{showDass21 ? '21' : '42'} — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
+
+        {/* Compare button */}
+        <div className="mb-6">
+          <button onClick={() => setShowCompare(true)} className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-900/40 border border-blue-500/30 text-blue-300 hover:bg-blue-900/60 transition-all">
+            {lang === 'cs' ? 'Porovnat s…' : 'Compare with…'}
+          </button>
+        </div>
+
+        {/* Compare Modal */}
+        {showCompare && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-xl">
+              <h2 className="text-lg font-bold text-blue-300 mb-4">{lang === 'cs' ? 'Porovnat výsledky' : 'Compare Results'}</h2>
+              <div className="space-y-3 mb-4">
+                <button onClick={() => { setCompareType('other'); setOtherScores(null); setOtherLabel(''); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='other' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S jiným člověkem' : 'With another person'}</button>
+                <button onClick={() => { setCompareType('pop'); setOtherScores(POP_AVG); setOtherLabel(lang==='cs'?'Průměr populace':'Population average'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='pop' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem populace' : 'With population average'}</button>
+                <button onClick={() => { setCompareType('mdd'); setOtherScores(MDD_AVG); setOtherLabel(lang==='cs'?'Průměr u deprese (MDD)':'Average for depression (MDD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='mdd' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u deprese (MDD)' : 'With average for depression (MDD)'}</button>
+                <button onClick={() => { setCompareType('gad'); setOtherScores(GAD_AVG); setOtherLabel(lang==='cs'?'Průměr u úzkosti (GAD)':'Average for anxiety (GAD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='gad' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u úzkosti (GAD)' : 'With average for anxiety (GAD)'}</button>
+              </div>
+              {compareType === 'other' && (
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-400 mb-1">{lang === 'cs' ? 'Vlož JSON výsledků druhé osoby:' : "Paste JSON of other person's results:"}</label>
+                  <textarea rows={3} className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-xs text-gray-200 mb-2" placeholder={'{"depression":12,"anxiety":8,"stress":10}'} value={otherLabel} onChange={e => setOtherLabel(e.target.value)} />
+                  <button onClick={() => {
+                    try {
+                      const obj = JSON.parse(otherLabel);
+                      if (obj.depression !== undefined && obj.anxiety !== undefined && obj.stress !== undefined) {
+                        setOtherScores(obj);
+                      } else {
+                        alert('Invalid format');
+                      }
+                    } catch {
+                      alert('Invalid JSON');
+                    }
+                  }} className="px-3 py-1 rounded bg-blue-700 text-white text-xs font-semibold">{lang === 'cs' ? 'Načíst' : 'Load'}</button>
+                </div>
+              )}
+              {otherScores && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-blue-200 mb-2">{lang === 'cs' ? 'Porovnání subškál' : 'Subscale Comparison'}</h3>
+                  <table className="w-full text-xs mb-2">
+                    <thead>
+                      <tr className="text-gray-500">
+                        <th className="text-left py-1"></th>
+                        <th className="text-center py-1">{lang === 'cs' ? 'Vy' : 'You'}</th>
+                        <th className="text-center py-1">{compareType==='other'? (lang==='cs'?'Druhý člověk':'Other person') : otherLabel}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {['depression','anxiety','stress'].map(sub => (
+                        <tr key={sub} className="border-t border-gray-800/50">
+                          <td className="py-1.5 text-gray-400">{SUBSCALE_LABELS[lang][sub]}</td>
+                          <td className="text-center py-1.5 font-mono text-blue-300">{activeScores[sub]}</td>
+                          <td className="text-center py-1.5 font-mono text-blue-400">{otherScores[sub]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="flex gap-2 mt-2">
+                    {['depression','anxiety','stress'].map(sub => (
+                      <div key={sub} className="flex-1">
+                        <div className="text-xs text-gray-400 mb-1 text-center">{SUBSCALE_LABELS[lang][sub]}</div>
+                        <div className="relative h-4 bg-gray-800 rounded-full">
+                          <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(activeScores[sub]/activeMax)*100}%`,background:SUBSCALE_COLORS[sub],opacity:0.7}} />
+                          <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(otherScores[sub]/activeMax)*100}%`,background:SUBSCALE_COLORS[sub],opacity:0.3}} />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
+                          <span>{lang==='cs'?'Vy':'You'}: {activeScores[sub]}</span>
+                          <span>{compareType==='other'? (lang==='cs'?'Druhý':'Other') : otherLabel}: {otherScores[sub]}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-2 justify-end">
+                <button onClick={()=>setShowCompare(false)} className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700">{lang==='cs'?'Zavřít':'Close'}</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* DASS-42 / DASS-21 toggle */}
         <div className="flex gap-2 mb-6">

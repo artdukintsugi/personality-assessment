@@ -1,11 +1,18 @@
 /**
  * PHQ-9 Results page
  */
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '../data/phq9';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
 export default function PHQ9Results({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
+    const [showCompare, setShowCompare] = useState(false);
+    const [compareType, setCompareType] = useState(null);
+    const [otherScore, setOtherScore] = useState(null);
+    const [otherLabel, setOtherLabel] = useState('');
+    // Reference averages (example values)
+    const POP_AVG = 4;
+    const MDD_AVG = 18;
   const total = Object.values(answers).reduce((a, b) => a + b, 0);
   const maxScore = questions.length * 3; // 27
   const severity = PHQ9_SEVERITY.find(s => total >= s.min && total <= s.max) || PHQ9_SEVERITY[0];
@@ -43,6 +50,70 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
           <span className="text-sm font-semibold text-emerald-400">PHQ-9 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
+
+        {/* Compare button */}
+        <div className="mb-6">
+          <button onClick={() => setShowCompare(true)} className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/60 transition-all">
+            {lang === 'cs' ? 'Porovnat s…' : 'Compare with…'}
+          </button>
+        </div>
+
+        {/* Compare Modal */}
+        {showCompare && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-xl">
+              <h2 className="text-lg font-bold text-emerald-300 mb-4">{lang === 'cs' ? 'Porovnat výsledky' : 'Compare Results'}</h2>
+              <div className="space-y-3 mb-4">
+                <button onClick={() => { setCompareType('other'); setOtherScore(null); setOtherLabel(''); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='other' ? 'bg-emerald-800/30 border-emerald-400 text-emerald-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S jiným člověkem' : 'With another person'}</button>
+                <button onClick={() => { setCompareType('pop'); setOtherScore(POP_AVG); setOtherLabel(lang==='cs'?'Průměr populace':'Population average'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='pop' ? 'bg-emerald-800/30 border-emerald-400 text-emerald-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem populace' : 'With population average'}</button>
+                <button onClick={() => { setCompareType('mdd'); setOtherScore(MDD_AVG); setOtherLabel(lang==='cs'?'Průměr u deprese (MDD)':'Average for depression (MDD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='mdd' ? 'bg-emerald-800/30 border-emerald-400 text-emerald-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u deprese (MDD)' : 'With average for depression (MDD)'}</button>
+              </div>
+              {compareType === 'other' && (
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-400 mb-1">{lang === 'cs' ? 'Vlož JSON výsledků druhé osoby (číslo):' : 'Paste JSON of other person’s result (number):'}</label>
+                  <input type="text" className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-xs text-gray-200 mb-2" placeholder="12" value={otherLabel} onChange={e => setOtherLabel(e.target.value)} />
+                  <button onClick={() => {
+                    const val = parseInt(otherLabel);
+                    if (!isNaN(val)) setOtherScore(val);
+                    else alert('Invalid number');
+                  }} className="px-3 py-1 rounded bg-emerald-700 text-white text-xs font-semibold">{lang === 'cs' ? 'Načíst' : 'Load'}</button>
+                </div>
+              )}
+              {otherScore !== null && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-emerald-200 mb-2">{lang === 'cs' ? 'Porovnání celkového skóre' : 'Total Score Comparison'}</h3>
+                  <table className="w-full text-xs mb-2">
+                    <thead>
+                      <tr className="text-gray-500">
+                        <th className="text-left py-1"></th>
+                        <th className="text-center py-1">{lang === 'cs' ? 'Vy' : 'You'}</th>
+                        <th className="text-center py-1">{compareType==='other'? (lang==='cs'?'Druhý člověk':'Other person') : otherLabel}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-t border-gray-800/50">
+                        <td className="py-1.5 text-gray-400">PHQ-9</td>
+                        <td className="text-center py-1.5 font-mono text-emerald-300">{total}</td>
+                        <td className="text-center py-1.5 font-mono text-emerald-400">{otherScore}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="relative h-4 bg-gray-800 rounded-full mt-2">
+                    <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(total/maxScore)*100}%`,background:severity.color,opacity:0.7}} />
+                    <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(otherScore/maxScore)*100}%`,background:severity.color,opacity:0.3}} />
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
+                    <span>{lang==='cs'?'Vy':'You'}: {total}</span>
+                    <span>{compareType==='other'? (lang==='cs'?'Druhý':'Other') : otherLabel}: {otherScore}</span>
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-2 justify-end">
+                <button onClick={()=>setShowCompare(false)} className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700">{lang==='cs'?'Zavřít':'Close'}</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Total score */}
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
