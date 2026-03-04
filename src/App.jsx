@@ -4,7 +4,7 @@ import { SOURCES, FACET_META, DOMAIN_META, SCORING_INFO } from './lib/scoring-me
 import { getQuestionHint, DIAG_EXPLANATIONS, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
-import { Q, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
+import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
@@ -70,7 +70,7 @@ function HoverTip({ children, text, wide }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -93,7 +93,9 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [cloudResults, setCloudResults] = useState([]);
   const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result
+  const [lang, setLang] = useState(() => lsGet(LS_KEYS.lang, 'cs')); // 'cs' | 'en'
 
+  useEffect(() => { lsSet(LS_KEYS.lang, lang); }, [lang]);
   useEffect(() => { lsSet(LS_KEYS.answers, answers); }, [answers]);
   useEffect(() => { lsSet(LS_KEYS.idx, idx); }, [idx]);
   useEffect(() => { lsSet(LS_KEYS.lpfsAns, lpfsAns); }, [lpfsAns]);
@@ -151,18 +153,21 @@ export default function App() {
     }
   }, [mode, idx, lpfsIdx]);
 
+  const toggleLang = useCallback(() => setLang(l => l === 'cs' ? 'en' : 'cs'), []);
+
   useEffect(() => {
     if (mode !== "pid5" && mode !== "lpfs") return;
     const isPid = mode === "pid5";
     const handler = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       const key = e.key;
+      if (key === 'e' || key === 'E') { e.preventDefault(); toggleLang(); return; }
       if (isPid && ["0","1","2","3"].includes(key)) { e.preventDefault(); answer(parseInt(key)); }
       else if (!isPid && ["1","2","3","4"].includes(key)) { e.preventDefault(); answer(parseInt(key)); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [mode, answer]);
+  }, [mode, answer, toggleLang]);
 
   const facetScores = useMemo(() => scoreFacets(answers), [answers]);
   const domainScores = useMemo(() => scoreDomains(facetScores), [facetScores]);
@@ -711,11 +716,13 @@ export default function App() {
 
   // ═══ QUESTIONNAIRE UI ═══
   const isPid = mode === "pid5";
-  const curQ = isPid ? Q : LPFS_Q;
+  const curQ = isPid ? (lang === 'en' ? Q_EN : Q) : LPFS_Q;
   const curI = isPid ? idx : lpfsIdx;
   const setCurI = isPid ? setIdx : setLpfsIdx;
   const curA = isPid ? answers : lpfsAns;
-  const optLabels = isPid ? ["0 — Zcela nepravdivé", "1 — Částečně nepravdivé", "2 — Částečně pravdivé", "3 — Zcela pravdivé"] : ["1 — Zcela nepravdivé", "2 — Trochu pravdivé", "3 — Převážně pravdivé", "4 — Zcela pravdivé"];
+  const optLabelsCz = isPid ? ["0 — Zcela nepravdivé", "1 — Částečně nepravdivé", "2 — Částečně pravdivé", "3 — Zcela pravdivé"] : ["1 — Zcela nepravdivé", "2 — Trochu pravdivé", "3 — Převážně pravdivé", "4 — Zcela pravdivé"];
+  const optLabelsEn = isPid ? ["0 — Very false or often false", "1 — Sometimes or somewhat false", "2 — Sometimes or somewhat true", "3 — Very true or often true"] : ["1 — Totally false", "2 — Somewhat true", "3 — Mostly true", "4 — Totally true"];
+  const optLabels = lang === 'en' ? optLabelsEn : optLabelsCz;
   const optValues = isPid ? [0,1,2,3] : [1,2,3,4];
   const facets = isPid ? (REVERSE[curI] || []) : [];
   const domain = facets.length ? facetDomain(facets[0]) : null;
@@ -731,9 +738,12 @@ export default function App() {
       {/* Progress bar */}
       <div className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800/60 px-4 py-2.5">
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
             <button onClick={() => setMode("menu")} className="hover:text-gray-300 transition-colors">← Menu</button>
-            <span className="font-mono">{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
+            <div className="flex items-center gap-3">
+              {isPid && <button onClick={toggleLang} className={`px-2 py-0.5 rounded text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`} title="Klávesa E">{lang === 'en' ? 'EN' : 'CZ'}</button>}
+              <span className="font-mono">{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
+            </div>
           </div>
           <div className="w-full bg-gray-800/60 rounded-full h-1.5 overflow-hidden">
             <div className={`h-full rounded-full transition-all duration-500 ${isPid ? 'bg-purple-500' : 'bg-blue-500'}`} style={{width: `${progress}%`}} />
