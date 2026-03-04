@@ -28,7 +28,8 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
   const aboveCutoff = total >= EAT26_CUTOFF;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">EAT-26 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
@@ -118,6 +119,7 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
           ← {lang === 'cs' ? 'Zpět do menu' : 'Back to Menu'}
         </button>
       </div>
+    </div>
     </div>
   );
 }

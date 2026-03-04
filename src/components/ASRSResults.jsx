@@ -14,7 +14,8 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
   const hyperScore = ASRS_SUBSCALES.hyperactivity.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">ASRS v1.1 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
@@ -90,6 +91,7 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
           ← {lang === 'cs' ? 'Zpět do menu' : 'Back to Menu'}
         </button>
       </div>
+    </div>
     </div>
   );
 }
