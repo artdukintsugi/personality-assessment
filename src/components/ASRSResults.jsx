@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES } from '../data/asrs';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -8,6 +8,10 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
   const total = (answers || []).reduce((s, v) => s + (v ?? 0), 0);
   const maxScore = 24;
   const validity = checkSimpleValidity(answers, 6, 0, 4, lang);
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('asrs_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('asrs_showLiveResults', showLive); } catch (e) {} }, [showLive]);
 
   // Subscale scores
   const inattScore = ASRS_SUBSCALES.inattention.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
@@ -18,28 +22,36 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">ASRS v1.1 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Total score */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={ASRS_SEVERITY} lang={lang} />
         </div>
         <div className="text-4xl font-bold text-white mb-1">{total}<span className="text-lg text-gray-500">/{maxScore}</span></div>
         <ScoreBar value={total} max={maxScore} color="#818CF8" label="" />
-      </div>
+        </div>
+      )}
 
       {/* Subscales */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
         <ScoreBar value={inattScore} max={12} color="#60A5FA" label={lang === 'cs' ? 'Nepozornost' : 'Inattention'} />
         <ScoreBar value={hyperScore} max={12} color="#F472B6" label={lang === 'cs' ? 'Hyperaktivita / Impulzivita' : 'Hyperactivity / Impulsivity'} />
-      </div>
+        </div>
+      )}
 
       {/* Item breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => (
@@ -51,10 +63,12 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Severity scale */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {ASRS_SEVERITY.map((s, i) => {
@@ -68,7 +82,8 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />

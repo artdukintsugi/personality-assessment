@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AUDIT_QUESTIONS, AUDIT_SCALES, AUDIT_SEVERITY, AUDIT_SUBSCALES, scoreAUDIT, scoreAUDITSubscale, Q910_SCORE_MAP } from '../data/audit';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -8,6 +8,10 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
   const total = scoreAUDIT(answers);
   const maxScore = 40;
   const validity = checkSimpleValidity(answers, 10, 0, 4, lang);
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('audit_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('audit_showLiveResults', showLive); } catch (e) {} }, [showLive]);
 
   // Subscale scores
   const hazScore = scoreAUDITSubscale(answers, 'hazardous');
@@ -19,29 +23,37 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">AUDIT — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Total score */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={AUDIT_SEVERITY} lang={lang} />
         </div>
         <div className="text-4xl font-bold text-white mb-1">{total}<span className="text-lg text-gray-500">/{maxScore}</span></div>
         <ScoreBar value={total} max={maxScore} color="#F59E0B" label="" />
-      </div>
+        </div>
+      )}
 
       {/* Subscales */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
         <ScoreBar value={hazScore} max={12} color={AUDIT_SUBSCALES.hazardous.color} label={AUDIT_SUBSCALES.hazardous[lang] || AUDIT_SUBSCALES.hazardous.cs} />
         <ScoreBar value={depScore} max={12} color={AUDIT_SUBSCALES.dependence.color} label={AUDIT_SUBSCALES.dependence[lang] || AUDIT_SUBSCALES.dependence.cs} />
         <ScoreBar value={harmScore} max={16} color={AUDIT_SUBSCALES.harmful.color} label={AUDIT_SUBSCALES.harmful[lang] || AUDIT_SUBSCALES.harmful.cs} />
-      </div>
+        </div>
+      )}
 
       {/* WHO intervention zones */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Intervenční zóny WHO' : 'WHO Intervention Zones'}</h3>
         <div className="space-y-2 text-sm">
           <div className={`flex items-start gap-2 px-3 py-2 rounded-lg ${total <= 7 ? 'bg-green-900/30 border border-green-700/30' : 'opacity-50'}`}>
@@ -73,10 +85,12 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Item breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => {
@@ -92,10 +106,12 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Severity scale */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {AUDIT_SEVERITY.map((s, i) => {
@@ -109,7 +125,8 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />

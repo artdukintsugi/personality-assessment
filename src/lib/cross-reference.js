@@ -159,7 +159,7 @@ export function generateCrossReferences(history, lang = 'cs') {
         en: 'PTSD with Comorbid Depression',
       },
       description: {
-        cs: `PCL-5 (${pcl5}) nad cut-off ${PCL5_CUTOFF} spolu s PHQ-9 (${phq9}) ukazují na možnou PTSD komplikovanou depresí. Až 50 % osob s PTSD trpí současně MDD. Depresivní symptomy u PTSD mohou odrážet sdílený okruh „negativních alterací kognice a nálady" (cluster D). Doporučen traumatologický přístup.`,
+        cs: `PCL-5 (${pcl5}) nad cut-off ${PCL5_CUTOFF} spolu s PHQ-9 (${phq9}) ukazují na možnou PTSD komplikovanou depresí. Až 50 % osob s PTSD trpí současně MDD. Depresivní symptomy u PTSD mohou odrážet sdílený okruh „negativních alterací kognice a nálady“ (cluster D). Doporučen traumatologický přístup.`,
         en: `PCL-5 (${pcl5}) above cut-off ${PCL5_CUTOFF} alongside PHQ-9 (${phq9}) suggest possible PTSD complicated by depression. Up to 50% of PTSD patients also have MDD. Depressive symptoms in PTSD may reflect the shared "negative alterations in cognition and mood" (cluster D). Trauma-focused treatment approach recommended.`,
       },
     });
@@ -528,7 +528,7 @@ export function generateCrossReferences(history, lang = 'cs') {
         en: 'Hazardous Alcohol Use with Depression',
       },
       description: {
-        cs: `AUDIT (${audit}) a PHQ-9 (${phq9}) ukazují na rizikové pití alkoholu provázené depresivními symptomy. Alkohol a deprese se vzájemně posilují — alkohol je depresogenní substance a deprese zvyšuje riziko pití jako „sebemedikace". Integrovaná léčba obou stavů je doporučena.`,
+        cs: `AUDIT (${audit}) a PHQ-9 (${phq9}) ukazují na rizikové pití alkoholu provázené depresivními symptomy. Alkohol a deprese se vzájemně posilují — alkohol je depresogenní substance a deprese zvyšuje riziko pití jako „sebemedikace“. Integrovaná léčba obou stavů je doporučena.`,
         en: `AUDIT (${audit}) and PHQ-9 (${phq9}) indicate hazardous alcohol use accompanied by depressive symptoms. Alcohol and depression reinforce each other — alcohol is a depressogenic substance and depression increases risk of self-medicating with alcohol. Integrated treatment of both conditions is recommended.`,
       },
     });

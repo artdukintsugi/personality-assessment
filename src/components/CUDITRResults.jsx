@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, scoreCUDITR, Q8_SCORE_MAP } from '../data/cuditr';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -10,16 +10,25 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
   const validity = checkSimpleValidity(answers, 8, 0, 4, lang);
   const aboveCutoff = total >= CUDITR_CUTOFF;
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('cuditr_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('cuditr_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">CUDIT-R — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Total score */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={CUDITR_SEVERITY} lang={lang} />
@@ -33,10 +42,12 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
               : `Score ≥ ${CUDITR_CUTOFF} — indicates hazardous cannabis use.${total >= 12 ? ' Score ≥ 12 suggests possible cannabis use disorder — further assessment recommended.' : ''}`}
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Item breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-3">
           {q.map((text, i) => {
@@ -58,10 +69,12 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Severity scale */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {CUDITR_SEVERITY.map((s, i) => {
@@ -75,7 +88,8 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />

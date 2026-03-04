@@ -8,7 +8,7 @@
 
 export const MDQ_PART1 = {
   cs: [
-    'Cítil/a jste se tak dobře nebo tak „nahoře", že si ostatní lidé mysleli, že nejste svůj/svá, nebo jste byl/a tak „nahoře", že jste se dostal/a do problémů?',
+    'Cítil/a jste se tak dobře nebo tak „nahoře“, že si ostatní lidé mysleli, že nejste svůj/svá, nebo jste byl/a tak „nahoře“, že jste se dostal/a do problémů?',
     'Byl/a jste tak podrážděný/á, že jste na lidi křičel/a nebo začínal/a hádky či konflikty?',
     'Cítil/a jste se mnohem sebejistěji než obvykle?',
     'Spal/a jste mnohem méně než obvykle a zjistil/a jste, že vám to vlastně nechybí?',

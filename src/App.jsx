@@ -2020,8 +2020,8 @@ export default function App() {
               completeness: { cs: `Zodpovězeno ${c.value}% položek (doporučeno 100%).`, en: `Answered ${c.value}% of items (100% recommended).` },
               straightLining: { cs: `Nejběžnější odpověď '${c.detail}' použita v ${c.value}% případů.${c.status !== 'pass' ? ' Naznačuje možné nepozorné odpovídání.' : ''}`, en: `Most common answer '${c.detail}' used in ${c.value}% of items.${c.status !== 'pass' ? ' Suggests possible inattentive responding.' : ''}` },
               variability: { cs: `Směrodatná odchylka ${c.value} (čím nižší, tím uniformnější odpovědi).`, en: `Standard deviation ${c.value} (lower = more uniform responses).` },
-              overReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně vysoký — vše označeno jako „zcela pravdivé".' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively high — almost everything marked as "completely true".' : ''}` },
-              underReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně nízký — vše označeno jako „zcela nepravdivé".' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively low — almost everything marked as "completely false".' : ''}` },
+              overReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně vysoký — vše označeno jako „zcela pravdivé“.' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively high — almost everything marked as "completely true".' : ''}` },
+              underReporting: { cs: `Průměr odpovědí ${c.value}/4.${c.status !== 'pass' ? ' Nadměrně nízký — vše označeno jako „zcela nepravdivé“.' : ''}`, en: `Response mean ${c.value}/4.${c.status !== 'pass' ? ' Excessively low — almost everything marked as "completely false".' : ''}` },
             };
             return descs[c.id]?.[lang] || '';
           };

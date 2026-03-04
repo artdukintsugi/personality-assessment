@@ -1,7 +1,7 @@
 /**
  * PCL-5 Results page
  */
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from '../data/pcl5';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -54,6 +54,11 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
   // DSM-5 provisional diagnosis
   const dsm5Met = Object.values(clusterScores).every(c => c.met);
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('pcl5_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('pcl5_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
       <div className="max-w-2xl mx-auto px-4 py-6">
@@ -61,11 +66,15 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">← {t('back')}</button>
           <span className="text-sm font-semibold text-rose-400">PCL-5 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          </div>
         </div>
 
         {/* Total score + threshold */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -94,10 +103,12 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
           <div className="mt-4">
             <SeverityBadge score={total} severityLevels={PCL5_SEVERITY} lang={lang} />
           </div>
-        </div>
+          </div>
+        )}
 
         {/* DSM-5 Cluster Analysis */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-2">{lang === 'cs' ? 'Analýza symptomových clusterů (DSM-5)' : 'DSM-5 Symptom Cluster Analysis'}</h3>
           <p className="text-xs text-gray-500 mb-5">
             {lang === 'cs'
@@ -139,10 +150,12 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
               </span>
             </div>
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Item breakdown */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           {Object.entries(PCL5_CLUSTERS).map(([key, { name, items }]) => (
             <div key={key} className="mb-5 last:mb-0">
@@ -167,7 +180,8 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Validity */}
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />

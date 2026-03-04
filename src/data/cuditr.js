@@ -11,7 +11,7 @@
 export const CUDITR_QUESTIONS = {
   cs: [
     'Jak často užíváte konopí?',
-    'Kolik hodin jste byl/a „zhulený/á" (pod vlivem) v typický den, kdy jste užíval/a konopí?',
+    'Kolik hodin jste byl/a „zhulený/á“ (pod vlivem) v typický den, kdy jste užíval/a konopí?',
     'Jak často jste v posledních 6 měsících zjistil/a, že nejste schopen/schopna přestat s užíváním konopí, jakmile jste začal/a?',
     'Jak často jste v posledních 6 měsících nesplnil/a to, co se od vás běžně očekávalo, kvůli užívání konopí?',
     'Jak často jste v posledních 6 měsících věnoval/a velkou část svého času získávání, užívání konopí nebo zotavování se z jeho účinků?',

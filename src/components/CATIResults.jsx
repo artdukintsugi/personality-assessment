@@ -1,7 +1,7 @@
 /**
  * CATI Results page — Camouflaging Autistic Traits Questionnaire
  */
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { CATI_SUBSCALES, CATI_SUBSCALE_ITEMS, CATI_REVERSE_ITEMS, CATI_SEVERITY, scoreCATI } from '../data/cati';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -10,6 +10,11 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
   const severity = CATI_SEVERITY.find(s => total >= s.min && total <= s.max) || CATI_SEVERITY[0];
   const validity = useMemo(() => checkSimpleValidity(answers, 42, 1, 5, lang), [answers, lang]);
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('cati_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('cati_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
       <div className="max-w-2xl mx-auto px-4 py-6">
@@ -17,11 +22,15 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">← {t('back')}</button>
           <span className="text-sm font-semibold text-violet-400">CATI — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          </div>
         </div>
 
         {/* Total score */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -31,10 +40,12 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
           <div className="mt-4">
             <span className="px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: severity.color + '20', color: severity.color }}>{severity[lang]}</span>
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Subscale overview */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
           <div className="space-y-4">
             {Object.entries(CATI_SUBSCALES).map(([key, meta]) => {
@@ -55,10 +66,12 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
               );
             })}
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Item breakdown by subscale */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           {Object.entries(CATI_SUBSCALES).map(([key, meta]) => (
             <div key={key} className="mb-5 last:mb-0">
@@ -87,10 +100,12 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Severity scale reference */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-sm font-semibold text-gray-400 mb-3">{lang === 'cs' ? 'Interpretační škála CATI' : 'CATI Interpretation Scale'}</h3>
           <div className="space-y-2">
             {CATI_SEVERITY.map(s => (
@@ -101,7 +116,8 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
               </div>
             ))}
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Validity */}
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={5} />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from '../data/mdq';
 import { ScoreBar } from './GenericQuestionnaire';
 
@@ -12,16 +12,25 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
   const answeredCount = (answers || []).filter(v => v !== undefined && v !== null).length;
   const allAnswered = answeredCount === MDQ_TOTAL_ITEMS;
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('mdq_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('mdq_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">MDQ — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Screening result */}
-      <div className={`rounded-xl p-6 mb-4 border ${positive ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
+      {showLive && (
+        <div className={`rounded-xl p-6 mb-4 border ${positive ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
         <div className="text-lg font-bold mb-2" style={{ color: positive ? '#F87171' : '#4ADE80' }}>
           {positive
             ? (lang === 'cs' ? '⚠️ Pozitivní screening' : '⚠️ Positive Screen')
@@ -36,10 +45,12 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
               ? 'Výsledky nenasvědčují bipolární poruše, ale pokud máte obavy, konzultujte odborníka.'
               : 'Results do not suggest bipolar disorder, but consult a professional if you have concerns.')}
         </p>
-      </div>
+        </div>
+      )}
 
       {/* Scoring breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Kritéria screeningu' : 'Screening Criteria'}</h3>
         <div className="space-y-3">
           {/* Part 1 */}
@@ -65,10 +76,12 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
             </span>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Part 1 items */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Část 1 — Manické příznaky' : 'Part 1 — Manic Symptoms'}</h3>
         <div className="space-y-2">
           {part1Q.map((text, i) => {
@@ -85,10 +98,12 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Part 2 & 3 */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Části 2–3' : 'Parts 2–3'}</h3>
         <div className="space-y-2 text-sm">
           <div className="flex items-start gap-2">
@@ -106,7 +121,8 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
             </span>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       {!allAnswered && (

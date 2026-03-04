@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, EAT26_SUBSCALES, EAT26_CUTOFF, scoreEAT26, EAT26_REVERSE_ITEM } from '../data/eat26';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -27,16 +27,25 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
 
   const aboveCutoff = total >= EAT26_CUTOFF;
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('eat26_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('eat26_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">EAT-26 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Total score */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={EAT26_SEVERITY} lang={lang} />
@@ -50,10 +59,12 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
               : `Score ≥ ${EAT26_CUTOFF} — clinical evaluation for eating disorders is recommended.`}
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Subscales */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
         {Object.entries(EAT26_SUBSCALES).map(([key, sub]) => (
           <ScoreBar
@@ -64,10 +75,12 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
             label={sub[lang] || sub.cs}
           />
         ))}
-      </div>
+        </div>
+      )}
 
       {/* Item breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => (
@@ -79,10 +92,12 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Severity scale */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {EAT26_SEVERITY.map((s, i) => {
@@ -96,7 +111,8 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={5} />

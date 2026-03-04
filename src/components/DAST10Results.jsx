@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DAST10_QUESTIONS, DAST10_SCALE, DAST10_SEVERITY, DAST10_REVERSE_ITEM, scoreDAST10, DAST10_CUTOFF } from '../data/dast10';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
 
@@ -10,26 +10,36 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
   const validity = checkSimpleValidity(answers, 10, 0, 1, lang);
   const aboveCutoff = total >= DAST10_CUTOFF;
 
+  const [showLive, setShowLive] = useState(() => {
+    try { const v = localStorage.getItem('dast10_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem('dast10_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">DAST-10 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
-        <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+        </div>
       </div>
 
       {/* Total score */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={DAST10_SEVERITY} lang={lang} />
         </div>
         <div className="text-4xl font-bold text-white mb-1">{total}<span className="text-lg text-gray-500">/{maxScore}</span></div>
         <ScoreBar value={total} max={maxScore} color="#EF4444" label="" />
-      </div>
+        </div>
+      )}
 
       {/* Cutoff alert */}
-      {aboveCutoff && (
+      {showLive && aboveCutoff && (
         <div className="bg-red-900/30 border border-red-700 rounded-xl p-4 mb-4 text-red-200 text-sm flex items-start gap-2">
           <span className="text-lg">⚠️</span>
           <div>
@@ -44,7 +54,8 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
       )}
 
       {/* Item breakdown */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => {
@@ -65,10 +76,12 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Severity scale */}
-      <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {DAST10_SEVERITY.map((s, i) => {
@@ -82,7 +95,8 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Validity */}
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={1} />
