@@ -3,6 +3,76 @@
  * Supports: cs (Czech), en (English)
  */
 
+// ═══ Domain name translations ═══
+const DOMAIN_NAMES = {
+  cs: {
+    'Negativní afektivita': 'Negativní afektivita',
+    'Odtažitost': 'Odtažitost',
+    'Antagonismus': 'Antagonismus',
+    'Disinhibice': 'Disinhibice',
+    'Psychoticismus': 'Psychoticismus',
+  },
+  en: {
+    'Negativní afektivita': 'Negative Affectivity',
+    'Odtažitost': 'Detachment',
+    'Antagonismus': 'Antagonism',
+    'Disinhibice': 'Disinhibition',
+    'Psychoticismus': 'Psychoticism',
+  },
+};
+
+// ═══ Facet name translations ═══
+const FACET_NAMES = {
+  cs: {},
+  en: {
+    'Anhedonie': 'Anhedonia',
+    'Úzkostnost': 'Anxiousness',
+    'Vyhášení pozornosti': 'Attention Seeking',
+    'Bezcitnost': 'Callousness',
+    'Klamavost': 'Deceitfulness',
+    'Depresivita': 'Depressivity',
+    'Roztříštěnost': 'Distractibility',
+    'Excentricita': 'Eccentricity',
+    'Emoční labilita': 'Emotional Lability',
+    'Grandiozita': 'Grandiosity',
+    'Hostilita': 'Hostility',
+    'Impulzivita': 'Impulsivity',
+    'Vyhýbání se intimitě': 'Intimacy Avoidance',
+    'Nezodpovědnost': 'Irresponsibility',
+    'Manipulativnost': 'Manipulativeness',
+    'Percepční dysregulace': 'Perceptual Dysregulation',
+    'Perseverace': 'Perseveration',
+    'Restriktivní afektivita': 'Restricted Affectivity',
+    'Riskování': 'Risk Taking',
+    'Separační nejistota': 'Separation Insecurity',
+    'Submisivita': 'Submissiveness',
+    'Podezřívavost': 'Suspiciousness',
+    'Neobvyklé přesvědčení': 'Unusual Beliefs',
+    'Stažení': 'Withdrawal',
+    'Rigidita': 'Rigid Perfectionism',
+  },
+};
+
+// ═══ Diagnostic profile name translations ═══
+const DIAG_NAMES = {
+  cs: {},
+  en: {
+    bpd: 'Borderline Personality Disorder (BPD)',
+    npd: 'Narcissistic Personality Disorder (NPD)',
+    aspd: 'Antisocial Personality Disorder (ASPD)',
+    avpd: 'Avoidant Personality Disorder (AvPD)',
+    ocpd: 'Obsessive-Compulsive PD (OCPD)',
+    stpd: 'Schizotypal Personality Disorder (StPD)',
+    szpd: 'Schizoid Personality Traits',
+    ppd: 'Paranoid Personality Traits',
+    hpd: 'Histrionic Personality Traits',
+    dpd: 'Dependent Personality Traits (DPD)',
+    depressive: 'Depressive Personality Traits',
+    adhd: 'ADHD — indicators (non-PD)',
+    did: 'Dissociation / DID — indicators (non-PD)',
+  },
+};
+
 const translations = {
   cs: {
     appTitle: 'Osobnostní diagnostika',
@@ -212,4 +282,33 @@ const LPFS_SUB_NAMES = {
 export function lpfsSubName(sub, lang) {
   const names = LPFS_SUB_NAMES[lang] || LPFS_SUB_NAMES.cs;
   return names[sub] !== undefined ? names[sub] : sub;
+}
+
+/** Translate a domain name (e.g. 'Negativní afektivita' → 'Negative Affectivity') */
+export function domainName(name, lang) {
+  if (lang === 'cs') return name;
+  return DOMAIN_NAMES.en[name] || name;
+}
+
+/** Translate a facet name (e.g. 'Úzkostnost' → 'Anxiousness') */
+export function facetName(name, lang) {
+  if (lang === 'cs') return name;
+  return FACET_NAMES.en[name] || name;
+}
+
+/** Translate a diagnostic profile name by id */
+export function diagName(id, csName, lang) {
+  if (lang === 'cs') return csName;
+  return DIAG_NAMES.en[id] || csName;
+}
+
+/** Short domain name for radar chart */
+export function domainShort(name, lang) {
+  if (lang === 'en') {
+    const en = DOMAIN_NAMES.en[name] || name;
+    const shorts = { 'Negative Affectivity': 'Neg. Affect.', 'Psychoticism': 'Psychotic.' };
+    return shorts[en] || en;
+  }
+  const shorts = { 'Negativní afektivita': 'Neg. afekt.', 'Psychoticismus': 'Psychotic.' };
+  return shorts[name] || name;
 }

@@ -5,7 +5,7 @@ import { getQuestionHint, DIAG_EXPLANATIONS, getLpfsSubscale, LPFS_SUBSCALE_NAME
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
 import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
-import { createT, sevLabel, lpfsSubName } from './lib/i18n';
+import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, domainShort } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
@@ -157,19 +157,28 @@ export default function App() {
 
   const toggleLang = useCallback(() => setLang(l => l === 'cs' ? 'en' : 'cs'), []);
 
+  // ═══ Global E key — works on ALL screens (menu, results, questionnaire) ═══
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === 'e' || e.key === 'E') { e.preventDefault(); toggleLang(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [toggleLang]);
+
+  // Questionnaire number keys — only in pid5/lpfs modes
   useEffect(() => {
     if (mode !== "pid5" && mode !== "lpfs") return;
     const isPid = mode === "pid5";
     const handler = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      const key = e.key;
-      if (key === 'e' || key === 'E') { e.preventDefault(); toggleLang(); return; }
-      if (isPid && ["0","1","2","3"].includes(key)) { e.preventDefault(); answer(parseInt(key)); }
-      else if (!isPid && ["1","2","3","4"].includes(key)) { e.preventDefault(); answer(parseInt(key)); }
+      if (isPid && ["0","1","2","3"].includes(e.key)) { e.preventDefault(); answer(parseInt(e.key)); }
+      else if (!isPid && ["1","2","3","4"].includes(e.key)) { e.preventDefault(); answer(parseInt(e.key)); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [mode, answer, toggleLang]);
+  }, [mode, answer]);
 
   const facetScores = useMemo(() => scoreFacets(answers), [answers]);
   const domainScores = useMemo(() => scoreDomains(facetScores), [facetScores]);
@@ -202,8 +211,8 @@ export default function App() {
   }, [hoveredVal, lpfsAns, lpfsIdx, mode]);
 
   const radarData = useMemo(() =>
-    Object.entries(domainScores).map(([d, v]) => ({ domain: d.replace("Negativní afektivita","Neg. afekt.").replace("Psychoticismus","Psychotic."), value: Math.round(v * 100) / 100, full: d })),
-    [domainScores]
+    Object.entries(domainScores).map(([d, v]) => ({ domain: domainShort(d, lang), value: Math.round(v * 100) / 100, full: domainName(d, lang) })),
+    [domainScores, lang]
   );
 
   const lpfsTotal = useMemo(() => {
@@ -225,12 +234,13 @@ export default function App() {
   const DiagCard = ({ diag, fScores }) => {
     const { name, color, desc, facets: dFacets, score, flag, id } = diag;
     const explanation = DIAG_EXPLANATIONS[id];
+    const displayName = diagName(id, name, lang);
     return (
       <div className={`mb-4 p-4 rounded-xl border transition-all ${flag ? 'border-opacity-40' : 'border-gray-700/30 bg-gray-800/20'}`} style={flag ? { borderColor: color + '50', background: color + '08' } : {}}>
         <div className="flex items-center gap-2 mb-2">
           <div className="w-3 h-3 rounded-full" style={{ background: color }} />
           <HoverTip text={explanation} wide>
-            <span className="font-semibold text-sm cursor-help" style={{ color: flag ? color : '#9CA3AF' }}>{name}</span>
+            <span className="font-semibold text-sm cursor-help" style={{ color: flag ? color : '#9CA3AF' }}>{displayName}</span>
           </HoverTip>
           <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ background: flag ? color + '20' : '#374151', color: flag ? color : '#6B7280' }}>
             {score.toFixed(2)} — {flag ? t('sevElevated') : score >= 1.0 ? t('sevMild') : t('sevLow')}
@@ -245,7 +255,7 @@ export default function App() {
               <div key={f}>
                 <div className="flex items-center justify-between mb-0.5">
                   <HoverTip text={meta?.desc}>
-                    <div className="text-xs text-gray-400 truncate cursor-help">↳ {f}</div>
+                    <div className="text-xs text-gray-400 truncate cursor-help">↳ {facetName(f, lang)}</div>
                   </HoverTip>
                   <div className="text-xs font-mono text-gray-400 shrink-0">{v.toFixed(2)}</div>
                 </div>
@@ -474,7 +484,7 @@ export default function App() {
                     <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t('domains')}</div>
                     {Object.entries(vDomains).map(([d, v]) => (
                       <div key={d} className="flex items-center gap-3 mb-2">
-                        <div className="w-36 text-sm font-medium" style={{color: DC[d]}}>{d}</div>
+                        <div className="w-36 text-sm font-medium" style={{color: DC[d]}}>{domainName(d, lang)}</div>
                         <div className="flex-1 bg-gray-800 rounded-full h-2.5 overflow-hidden">
                           <div className="h-full rounded-full" style={{width: `${(v/3)*100}%`, background: DC[d]}} />
                         </div>
@@ -491,7 +501,7 @@ export default function App() {
                         {vDiags.map(d => (
                           <div key={d.id} className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? (DIAG_PROFILES.find(p=>p.id===d.id)?.color || '#6B7280') : '#374151' }} />
-                            <div className="flex-1 text-xs truncate" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.name}</div>
+                            <div className="flex-1 text-xs truncate" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{diagName(d.id, d.name, lang)}</div>
                             <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.score.toFixed(2)}</div>
                             <div className="w-16 text-xs text-right" style={{ color: d.flag ? '#FB923C' : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : t('sevLow')}</div>
                           </div>
@@ -552,8 +562,11 @@ export default function App() {
   // ── PID-5 RESULTS ──
   if (mode === "pid5_results") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
-      <div className="max-w-4xl mx-auto">
-        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">{t('back')}</button>
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+        </div>
         <h2 className="text-3xl font-bold text-purple-300 mb-2">{t('pid5ResultsHeading')}</h2>
         <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
 
@@ -578,7 +591,7 @@ export default function App() {
             <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide>
               <div className="cursor-help mb-3">
                 <div className="flex items-center justify-between mb-1">
-                  <div className="text-sm font-medium truncate" style={{color: DC[d]}}>{d}</div>
+                  <div className="text-sm font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-sm font-mono">{v.toFixed(2)}</span>
                     <span className="text-xs" style={{color: SEV_CLR(v)}}>{SEV(v)}</span>
@@ -592,61 +605,152 @@ export default function App() {
           ))}
         </div>
 
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
-          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('facetsDetail')}</h3>
-          <div className="space-y-2">
-            {Object.entries(DF_ALL).map(([domain, facetList]) => (
-              <div key={domain} className="mb-4">
-                <div className="text-xs uppercase tracking-wider mb-2 font-semibold" style={{color: DC[domain]}}>{domain}</div>
+        {/* ═══ FACET DETAILS — Modern Grid ═══ */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-300 mb-6">{t('facetsDetail')}</h3>
+          {Object.entries(DF_ALL).map(([domain, facetList]) => (
+            <div key={domain} className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-3 h-3 rounded-full" style={{background: DC[domain]}} />
+                <h4 className="text-sm font-bold uppercase tracking-wider" style={{color: DC[domain]}}>{domainName(domain, lang)}</h4>
+                <div className="flex-1 h-px" style={{background: DC[domain] + '30'}} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {facetList.map(f => {
                   const v = facetScores[f] || 0;
                   const meta = FACET_META[f];
+                  const sevColor = SEV_CLR(v);
                   return (
                     <HoverTip key={f} text={meta?.desc} wide>
-                      <div className="cursor-help py-1">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <div className="text-xs text-gray-400 truncate">{f}</div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-xs font-mono text-gray-300">{v.toFixed(2)}</span>
-                            <span className="text-xs w-14 text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</span>
+                      <div className="cursor-help group rounded-xl border border-gray-800/60 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/40 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors truncate">{facetName(f, lang)}</div>
+                            {lang === 'en' && <div className="text-[10px] text-gray-600 truncate">{f}</div>}
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                            <span className="text-lg font-bold font-mono" style={{color: sevColor}}>{v.toFixed(2)}</span>
                           </div>
                         </div>
-                        <div className="bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                          <div className="h-full rounded-full" style={{width: `${(v/3)*100}%`, background: SEV_CLR(v)}} />
+                        <div className="bg-gray-800 rounded-full h-2 overflow-hidden mb-2">
+                          <div className="h-full rounded-full transition-all duration-500" style={{width: `${(v/3)*100}%`, background: sevColor}} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-medium px-2 py-0.5 rounded-full" style={{background: sevColor + '20', color: sevColor}}>{SEV(v)}</span>
+                          <span className="text-[10px] text-gray-600 font-mono">{meta?.items?.length || '—'} items</span>
                         </div>
                       </div>
                     </HoverTip>
                   );
                 })}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
+        {/* ═══ DIAGNOSTIC PROFILES — Modern Grid ═══ */}
+        <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('diagProfilesTitle')}</h3>
           <p className="text-xs text-gray-500 mb-6">{t('diagDisclaimer')}</p>
-          <div className="mb-6 p-4 rounded-xl bg-gray-800/40 border border-gray-700/30">
+
+          {/* Elevated profiles — large grid cards */}
+          {diagnostics.filter(d => d.flag).length > 0 && (
+            <div className="mb-8">
+              <div className="text-sm font-semibold text-amber-400 mb-4 flex items-center gap-2">
+                <span>⚠</span> {t('elevatedProfiles')}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {diagnostics.filter(d => d.flag).map(d => {
+                  const explanation = DIAG_EXPLANATIONS[d.id];
+                  const displayName = diagName(d.id, d.name, lang);
+                  return (
+                    <div key={d.id} className="group rounded-2xl border-2 p-5 hover:shadow-xl hover:shadow-black/30 transition-all duration-200" style={{borderColor: d.color + '40', background: d.color + '08'}}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-4 h-4 rounded-full ring-2 ring-offset-2 ring-offset-gray-950" style={{background: d.color, ringColor: d.color + '60'}} />
+                        <div className="flex-1 min-w-0">
+                          <HoverTip text={explanation} wide>
+                            <div className="text-base font-bold cursor-help truncate" style={{color: d.color}}>{displayName.split('(')[0].trim()}</div>
+                          </HoverTip>
+                          {displayName.includes('(') && <div className="text-[10px] text-gray-500">{displayName.match(/\(([^)]+)\)/)?.[1]}</div>}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="text-2xl font-bold font-mono" style={{color: d.color}}>{d.score.toFixed(2)}</div>
+                          <div className="text-[10px] font-medium px-2 py-0.5 rounded-full mt-1" style={{background: d.color + '25', color: d.color}}>⚠ {t('sevElevated')}</div>
+                        </div>
+                      </div>
+                      <div className="bg-gray-800/60 rounded-full h-2.5 overflow-hidden mb-3">
+                        <div className="h-full rounded-full transition-all" style={{width: `${(d.score/3)*100}%`, background: d.color}} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        {d.facets.map(f => {
+                          const fv = facetScores[f] || 0;
+                          return (
+                            <div key={f} className="flex items-center gap-1.5">
+                              <div className="flex-1 text-[11px] text-gray-400 truncate">↳ {facetName(f, lang)}</div>
+                              <div className="text-[11px] font-mono shrink-0" style={{color: SEV_CLR(fv)}}>{fv.toFixed(2)}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Subclinical — medium cards */}
+          {diagnostics.filter(d => !d.flag && d.score >= 0.8).length > 0 && (
+            <div className="mb-8">
+              <div className="text-sm font-semibold text-gray-500 mb-4">{t('subclinical')}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {diagnostics.filter(d => !d.flag && d.score >= 0.8).map(d => {
+                  const explanation = DIAG_EXPLANATIONS[d.id];
+                  const displayName = diagName(d.id, d.name, lang);
+                  return (
+                    <HoverTip key={d.id} text={explanation} wide>
+                      <div className="cursor-help group rounded-xl border border-gray-700/40 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/30 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-3 h-3 rounded-full" style={{background: d.color, opacity: 0.6}} />
+                          <div className="text-sm font-medium text-gray-300 group-hover:text-gray-100 truncate transition-colors flex-1">{displayName.split('(')[0].trim()}</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                            <div className="h-full rounded-full" style={{width: `${(d.score/3)*100}%`, background: d.color, opacity: 0.6}} />
+                          </div>
+                          <span className="text-sm font-mono font-bold text-gray-400">{d.score.toFixed(2)}</span>
+                        </div>
+                        <div className="mt-2 text-[10px] font-medium px-2 py-0.5 rounded-full inline-block" style={{background: '#374151', color: '#9CA3AF'}}>{t('sevMild')}</div>
+                      </div>
+                    </HoverTip>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* All profiles — compact summary */}
+          <div className="bg-gray-900/40 rounded-2xl border border-gray-800/60 p-5">
+            <div className="text-xs uppercase tracking-wider text-gray-500 mb-4">{t('diagProfilesTitle')} — {lang === 'en' ? 'all' : 'vše'}</div>
             <div className="space-y-2">
-              {diagnostics.map(d => (
-                <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide>
-                  <div className="cursor-help">
-                    <div className="flex items-center gap-2 mb-1">
+              {diagnostics.map(d => {
+                const displayName = diagName(d.id, d.name, lang);
+                return (
+                  <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide>
+                    <div className="cursor-help group flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-lg hover:bg-gray-800/40 transition-all">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
-                      <div className="text-xs font-medium truncate min-w-0 flex-1" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].trim()}</div>
-                      <div className="text-xs font-mono shrink-0" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                      <div className="text-xs shrink-0 w-16 text-right" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : d.score >= 1.0 ? t('sevMild') : t('sevLow')}</div>
+                      <div className="flex-1 text-sm truncate min-w-0 group-hover:text-gray-200 transition-colors" style={{ color: d.flag ? d.color : '#6B7280' }}>{displayName.split('(')[0].trim()}</div>
+                      <div className="flex-1 max-w-[120px] bg-gray-800/60 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${(d.score/3)*100}%`, background: d.color, opacity: d.flag ? 1 : 0.4 }} />
+                      </div>
+                      <div className="w-12 text-right text-sm font-mono shrink-0" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
+                      <div className="w-16 text-xs text-right shrink-0" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : d.score >= 1.0 ? t('sevMild') : t('sevLow')}</div>
                     </div>
-                    <div className="ml-5 bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${(d.score/3)*100}%`, background: d.color, opacity: d.flag ? 1 : 0.4 }} />
-                    </div>
-                  </div>
-                </HoverTip>
-              ))}
+                  </HoverTip>
+                );
+              })}
             </div>
           </div>
-          {diagnostics.filter(d => d.flag).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-400 mb-3">{t('elevatedProfiles')}</div>{diagnostics.filter(d => d.flag).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
-          {diagnostics.filter(d => !d.flag && d.score >= 0.8).length > 0 && <div className="mb-4"><div className="text-sm font-semibold text-gray-500 mb-3">{t('subclinical')}</div>{diagnostics.filter(d => !d.flag && d.score >= 0.8).map(d => <DiagCard key={d.id} diag={d} fScores={facetScores} />)}</div>}
         </div>
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
@@ -683,7 +787,10 @@ export default function App() {
   if (mode === "lpfs_results") return (
     <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
-        <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 mb-6 text-sm">{t('back')}</button>
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+        </div>
         <h2 className="text-3xl font-bold text-blue-300 mb-2">{t('lpfsResultsHeading')}</h2>
         <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(lpfsAns).length}/80 {t('items')}</p>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
@@ -778,7 +885,7 @@ export default function App() {
               <div className="flex gap-2 mb-3 flex-wrap">
                 {facets.map(f => (
                   <HoverTip key={f} text={FACET_META[f]?.desc}>
-                    <span className="text-xs px-2.5 py-1 rounded-full border cursor-help" style={{borderColor: DC[domain] + '60', color: DC[domain], background: DC[domain] + '15'}}>{f}</span>
+                    <span className="text-xs px-2.5 py-1 rounded-full border cursor-help" style={{borderColor: DC[domain] + '60', color: DC[domain], background: DC[domain] + '15'}}>{facetName(f, lang)}</span>
                   </HoverTip>
                 ))}
               </div>
@@ -862,7 +969,7 @@ export default function App() {
                     return (
                       <HoverTip key={d} text={DOMAIN_META[d]?.desc}>
                         <div className="flex items-center gap-2 cursor-help">
-                          <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{d}</div>
+                          <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
                           <div className="flex-1 bg-gray-800/60 rounded-full h-1.5 overflow-hidden relative">
                             <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: DC[d], opacity: hoveredVal !== null ? 0.35 : 1}} />
                             {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: DC[d]}} />}
@@ -885,7 +992,7 @@ export default function App() {
                       return (
                         <HoverTip key={f} text={FACET_META[f]?.desc}>
                           <div className="flex items-center gap-2 cursor-help">
-                            <div className="w-28 text-xs text-gray-400 truncate">↳ {f}</div>
+                            <div className="w-28 text-xs text-gray-400 truncate">↳ {facetName(f, lang)}</div>
                             <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
                               <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: SEV_CLR(base), opacity: hoveredVal !== null ? 0.35 : 1}} />
                               {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: SEV_CLR(v)}} />}
@@ -917,7 +1024,7 @@ export default function App() {
                         <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]}>
                           <div className="flex items-center gap-1.5 py-0.5 cursor-help">
                             <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
-                            <div className="w-28 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].split('—')[0].trim()}</div>
+                            <div className="w-28 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()}</div>
                             <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
                               <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{ width: `${((baseDiag?.score || 0)/3)*100}%`, background: d.color, opacity: hoveredVal !== null ? 0.35 : 1 }} />
                               {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{ width: `${(d.score/3)*100}%`, background: d.color }} />}
@@ -1001,7 +1108,7 @@ export default function App() {
                       <div className="text-amber-300 font-semibold mb-1.5">{t('questionFacetsInfo')} #{curI + 1}</div>
                       {facets.map(f => { const meta = FACET_META[f]; if (!meta) return null; const src = SOURCES[meta.source]; return (
                         <div key={f} className="mb-2 p-2 rounded-lg bg-gray-900/40 border border-gray-700/20">
-                          <div className="font-semibold text-gray-200">{f} <span className="text-gray-600">({meta.en})</span></div>
+                          <div className="font-semibold text-gray-200">{facetName(f, lang)} <span className="text-gray-600">({meta.en})</span></div>
                           <p className="font-mono text-[11px] text-amber-400/80 bg-black/30 rounded px-2 py-1 mt-1">{meta.formulaExact}</p>
                           <p className="text-gray-500 mt-1">📚 {src?.url ? <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-blue-400/70 hover:text-blue-300 underline underline-offset-2">{src.short}</a> : meta.source}</p>
                         </div>
