@@ -92,6 +92,7 @@ export default function App() {
   const [authPass, setAuthPass] = useState('');
   const [authError, setAuthError] = useState('');
   const [cloudResults, setCloudResults] = useState([]);
+  const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result
 
   useEffect(() => { lsSet(LS_KEYS.answers, answers); }, [answers]);
   useEffect(() => { lsSet(LS_KEYS.idx, idx); }, [idx]);
@@ -285,78 +286,253 @@ export default function App() {
 
   // ── MENU ──
   if (mode === "menu") return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6 font-sans">
+    <div className="min-h-screen bg-gray-950 text-white font-sans">
       <AuthModal />
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-3">Diagnostický protokol</h1>
-        <p className="text-gray-400 text-lg">PID-5 & LPFS-SR — interaktivní vyplňování</p>
-        {/* Auth status */}
-        <div className="mt-4">
+      <div className="max-w-2xl mx-auto px-4 py-8 md:py-12">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">Diagnostický protokol</h1>
+          <p className="text-gray-500 text-sm">PID-5 & LPFS-SR — interaktivní vyplňování</p>
+        </div>
+
+        {/* Auth bar */}
+        <div className="mb-8 p-4 rounded-2xl bg-gray-900/50 border border-gray-800/60">
           {auth?.user ? (
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-xs text-green-400/80">☁ {auth.user.email}</span>
-              <button onClick={() => auth.signOut()} className="text-xs text-gray-500 hover:text-gray-300">Odhlásit</button>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold shrink-0">{auth.user.email?.[0]?.toUpperCase()}</div>
+                <div className="min-w-0">
+                  <div className="text-sm text-gray-200 truncate">{auth.user.email}</div>
+                  <div className="text-xs text-green-500/70">☁ Synchronizováno</div>
+                </div>
+              </div>
+              <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">Odhlásit</button>
             </div>
           ) : auth?.isConfigured ? (
-            <div className="flex items-center justify-center gap-2">
-              <button onClick={() => setAuthForm('login')} className="text-xs text-purple-400 hover:text-purple-300">🔐 Přihlásit se</button>
-              <span className="text-gray-700">·</span>
-              <button onClick={() => setAuthForm('signup')} className="text-xs text-gray-500 hover:text-gray-300">Registrace</button>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">💾 Data jen lokálně — přihlaste se pro synchronizaci</span>
+              <div className="flex gap-2">
+                <button onClick={() => setAuthForm('login')} className="text-xs px-3 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all">Přihlásit</button>
+                <button onClick={() => setAuthForm('signup')} className="text-xs px-3 py-1.5 rounded-lg text-gray-500 hover:text-gray-300 transition-all">Registrace</button>
+              </div>
             </div>
           ) : (
-            <span className="text-xs text-gray-700">💾 Data se ukládají lokálně</span>
+            <span className="text-xs text-gray-600">💾 Data se ukládají lokálně</span>
           )}
         </div>
-      </div>
-      <div className="flex flex-col gap-4 w-full max-w-sm">
-        <button onClick={() => setMode("pid5")} className="p-6 rounded-2xl bg-linear-to-br from-purple-900/60 to-purple-800/30 border border-purple-500/30 backdrop-blur-xl hover:border-purple-400/60 transition-all text-left">
-          <div className="text-xl font-semibold text-purple-300">PID-5</div>
-          <div className="text-sm text-gray-400 mt-1">220 otázek · 25 facet · 5 domén · 13 diagnostických profilů</div>
-          {Object.keys(answers).length > 0 && <div className="text-xs text-purple-400 mt-2">▸ Rozpracováno: {Object.keys(answers).length}/220</div>}
-        </button>
-        <button onClick={() => setMode("lpfs")} className="p-6 rounded-2xl bg-linear-to-br from-blue-900/60 to-blue-800/30 border border-blue-500/30 backdrop-blur-xl hover:border-blue-400/60 transition-all text-left">
-          <div className="text-xl font-semibold text-blue-300">LPFS-SR</div>
-          <div className="text-sm text-gray-400 mt-1">80 otázek · úroveň fungování osobnosti</div>
-          {Object.keys(lpfsAns).length > 0 && <div className="text-xs text-blue-400 mt-2">▸ Rozpracováno: {Object.keys(lpfsAns).length}/80</div>}
-        </button>
-        {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-4 rounded-2xl bg-linear-to-br from-green-900/60 to-green-800/30 border border-green-500/30 text-green-300 font-semibold">Zobrazit PID-5 výsledky</button>}
-        {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-4 rounded-2xl bg-linear-to-br from-green-900/60 to-green-800/30 border border-green-500/30 text-green-300 font-semibold">Zobrazit LPFS výsledky</button>}
 
-        <div className="border-t border-gray-800 pt-4 mt-4">
-          <div className="text-xs text-gray-600 mb-2">🔧 Debug — vzorek dat</div>
-          <div className="flex gap-2">
-            <button onClick={fillSample} className="flex-1 p-3 rounded-xl bg-gray-800/50 border border-gray-700/30 text-gray-400 text-xs hover:text-gray-200 hover:border-gray-600 transition-all">🎲 PID-5</button>
-            <button onClick={fillSampleLpfs} className="flex-1 p-3 rounded-xl bg-gray-800/50 border border-gray-700/30 text-gray-400 text-xs hover:text-gray-200 hover:border-gray-600 transition-all">🎲 LPFS</button>
-            <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); }} className="flex-1 p-3 rounded-xl bg-gray-800/50 border border-red-900/30 text-gray-500 text-xs hover:text-red-300 hover:border-red-700 transition-all">🗑 Reset</button>
-          </div>
+        {/* Test cards */}
+        <div className="grid gap-3 mb-6">
+          <button onClick={() => setMode("pid5")} className="p-5 rounded-2xl bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/20 hover:border-purple-400/40 transition-all text-left group">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-lg font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">PID-5</div>
+                <div className="text-xs text-gray-500 mt-1">220 otázek · 25 facet · 5 domén · 13 diagnostických profilů</div>
+              </div>
+              <span className="text-gray-600 group-hover:text-gray-400 text-lg">→</span>
+            </div>
+            {Object.keys(answers).length > 0 && (
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden"><div className="h-full bg-purple-500 rounded-full" style={{width: `${(Object.keys(answers).length/220)*100}%`}} /></div>
+                <span className="text-xs text-purple-400 shrink-0">{Object.keys(answers).length}/220</span>
+              </div>
+            )}
+          </button>
+          <button onClick={() => setMode("lpfs")} className="p-5 rounded-2xl bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/20 hover:border-blue-400/40 transition-all text-left group">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-lg font-semibold text-blue-300 group-hover:text-blue-200 transition-colors">LPFS-SR</div>
+                <div className="text-xs text-gray-500 mt-1">80 otázek · úroveň fungování osobnosti</div>
+              </div>
+              <span className="text-gray-600 group-hover:text-gray-400 text-lg">→</span>
+            </div>
+            {Object.keys(lpfsAns).length > 0 && (
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden"><div className="h-full bg-blue-500 rounded-full" style={{width: `${(Object.keys(lpfsAns).length/80)*100}%`}} /></div>
+                <span className="text-xs text-blue-400 shrink-0">{Object.keys(lpfsAns).length}/80</span>
+              </div>
+            )}
+          </button>
         </div>
 
-        {history.length > 0 && (
-          <div className="border-t border-gray-800 pt-4 mt-4">
-            <button onClick={() => setShowHistory(!showHistory)} className="flex items-center justify-between w-full text-left">
-              <span className="text-xs text-gray-500">📋 Historie výsledků ({history.length})</span>
-              <span className="text-xs text-gray-600">{showHistory ? '▾ Sbalit' : '▸ Rozbalit'}</span>
+        {/* Quick result buttons */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PID-5 výsledky</button>}
+          {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 LPFS výsledky</button>}
+        </div>
+
+        {/* ═══ SAVED RESULTS / HISTORY ═══ */}
+        {(history.length > 0 || cloudResults.length > 0) && (
+          <div className="mb-6">
+            <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-900/40 border border-gray-800/60 hover:border-gray-700 transition-all">
+              <span className="text-sm text-gray-400 flex items-center gap-2">📋 Uložené výsledky <span className="text-xs text-gray-600">({history.length} lok.{cloudResults.length > 0 ? ` + ${cloudResults.length} cloud` : ''})</span></span>
+              <span className="text-xs text-gray-600">{showHistory ? '▾' : '▸'}</span>
             </button>
             {showHistory && (
-              <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+              <div className="mt-2 space-y-2 max-h-96 overflow-y-auto pr-1">
+                {/* Local results */}
                 {history.map((h) => (
-                  <div key={h.id} className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 text-xs">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={h.type === 'pid5' ? 'text-purple-400 font-semibold' : 'text-blue-400 font-semibold'}>{h.type === 'pid5' ? 'PID-5' : 'LPFS-SR'}</span>
-                      <span className="text-gray-600">{new Date(h.date).toLocaleString('cs-CZ')}</span>
+                  <div key={h.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${h.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{h.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
+                        <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString('cs-CZ')}</span>
+                      </div>
                     </div>
-                    {h.type === 'pid5' && h.topDiags && <div className="text-gray-400 mt-1">{h.topDiags.map((d, j) => <span key={j} className="inline-block mr-2"><span className="inline-block w-2 h-2 rounded-full mr-1" style={{ background: d.color }} />{d.name.split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}</span>)}</div>}
-                    {h.type === 'lpfs' && <div className="text-gray-400 mt-1">Průměr: {h.score?.toFixed(2)}</div>}
-                    <div className="flex gap-2 mt-2">
-                      <button onClick={() => { const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${h.type}_${h.date.slice(0,10)}.json`; a.click(); }} className="text-gray-500 hover:text-gray-300">Export</button>
-                      <button onClick={() => { if (confirm('Smazat?')) setHistory(prev => prev.filter(x => x.id !== h.id)); }} className="text-gray-600 hover:text-red-400">Smazat</button>
+                    {h.type === 'pid5' && h.topDiags?.length > 0 && (
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
+                        {h.topDiags.slice(0, 4).map((d, j) => (
+                          <span key={j} className="text-xs text-gray-400 flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
+                            {d.name.split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">Průměr: {h.score?.toFixed(2)}</div>}
+                    <div className="flex gap-2">
+                      <button onClick={() => setViewingResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">👁 Zobrazit</button>
+                      <button onClick={() => {
+                        const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'});
+                        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                        a.download = `${h.type}_${h.date.slice(0,10)}.json`; a.click();
+                      }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">📥 Export</button>
+                      <button onClick={() => { if (confirm('Smazat tento výsledek?')) setHistory(prev => prev.filter(x => x.id !== h.id)); }}
+                        className="text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-950/30 transition-all ml-auto">🗑</button>
                     </div>
                   </div>
                 ))}
+                {/* Cloud results */}
+                {cloudResults.length > 0 && (
+                  <>
+                    <div className="text-xs text-gray-600 px-2 pt-2 flex items-center gap-2"><span className="h-px flex-1 bg-gray-800" /><span>☁ Cloud</span><span className="h-px flex-1 bg-gray-800" /></div>
+                    {cloudResults.map((cr) => (
+                      <div key={cr.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${cr.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{cr.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
+                            <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString('cs-CZ')}</span>
+                            <span className="text-xs text-gray-700">☁</span>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => setViewingResult({ type: cr.type, fullData: cr.data, date: cr.created_at })}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">👁 Zobrazit</button>
+                          <button onClick={() => {
+                            const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
+                            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                            a.download = `${cr.type}_cloud_${cr.created_at?.slice(0,10)}.json`; a.click();
+                          }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">📥 Export</button>
+                          <button onClick={async () => {
+                            if (confirm('Smazat z cloudu?')) {
+                              await deleteResultFromCloud(auth.user, cr.id);
+                              setCloudResults(prev => prev.filter(x => x.id !== cr.id));
+                            }
+                          }} className="text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-950/30 transition-all ml-auto">🗑</button>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </div>
         )}
+
+        {/* ═══ VIEW SAVED RESULT MODAL ═══ */}
+        {viewingResult && (() => {
+          const vr = viewingResult;
+          const fd = vr.fullData;
+          if (vr.type === 'pid5' && fd) {
+            const vDomains = fd.domeny || {};
+            const vFacets = fd.facety || {};
+            const vDiags = (fd.diagnostika || []).sort((a,b) => b.score - a.score);
+            return (
+              <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 pt-12 overflow-y-auto" onClick={() => setViewingResult(null)}>
+                <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-2xl mb-12" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-purple-300">PID-5 Výsledky</h3>
+                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString('cs-CZ')}</span>
+                    </div>
+                    <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
+                  </div>
+                  {/* Domains */}
+                  <div className="mb-6">
+                    <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">Domény</div>
+                    {Object.entries(vDomains).map(([d, v]) => (
+                      <div key={d} className="flex items-center gap-3 mb-2">
+                        <div className="w-36 text-sm font-medium" style={{color: DC[d]}}>{d}</div>
+                        <div className="flex-1 bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                          <div className="h-full rounded-full" style={{width: `${(v/3)*100}%`, background: DC[d]}} />
+                        </div>
+                        <div className="w-12 text-right text-sm font-mono">{v.toFixed(2)}</div>
+                        <div className="w-16 text-xs text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Top diagnostics */}
+                  {vDiags.length > 0 && (
+                    <div className="mb-4">
+                      <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">Diagnostické profily</div>
+                      <div className="space-y-1.5">
+                        {vDiags.map(d => (
+                          <div key={d.id} className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? (DIAG_PROFILES.find(p=>p.id===d.id)?.color || '#6B7280') : '#374151' }} />
+                            <div className="flex-1 text-xs truncate" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.name}</div>
+                            <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.score.toFixed(2)}</div>
+                            <div className="w-16 text-xs text-right" style={{ color: d.flag ? '#FB923C' : '#4B5563' }}>{d.flag ? '⚠ Zvýšené' : 'Nízké'}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <button onClick={() => setViewingResult(null)} className="w-full mt-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">Zavřít</button>
+                </div>
+              </div>
+            );
+          }
+          if (vr.type === 'lpfs' && fd) {
+            return (
+              <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setViewingResult(null)}>
+                <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-300">LPFS-SR Výsledky</h3>
+                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString('cs-CZ')}</span>
+                    </div>
+                    <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
+                  </div>
+                  <div className="text-center mb-6">
+                    <div className="text-5xl font-bold" style={{color: SEV_CLR(fd.prumer)}}>{fd.prumer?.toFixed(2)}</div>
+                    <div className="text-gray-500 text-sm mt-1">{SEV(fd.prumer)}</div>
+                  </div>
+                  {fd.subskaly && Object.entries(fd.subskaly).map(([sub, v]) => (
+                    <div key={sub} className="flex items-center gap-3 mb-2">
+                      <div className="w-28 text-sm text-blue-200/70">{LPFS_SUBSCALE_NAMES[sub] || sub}</div>
+                      <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                        <div className="h-full rounded-full bg-blue-500" style={{width: `${(v/4)*100}%`}} />
+                      </div>
+                      <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
+                    </div>
+                  ))}
+                  <button onClick={() => setViewingResult(null)} className="w-full mt-6 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">Zavřít</button>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
+        {/* Debug tools */}
+        <div className="mt-6 pt-4 border-t border-gray-800/40">
+          <div className="text-xs text-gray-700 mb-2">🔧 Debug</div>
+          <div className="flex gap-2">
+            <button onClick={fillSample} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
+            <button onClick={fillSampleLpfs} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
+            <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); }} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">🗑 Reset</button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -550,260 +726,266 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col font-sans">
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .scroll-thin::-webkit-scrollbar{width:4px} .scroll-thin::-webkit-scrollbar-track{background:transparent} .scroll-thin::-webkit-scrollbar-thumb{background:#374151;border-radius:2px}`}</style>
       <AuthModal />
-      {/* Progress */}
-      <div className="sticky top-0 z-50 bg-gray-950/90 backdrop-blur-xl border-b border-gray-800 px-4 py-3">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex justify-between text-xs text-gray-500 mb-1.5">
-            <button onClick={() => setMode("menu")} className="hover:text-gray-300">← Menu</button>
-            <span>{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
+      {/* Progress bar */}
+      <div className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800/60 px-4 py-2.5">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <button onClick={() => setMode("menu")} className="hover:text-gray-300 transition-colors">← Menu</button>
+            <span className="font-mono">{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
           </div>
-          <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-            <div className={`h-full rounded-full transition-all duration-300 ${isPid ? 'bg-purple-500' : 'bg-blue-500'}`} style={{width: `${progress}%`}} />
+          <div className="w-full bg-gray-800/60 rounded-full h-1.5 overflow-hidden">
+            <div className={`h-full rounded-full transition-all duration-500 ${isPid ? 'bg-purple-500' : 'bg-blue-500'}`} style={{width: `${progress}%`}} />
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex justify-center p-4 gap-4">
-        <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4">
-        <div className="w-full lg:w-1/2 lg:max-w-lg">
-          {/* Domain / subscale tag */}
-          {isPid && domain && (
-            <div className="flex gap-2 mb-3 flex-wrap">
-              {facets.map(f => (
-                <HoverTip key={f} text={FACET_META[f]?.desc}>
-                  <span className="text-xs px-2.5 py-1 rounded-full border cursor-help" style={{borderColor: DC[domain] + '60', color: DC[domain], background: DC[domain] + '15'}}>{f}</span>
-                </HoverTip>
-              ))}
-            </div>
-          )}
-          {!isPid && lpfsSub && (
-            <div className="flex gap-2 mb-3">
-              <span className="text-xs px-2.5 py-1 rounded-full border border-blue-500/40 text-blue-300 bg-blue-500/10">
-                {LPFS_SUBSCALE_NAMES[lpfsSub]}
-              </span>
-            </div>
-          )}
+      <div className="flex-1 max-w-6xl mx-auto w-full px-4 py-4">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
-          <div className={`rounded-2xl border p-6 md:p-8 backdrop-blur-xl ${isPid ? 'bg-purple-950/30 border-purple-500/20' : 'bg-blue-950/30 border-blue-500/20'}`}>
-            <div className="text-gray-500 text-sm mb-3 font-mono">#{curI + 1}</div>
-            <p className="text-lg md:text-xl font-medium leading-relaxed mb-4 text-gray-100">{curQ[curI]}</p>
-
-            {/* Question hint */}
-            {questionHint && (
-              <div className="mb-6">
-                <button onClick={() => setShowHint(!showHint)} className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1">
-                  <span>💡</span> {showHint ? 'Skrýt nápovědu' : 'Nápověda k otázce'}
-                </button>
-                {showHint && (
-                  <div className="mt-2 p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 text-xs" style={{animation: 'fadeIn .2s ease-out'}}>
-                    <p className="text-gray-300 mb-1">{questionHint.hint}</p>
-                    <p className="text-gray-500 italic">{questionHint.example}</p>
-                  </div>
-                )}
+          {/* ═══ LEFT: Question card ═══ */}
+          <div className="w-full lg:w-[440px] lg:shrink-0">
+            {/* Domain / subscale tag */}
+            {isPid && domain && (
+              <div className="flex gap-2 mb-3 flex-wrap">
+                {facets.map(f => (
+                  <HoverTip key={f} text={FACET_META[f]?.desc}>
+                    <span className="text-xs px-2.5 py-1 rounded-full border cursor-help" style={{borderColor: DC[domain] + '60', color: DC[domain], background: DC[domain] + '15'}}>{f}</span>
+                  </HoverTip>
+                ))}
+              </div>
+            )}
+            {!isPid && lpfsSub && (
+              <div className="flex gap-2 mb-3">
+                <span className="text-xs px-2.5 py-1 rounded-full border border-blue-500/40 text-blue-300 bg-blue-500/10">
+                  {LPFS_SUBSCALE_NAMES[lpfsSub]}
+                </span>
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-3">
-              {optLabels.map((label, i) => {
-                const val = optValues[i];
-                const isSelected = curA[curI] === val;
-                return (
-                  <button key={i} onClick={() => answer(val)} onMouseEnter={() => setHoveredVal(val)} onMouseLeave={() => setHoveredVal(null)}
-                    className={`p-4 rounded-xl text-left transition-all border font-medium text-sm ${isSelected ? (isPid ? 'bg-purple-600/40 border-purple-400/60 text-purple-200' : 'bg-blue-600/40 border-blue-400/60 text-blue-200') : 'bg-gray-900/40 border-gray-700/40 text-gray-300 hover:border-gray-500/60 hover:bg-gray-800/40'}`}>
-                    <span className="inline-flex items-center gap-2">
-                      <kbd className="px-1.5 py-0.5 rounded bg-gray-700/60 text-gray-400 text-xs font-mono border border-gray-600/40">{val}</kbd>
-                      {label}
-                    </span>
+            <div className={`rounded-2xl border p-5 md:p-6 ${isPid ? 'bg-purple-950/20 border-purple-500/15' : 'bg-blue-950/20 border-blue-500/15'}`}>
+              <div className="text-gray-600 text-xs mb-2 font-mono">#{curI + 1}</div>
+              <p className="text-base md:text-lg font-medium leading-relaxed mb-4 text-gray-100">{curQ[curI]}</p>
+
+              {questionHint && (
+                <div className="mb-4">
+                  <button onClick={() => setShowHint(!showHint)} className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors">
+                    <span>💡</span> {showHint ? 'Skrýt nápovědu' : 'Nápověda k otázce'}
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ═══ LPFS Live Dashboard ═══ */}
-          {!isPid && (
-            <div className="mt-4 rounded-2xl border border-blue-500/20 bg-blue-950/20 backdrop-blur-xl p-4">
-              <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                  Průběžné skóry LPFS
-                </span>
-                <span className="text-gray-600">{Object.keys(lpfsAns).length}/80</span>
-              </div>
-              {/* Total */}
-              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-800">
-                <div className="w-20 text-xs font-medium text-blue-300">Celkem</div>
-                <div className="flex-1 bg-gray-800 rounded-full h-2.5 overflow-hidden relative">
-                  <div className="absolute inset-0 h-full rounded-full transition-all" style={{width: `${(lpfsTotal/4)*100}%`, background: SEV_CLR(lpfsTotal), opacity: previewLpfsTotal !== null ? 0.4 : 1}} />
-                  {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(previewLpfsTotal/4)*100}%`, background: SEV_CLR(previewLpfsTotal)}} />}
+                  {showHint && (
+                    <div className="mt-2 p-3 rounded-xl bg-gray-800/30 border border-gray-700/20 text-xs" style={{animation: 'fadeIn .2s ease-out'}}>
+                      <p className="text-gray-300 mb-1">{questionHint.hint}</p>
+                      <p className="text-gray-500 italic">{questionHint.example}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="w-10 text-right text-sm font-mono font-bold" style={{color: SEV_CLR(previewLpfsTotal ?? lpfsTotal)}}>{(previewLpfsTotal ?? lpfsTotal).toFixed(2)}</div>
-                {previewLpfsTotal !== null && (() => { const diff = previewLpfsTotal - lpfsTotal; return <div className={`w-12 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-700'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : '—'}</div>; })()}
-              </div>
-              {/* Subscales */}
-              {Object.entries(previewLpfsSubscales).map(([sub, v]) => {
-                const base = lpfsSubscaleScores[sub] || 0;
-                const diff = previewLpfsTotal !== null ? v - base : 0;
-                return (
-                  <div key={sub} className="flex items-center gap-2 mb-1.5">
-                    <div className="w-28 text-xs text-blue-200/70 truncate">{LPFS_SUBSCALE_NAMES[sub]}</div>
-                    <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden relative">
-                      <div className="absolute inset-0 h-full rounded-full" style={{width: `${(base/4)*100}%`, background: '#60A5FA', opacity: previewLpfsTotal !== null ? 0.4 : 1}} />
-                      {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/4)*100}%`, background: '#60A5FA'}} />}
-                    </div>
-                    <div className="w-10 text-right text-xs font-mono text-gray-400">{v.toFixed(2)}</div>
-                    <div className={`w-12 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-700'}`}>
-                      {diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : '—'}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+              )}
 
-          {/* PID-5 Live domain dashboard */}
-          {isPid && (
-            <div className="mt-4 rounded-2xl border border-purple-500/20 bg-purple-950/20 backdrop-blur-xl p-4">
-              <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-purple-400 animate-pulse" />Průběžné skóry</span>
-                <span className="text-gray-600">{Object.keys(answers).length}/220</span>
-              </div>
-              <div className="space-y-2 mb-3">
-                {Object.entries(hoveredVal !== null ? previewDomainScores : domainScores).map(([d, v]) => {
-                  const base = domainScores[d] || 0;
-                  const diff = hoveredVal !== null ? v - base : 0;
+              <div className="grid grid-cols-1 gap-2">
+                {optLabels.map((label, i) => {
+                  const val = optValues[i];
+                  const isSelected = curA[curI] === val;
                   return (
-                    <HoverTip key={d} text={DOMAIN_META[d]?.desc}>
-                      <div className="flex items-center gap-2 cursor-help">
-                        <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{d}</div>
-                        <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden relative">
-                          <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: DC[d], opacity: hoveredVal !== null ? 0.4 : 1}} />
-                          {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: DC[d]}} />}
-                        </div>
-                        <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
-                        <div className={`w-12 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-700'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : '—'}</div>
-                      </div>
-                    </HoverTip>
+                    <button key={i} onClick={() => answer(val)} onMouseEnter={() => setHoveredVal(val)} onMouseLeave={() => setHoveredVal(null)}
+                      className={`p-3 rounded-xl text-left transition-all border text-sm ${isSelected ? (isPid ? 'bg-purple-600/30 border-purple-400/50 text-purple-200' : 'bg-blue-600/30 border-blue-400/50 text-blue-200') : 'bg-gray-900/30 border-gray-700/30 text-gray-300 hover:border-gray-500/50 hover:bg-gray-800/30'}`}>
+                      <span className="inline-flex items-center gap-2">
+                        <kbd className="px-1.5 py-0.5 rounded bg-gray-700/50 text-gray-500 text-xs font-mono border border-gray-600/30">{val}</kbd>
+                        {label}
+                      </span>
+                    </button>
                   );
                 })}
               </div>
-              {facets.length > 0 && (
-                <div className="border-t border-gray-800 pt-2 space-y-1">
-                  <div className="text-xs text-gray-600 mb-1">Facety této otázky:</div>
-                  {facets.map(f => {
-                    const displayScores = hoveredVal !== null ? previewFacetScores : facetScores;
-                    const v = displayScores[f] || 0;
-                    const base = facetScores[f] || 0;
+            </div>
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between mt-4 gap-2">
+              <button onClick={() => setCurI(Math.max(0, curI - 1))} disabled={curI === 0} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">← Předchozí</button>
+              <div className="flex gap-1 flex-wrap justify-center">
+                {Array.from({length: Math.min(10, Math.ceil((curI+1)/10)*10) - Math.floor(curI/10)*10}, (_, j) => {
+                  const n = Math.floor(curI / 10) * 10 + j;
+                  if (n >= curQ.length) return null;
+                  const has = curA[n] !== undefined;
+                  return <button key={n} onClick={() => setCurI(n)} className={`w-6 h-6 rounded-full text-xs flex items-center justify-center transition-all ${n === curI ? (isPid ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white') : has ? 'bg-gray-700 text-gray-300' : 'bg-gray-800/40 text-gray-600'}`}>{n+1}</button>;
+                })}
+              </div>
+              <button onClick={() => setCurI(Math.min(curQ.length - 1, curI + 1))} disabled={curI >= curQ.length - 1} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30 transition-colors">Další →</button>
+            </div>
+
+            {answered >= (isPid ? Q.length : LPFS_Q.length) && (
+              <button onClick={() => setMode(isPid ? 'pid5_results' : 'lpfs_results')} className={`w-full mt-4 p-3.5 rounded-xl font-semibold transition-all ${isPid ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'}`}>Zobrazit výsledky</button>
+            )}
+          </div>
+
+          {/* ═══ RIGHT: Live dashboards ═══ */}
+          <div className="flex-1 min-w-0 lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto scroll-thin space-y-3">
+
+            {/* PID-5 Live domain scores */}
+            {isPid && (
+              <div className="rounded-xl border border-purple-500/15 bg-purple-950/10 p-4">
+                <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
+                  <span className="flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />Průběžné skóry</span>
+                  <span className="text-gray-600 font-mono">{Object.keys(answers).length}/220</span>
+                </div>
+                <div className="space-y-1.5">
+                  {Object.entries(hoveredVal !== null ? previewDomainScores : domainScores).map(([d, v]) => {
+                    const base = domainScores[d] || 0;
                     const diff = hoveredVal !== null ? v - base : 0;
                     return (
-                      <HoverTip key={f} text={FACET_META[f]?.desc}>
+                      <HoverTip key={d} text={DOMAIN_META[d]?.desc}>
                         <div className="flex items-center gap-2 cursor-help">
-                          <div className="w-28 text-xs text-gray-400 truncate">↳ {f}</div>
-                          <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden relative">
-                            <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: SEV_CLR(base), opacity: hoveredVal !== null ? 0.4 : 1}} />
-                            {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: SEV_CLR(v)}} />}
+                          <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{d}</div>
+                          <div className="flex-1 bg-gray-800/60 rounded-full h-1.5 overflow-hidden relative">
+                            <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: DC[d], opacity: hoveredVal !== null ? 0.35 : 1}} />
+                            {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: DC[d]}} />}
                           </div>
-                          <div className="w-10 text-right text-xs font-mono text-gray-400">{v.toFixed(2)}</div>
-                          <div className={`w-12 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-700'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : '—'}</div>
+                          <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
+                          <div className={`w-10 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-800'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}</div>
                         </div>
                       </HoverTip>
                     );
                   })}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* PID-5 Live diagnostics */}
-          {isPid && (
-            <div className="mt-4 rounded-2xl border border-gray-700/30 bg-gray-900/40 backdrop-blur-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-xs text-gray-500 flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />Diagnostické profily — live</div>
-                <button onClick={() => setShowDiagLive(!showDiagLive)} className="text-xs text-gray-600 hover:text-gray-400">{showDiagLive ? '▾ Sbalit' : '▸ Rozbalit'}</button>
-              </div>
-              {showDiagLive && (
-                <div className="space-y-1">
-                  {liveDiags.map(d => {
-                    const baseDiag = diagnostics.find(x => x.id === d.id);
-                    const diff = baseDiag && hoveredVal !== null ? d.score - baseDiag.score : 0;
-                    return (
-                      <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]}>
-                        <div className="flex items-center gap-2 py-0.5 cursor-help">
-                          <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
-                          <div className="w-32 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].split('—')[0].trim()}</div>
-                          <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden relative">
-                            <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{ width: `${((baseDiag?.score || 0)/3)*100}%`, background: d.color, opacity: hoveredVal !== null ? 0.4 : 1 }} />
-                            {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{ width: `${(d.score/3)*100}%`, background: d.color }} />}
+                {facets.length > 0 && (
+                  <div className="border-t border-gray-800/40 pt-2 mt-3 space-y-1">
+                    <div className="text-xs text-gray-600 mb-1">Facety otázky:</div>
+                    {facets.map(f => {
+                      const displayScores = hoveredVal !== null ? previewFacetScores : facetScores;
+                      const v = displayScores[f] || 0;
+                      const base = facetScores[f] || 0;
+                      const diff = hoveredVal !== null ? v - base : 0;
+                      return (
+                        <HoverTip key={f} text={FACET_META[f]?.desc}>
+                          <div className="flex items-center gap-2 cursor-help">
+                            <div className="w-28 text-xs text-gray-400 truncate">↳ {f}</div>
+                            <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
+                              <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{width: `${(base/3)*100}%`, background: SEV_CLR(base), opacity: hoveredVal !== null ? 0.35 : 1}} />
+                              {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/3)*100}%`, background: SEV_CLR(v)}} />}
+                            </div>
+                            <div className="w-10 text-right text-xs font-mono text-gray-400">{v.toFixed(2)}</div>
+                            <div className={`w-10 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-800'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}</div>
                           </div>
-                          <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                          <div className={`w-10 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-700'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}</div>
-                        </div>
-                      </HoverTip>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Scoring Info panel — kept compact */}
-          <div className="mt-4">
-            <button onClick={() => setShowScoringInfo(!showScoringInfo)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs transition-all border ${showScoringInfo ? 'bg-amber-950/30 border-amber-500/30 text-amber-300' : 'bg-gray-900/40 border-gray-700/30 text-gray-500 hover:text-gray-400 hover:border-gray-600'}`}>
-              <span className="flex items-center gap-2"><span>{showScoringInfo ? '📖' : '📐'}</span>Zdroje & vzorečky</span>
-              <span>{showScoringInfo ? '▾ Skrýt' : '▸ Zobrazit'}</span>
-            </button>
-            {showScoringInfo && (
-              <div className="mt-2 rounded-xl border border-amber-500/20 bg-amber-950/10 backdrop-blur-xl p-4 space-y-3 text-xs">
-                <div>
-                  <div className="text-amber-300 font-semibold mb-1.5">📊 Skórování</div>
-                  <div className="text-gray-400 space-y-1">
-                    <p>• <span className="text-gray-300">Škála:</span> {isPid ? SCORING_INFO.pid5.scale : SCORING_INFO.lpfs.scale}</p>
-                    {isPid ? <>
-                      <p>• <span className="text-gray-300">Faceta:</span> {SCORING_INFO.pid5.facetFormula}</p>
-                      <p>• <span className="text-gray-300">Doména:</span> {SCORING_INFO.pid5.domainFormula}</p>
-                      <p>• <span className="text-gray-300">Diagnostika:</span> {SCORING_INFO.pid5.diagFormula}</p>
-                    </> : <>
-                      <p>• <span className="text-gray-300">Celkem:</span> {SCORING_INFO.lpfs.totalFormula}</p>
-                      <p>• <span className="text-gray-300">Subškály:</span> {SCORING_INFO.lpfs.subscales}</p>
-                    </>}
-                  </div>
-                </div>
-                {isPid && facets.length > 0 && (
-                  <div>
-                    <div className="text-amber-300 font-semibold mb-1.5">🧩 Facety otázky #{curI + 1}</div>
-                    {facets.map(f => { const meta = FACET_META[f]; if (!meta) return null; const src = SOURCES[meta.source]; return (
-                      <div key={f} className="mb-2 p-2 rounded-lg bg-gray-900/40 border border-gray-700/20">
-                        <div className="font-semibold text-gray-200">{f} <span className="text-gray-600">({meta.en})</span></div>
-                        <p className="font-mono text-[11px] text-amber-400/80 bg-black/30 rounded px-2 py-1 mt-1">{meta.formulaExact}</p>
-                        <p className="text-gray-500 mt-1">📚 {src?.url ? <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-blue-400/70 hover:text-blue-300 underline underline-offset-2">{src.short}</a> : meta.source}</p>
-                      </div>
-                    ); })}
+                        </HoverTip>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             )}
-          </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between mt-4">
-            <button onClick={() => setCurI(Math.max(0, curI - 1))} disabled={curI === 0} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30">← Předchozí</button>
-            <div className="flex gap-1">
-              {Array.from({length: Math.min(10, Math.ceil((curI+1)/10)*10) - Math.floor(curI/10)*10}, (_, j) => {
-                const n = Math.floor(curI / 10) * 10 + j;
-                if (n >= curQ.length) return null;
-                const has = curA[n] !== undefined;
-                return <button key={n} onClick={() => setCurI(n)} className={`w-6 h-6 rounded-full text-xs flex items-center justify-center transition-all ${n === curI ? (isPid ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white') : has ? 'bg-gray-700 text-gray-300' : 'bg-gray-800/50 text-gray-600'}`}>{n+1}</button>;
-              })}
+            {/* PID-5 Live diagnostics */}
+            {isPid && (
+              <div className="rounded-xl border border-gray-700/20 bg-gray-900/30 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-gray-500 flex items-center gap-2"><span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />Diagnostické profily</div>
+                  <button onClick={() => setShowDiagLive(!showDiagLive)} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{showDiagLive ? '▾' : '▸'}</button>
+                </div>
+                {showDiagLive && (
+                  <div className="space-y-0.5">
+                    {liveDiags.map(d => {
+                      const baseDiag = diagnostics.find(x => x.id === d.id);
+                      const diff = baseDiag && hoveredVal !== null ? d.score - baseDiag.score : 0;
+                      return (
+                        <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]}>
+                          <div className="flex items-center gap-1.5 py-0.5 cursor-help">
+                            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
+                            <div className="w-28 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].split('—')[0].trim()}</div>
+                            <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
+                              <div className="absolute inset-0 h-full rounded-full transition-all duration-300" style={{ width: `${((baseDiag?.score || 0)/3)*100}%`, background: d.color, opacity: hoveredVal !== null ? 0.35 : 1 }} />
+                              {hoveredVal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{ width: `${(d.score/3)*100}%`, background: d.color }} />}
+                            </div>
+                            <div className="w-8 text-right text-xs font-mono" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
+                            <div className={`w-8 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-800'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}</div>
+                          </div>
+                        </HoverTip>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* LPFS Live Dashboard */}
+            {!isPid && (
+              <div className="rounded-xl border border-blue-500/15 bg-blue-950/10 p-4">
+                <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    Průběžné skóry LPFS
+                  </span>
+                  <span className="text-gray-600 font-mono">{Object.keys(lpfsAns).length}/80</span>
+                </div>
+                {/* Total */}
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-800/40">
+                  <div className="w-20 text-xs font-medium text-blue-300">Celkem</div>
+                  <div className="flex-1 bg-gray-800/60 rounded-full h-2 overflow-hidden relative">
+                    <div className="absolute inset-0 h-full rounded-full transition-all" style={{width: `${(lpfsTotal/4)*100}%`, background: SEV_CLR(lpfsTotal), opacity: previewLpfsTotal !== null ? 0.35 : 1}} />
+                    {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(previewLpfsTotal/4)*100}%`, background: SEV_CLR(previewLpfsTotal)}} />}
+                  </div>
+                  <div className="w-10 text-right text-sm font-mono font-bold" style={{color: SEV_CLR(previewLpfsTotal ?? lpfsTotal)}}>{(previewLpfsTotal ?? lpfsTotal).toFixed(2)}</div>
+                  {previewLpfsTotal !== null && (() => { const diff = previewLpfsTotal - lpfsTotal; return <div className={`w-10 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-800'}`}>{diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}</div>; })()}
+                </div>
+                {/* Subscales */}
+                {Object.entries(previewLpfsSubscales).map(([sub, v]) => {
+                  const base = lpfsSubscaleScores[sub] || 0;
+                  const diff = previewLpfsTotal !== null ? v - base : 0;
+                  return (
+                    <div key={sub} className="flex items-center gap-2 mb-1.5">
+                      <div className="w-24 text-xs text-blue-200/70 truncate">{LPFS_SUBSCALE_NAMES[sub]}</div>
+                      <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
+                        <div className="absolute inset-0 h-full rounded-full" style={{width: `${(base/4)*100}%`, background: '#60A5FA', opacity: previewLpfsTotal !== null ? 0.35 : 1}} />
+                        {previewLpfsTotal !== null && <div className="absolute inset-0 h-full rounded-full transition-all duration-200" style={{width: `${(v/4)*100}%`, background: '#60A5FA'}} />}
+                      </div>
+                      <div className="w-10 text-right text-xs font-mono text-gray-400">{v.toFixed(2)}</div>
+                      <div className={`w-10 text-right text-xs font-mono ${diff > 0 ? 'text-red-400' : diff < 0 ? 'text-green-400' : 'text-gray-800'}`}>
+                        {diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(2) : ''}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Scoring Info panel */}
+            <div>
+              <button onClick={() => setShowScoringInfo(!showScoringInfo)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs transition-all border ${showScoringInfo ? 'bg-amber-950/20 border-amber-500/20 text-amber-300' : 'bg-gray-900/30 border-gray-800/40 text-gray-600 hover:text-gray-400 hover:border-gray-700'}`}>
+                <span className="flex items-center gap-2"><span>{showScoringInfo ? '📖' : '📐'}</span>Zdroje & vzorečky</span>
+                <span>{showScoringInfo ? '▾' : '▸'}</span>
+              </button>
+              {showScoringInfo && (
+                <div className="mt-2 rounded-xl border border-amber-500/15 bg-amber-950/10 p-4 space-y-3 text-xs">
+                  <div>
+                    <div className="text-amber-300 font-semibold mb-1.5">📊 Skórování</div>
+                    <div className="text-gray-400 space-y-1">
+                      <p>• <span className="text-gray-300">Škála:</span> {isPid ? SCORING_INFO.pid5.scale : SCORING_INFO.lpfs.scale}</p>
+                      {isPid ? <>
+                        <p>• <span className="text-gray-300">Faceta:</span> {SCORING_INFO.pid5.facetFormula}</p>
+                        <p>• <span className="text-gray-300">Doména:</span> {SCORING_INFO.pid5.domainFormula}</p>
+                        <p>• <span className="text-gray-300">Diagnostika:</span> {SCORING_INFO.pid5.diagFormula}</p>
+                      </> : <>
+                        <p>• <span className="text-gray-300">Celkem:</span> {SCORING_INFO.lpfs.totalFormula}</p>
+                        <p>• <span className="text-gray-300">Subškály:</span> {SCORING_INFO.lpfs.subscales}</p>
+                      </>}
+                    </div>
+                  </div>
+                  {isPid && facets.length > 0 && (
+                    <div>
+                      <div className="text-amber-300 font-semibold mb-1.5">🧩 Facety otázky #{curI + 1}</div>
+                      {facets.map(f => { const meta = FACET_META[f]; if (!meta) return null; const src = SOURCES[meta.source]; return (
+                        <div key={f} className="mb-2 p-2 rounded-lg bg-gray-900/40 border border-gray-700/20">
+                          <div className="font-semibold text-gray-200">{f} <span className="text-gray-600">({meta.en})</span></div>
+                          <p className="font-mono text-[11px] text-amber-400/80 bg-black/30 rounded px-2 py-1 mt-1">{meta.formulaExact}</p>
+                          <p className="text-gray-500 mt-1">📚 {src?.url ? <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-blue-400/70 hover:text-blue-300 underline underline-offset-2">{src.short}</a> : meta.source}</p>
+                        </div>
+                      ); })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <button onClick={() => setCurI(Math.min(curQ.length - 1, curI + 1))} disabled={curI >= curQ.length - 1} className="text-sm text-gray-500 hover:text-gray-300 disabled:opacity-30">Další →</button>
-          </div>
 
-          {answered >= (isPid ? Q.length : LPFS_Q.length) && (
-            <button onClick={() => setMode(isPid ? 'pid5_results' : 'lpfs_results')} className={`w-full mt-6 p-4 rounded-xl font-semibold text-lg transition-all ${isPid ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'}`}>Zobrazit výsledky</button>
-          )}
-        </div>
+          </div>
         </div>
       </div>
     </div>
