@@ -11,7 +11,8 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
   const aboveCutoff = total >= CUDITR_CUTOFF;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">CUDIT-R — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
@@ -28,8 +29,8 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
         {aboveCutoff && (
           <div className="mt-3 p-2 bg-red-900/40 border border-red-700 rounded text-red-200 text-sm">
             ⚠️ {lang === 'cs'
-              ? `Skóre ≥ ${CUDITR_CUTOFF} — naznačuje rizikové užívání konopí. Doporučena konzultace s odborníkem.`
-              : `Score ≥ ${CUDITR_CUTOFF} — indicates hazardous cannabis use. Professional consultation recommended.`}
+              ? `Skóre ≥ ${CUDITR_CUTOFF} — naznačuje rizikové užívání konopí.${total >= 12 ? ' Skóre ≥ 12 naznačuje možnou poruchu z užívání konopí — doporučeno podrobnější vyšetření.' : ''}`
+              : `Score ≥ ${CUDITR_CUTOFF} — indicates hazardous cannabis use.${total >= 12 ? ' Score ≥ 12 suggests possible cannabis use disorder — further assessment recommended.' : ''}`}
           </div>
         )}
       </div>
@@ -97,6 +98,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
           ← {lang === 'cs' ? 'Zpět do menu' : 'Back to Menu'}
         </button>
       </div>
+    </div>
     </div>
   );
 }

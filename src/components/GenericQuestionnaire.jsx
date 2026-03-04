@@ -259,10 +259,10 @@ export function ValiditySection({ validity, lang, t, scaleMax }) {
 export function SeverityBadge({ score, severityLevels, lang }) {
   const level = severityLevels.find(s => score >= s.min && score <= s.max) || severityLevels[severityLevels.length - 1];
   const SEVERITY_LABELS = {
-    cs: { minimal: 'Minimální', mild: 'Mírná', moderate: 'Středně těžká', moderatelySevere: 'Středně těžká až těžká', severe: 'Těžká', extremelySevere: 'Extrémně těžká', normal: 'Normální', significant: 'Významná', low: 'Nízké riziko', hazardous: 'Rizikové', harmful: 'Škodlivé', dependence: 'Závislost' },
-    en: { minimal: 'Minimal', mild: 'Mild', moderate: 'Moderate', moderatelySevere: 'Moderately Severe', severe: 'Severe', extremelySevere: 'Extremely Severe', normal: 'Normal', significant: 'Significant', low: 'Low Risk', hazardous: 'Hazardous', harmful: 'Harmful', dependence: 'Dependence' },
+    cs: { minimal: 'Minimální', mild: 'Mírná', moderate: 'Středně těžká', moderatelySevere: 'Středně těžká až těžká', severe: 'Těžká', extremelySevere: 'Extrémně těžká', normal: 'Normální', significant: 'Významná', low: 'Nízké riziko', hazardous: 'Rizikové', harmful: 'Škodlivé', dependence: 'Možná porucha' },
+    en: { minimal: 'Minimal', mild: 'Mild', moderate: 'Moderate', moderatelySevere: 'Moderately Severe', severe: 'Severe', extremelySevere: 'Extremely Severe', normal: 'Normal', significant: 'Significant', low: 'Low Risk', hazardous: 'Hazardous', harmful: 'Harmful', dependence: 'Possible CUD' },
   };
-  const label = SEVERITY_LABELS[lang]?.[level.key] || level.key;
+  const label = SEVERITY_LABELS[lang]?.[level.key] || level[lang] || level.cs || level.key;
 
   return (
     <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border font-semibold text-sm" style={{ color: level.color, borderColor: level.color + '40', background: level.color + '15' }}>
