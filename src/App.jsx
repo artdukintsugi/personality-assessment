@@ -305,7 +305,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -393,6 +393,8 @@ export default function App() {
   const [viewingSource, setViewingSource] = useState(null); // 'local' | 'cloud' — indicates we're viewing saved data
   const [lang, setLang] = useState(() => lsGet(LS_KEYS.lang, 'cs')); // 'cs' | 'en'
   const [shareToast, setShareToast] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => !lsGet(LS_KEYS.onboarded, false));
+  const [onboardStep, setOnboardStep] = useState(0);
   const t = useMemo(() => createT(lang), [lang]);
   const SEV = useCallback((v) => sevLabel(v, lang), [lang]);
 
@@ -782,19 +784,119 @@ export default function App() {
     </div>
   );
 
+  // ═══ ONBOARDING POPUP ═══
+  const ONBOARD_STEPS = useMemo(() => lang === 'cs' ? [
+    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 12 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
+    { icon: '📋', title: 'Jak to funguje', desc: 'Vyberte si dotazník, odpovídejte na otázky a na konci uvidíte své výsledky s podrobným skórováním. Odpovědi se automaticky ukládají — můžete se kdykoliv vrátit a pokračovat.' },
+    { icon: '🔗', title: 'Cross-reference analýza', desc: 'Po vyplnění více dotazníků systém automaticky analyzuje vztahy mezi vašimi výsledky — například jak spolu souvisí deprese, úzkost a nespavost.' },
+    { icon: '🔒', title: 'Soukromí a bezpečnost', desc: 'Vaše data jsou uložena pouze lokálně ve vašem prohlížeči. Po přihlášení se synchronizují do cloudu a zpřístupní Klinický profil. Žádná data nesdílíme s třetími stranami.' },
+    { icon: '⚕️', title: 'Důležité upozornění', desc: 'Tato aplikace je sebeposuzovací screeningový nástroj a nepředstavuje klinickou diagnózu. Pro odborné posouzení vždy konzultujte klinického psychologa nebo psychiatra.' },
+  ] : [
+    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 12 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
+    { icon: '📋', title: 'How It Works', desc: 'Choose a questionnaire, answer the questions, and see your results with detailed scoring at the end. Answers are saved automatically — you can return and continue anytime.' },
+    { icon: '🔗', title: 'Cross-Reference Analysis', desc: 'After completing multiple questionnaires, the system automatically analyzes relationships between your results — e.g., how depression, anxiety, and insomnia are interconnected.' },
+    { icon: '🔒', title: 'Privacy & Security', desc: 'Your data is stored locally in your browser only. After signing in, data syncs to the cloud and unlocks the Clinical Profile. We never share data with third parties.' },
+    { icon: '⚕️', title: 'Important Notice', desc: 'This app is a self-report screening tool and does not constitute a clinical diagnosis. Always consult a clinical psychologist or psychiatrist for professional assessment.' },
+  ], [lang]);
+
+  const OnboardingModal = () => showOnboarding && (
+    <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-md flex items-center justify-center p-4" onClick={() => {}}>
+      <div className="bg-gray-900 border border-gray-700/60 rounded-3xl p-0 w-full max-w-md overflow-hidden shadow-2xl shadow-purple-500/10">
+        {/* Progress dots */}
+        <div className="flex justify-center gap-1.5 pt-5 pb-2">
+          {ONBOARD_STEPS.map((_, i) => (
+            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === onboardStep ? 'w-6 bg-purple-400' : i < onboardStep ? 'w-1.5 bg-purple-400/50' : 'w-1.5 bg-gray-700'}`} />
+          ))}
+        </div>
+        {/* Content */}
+        <div className="px-8 py-6 text-center">
+          <div className="text-5xl mb-4">{ONBOARD_STEPS[onboardStep].icon}</div>
+          <h2 className="text-xl font-bold text-gray-100 mb-3">{ONBOARD_STEPS[onboardStep].title}</h2>
+          <p className="text-sm text-gray-400 leading-relaxed">{ONBOARD_STEPS[onboardStep].desc}</p>
+        </div>
+        {/* Buttons */}
+        <div className="px-8 pb-6 flex gap-3">
+          {onboardStep > 0 && (
+            <button onClick={() => setOnboardStep(s => s - 1)} className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition-all">
+              ← {lang === 'cs' ? 'Zpět' : 'Back'}
+            </button>
+          )}
+          {onboardStep < ONBOARD_STEPS.length - 1 ? (
+            <button onClick={() => setOnboardStep(s => s + 1)} className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold transition-all">
+              {lang === 'cs' ? 'Další' : 'Next'} →
+            </button>
+          ) : (
+            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm font-semibold transition-all">
+              {lang === 'cs' ? 'Začít používat' : 'Get Started'} ✨
+            </button>
+          )}
+        </div>
+        {/* Skip */}
+        {onboardStep < ONBOARD_STEPS.length - 1 && (
+          <div className="text-center pb-5">
+            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="text-xs text-gray-600 hover:text-gray-400 transition-all">
+              {lang === 'cs' ? 'Přeskočit úvod' : 'Skip intro'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   // ── MENU ──
   if (mode === "menu") return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
       <AuthModal />
-      <div className="max-w-2xl mx-auto px-4 py-8 md:py-12">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="flex justify-end mb-4">
+      <OnboardingModal />
+
+      {/* ═══ HERO SECTION ═══ */}
+      <div className="relative overflow-hidden">
+        {/* Gradient background glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-purple-500/8 via-pink-500/5 to-transparent rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 pt-8 pb-4 md:pt-12 relative">
+          {/* Top bar: help + lang */}
+          <div className="flex items-center justify-between mb-8">
+            <button onClick={() => { setShowOnboarding(true); setOnboardStep(0); }} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800/60 transition-all flex items-center gap-1.5">
+              <span className="text-sm">❓</span> {lang === 'cs' ? 'Jak to funguje' : 'How it works'}
+            </button>
             <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">{t('appTitle')}</h1>
-          <p className="text-gray-500 text-sm">{t('appSubtitle')}</p>
+
+          {/* Hero */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+              {lang === 'cs' ? '12 validovaných nástrojů' : '12 validated instruments'}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">{t('appTitle')}</h1>
+            <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto leading-relaxed">
+              {lang === 'cs' 
+                ? 'Komplexní screeningová psychodiagnostika s automatickou analýzou cross-referencí mezi výsledky.'
+                : 'Comprehensive screening psychodiagnostics with automatic cross-reference analysis between results.'}
+            </p>
+          </div>
+
+          {/* Feature pills */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {[
+              { icon: '🧠', label: lang === 'cs' ? 'Osobnost' : 'Personality' },
+              { icon: '💭', label: lang === 'cs' ? 'Nálada' : 'Mood' },
+              { icon: '⚡', label: lang === 'cs' ? 'Trauma' : 'Trauma' },
+              { icon: '🧩', label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment' },
+              { icon: '🔗', label: lang === 'cs' ? 'Cross-reference' : 'Cross-reference' },
+            ].map(f => (
+              <span key={f.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/60 border border-gray-700/40 text-xs text-gray-400">
+                {f.icon} {f.label}
+              </span>
+            ))}
+          </div>
         </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 pb-8 md:pb-12">
 
         {/* Auth bar */}
         <div className="mb-8 p-4 rounded-2xl bg-gray-900/50 border border-gray-800/60">
@@ -1136,9 +1238,9 @@ export default function App() {
         )}
 
         {/* Debug tools */}
-        <div className="mt-6 pt-4 border-t border-gray-800/40">
-          <div className="text-xs text-gray-700 mb-2">{t('debug')}</div>
-          <div className="grid grid-cols-4 gap-2 mb-2">
+        <details className="mt-6 pt-4 border-t border-gray-800/40">
+          <summary className="text-xs text-gray-700 mb-2 cursor-pointer hover:text-gray-500 transition-all">{t('debug')}</summary>
+          <div className="grid grid-cols-4 gap-2 mb-2 mt-2">
             <button onClick={fillSample} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
             <button onClick={fillSampleLpfs} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
             <button onClick={fillSamplePhq9} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PHQ-9</button>
@@ -1153,6 +1255,21 @@ export default function App() {
             <button onClick={fillSampleCuditr} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CUDIT</button>
           </div>
           <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
+        </details>
+
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-gray-800/30 text-center">
+          <p className="text-xs text-gray-700 leading-relaxed max-w-md mx-auto">
+            {lang === 'cs' 
+              ? 'Sebeposuzovací screeningový nástroj. Nepředstavuje klinickou diagnózu. Pro odborné posouzení konzultujte klinického psychologa nebo psychiatra.'
+              : 'Self-report screening tool. Does not constitute a clinical diagnosis. Consult a clinical psychologist or psychiatrist for professional assessment.'}
+          </p>
+          <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-800">
+            <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span>
+          </div>
+          <div className="flex items-center justify-center gap-3 mt-1 text-xs text-gray-800">
+            <span>CATI</span><span>·</span><span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span>
+          </div>
         </div>
       </div>
     </div>
