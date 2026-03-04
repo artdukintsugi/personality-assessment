@@ -2563,6 +2563,34 @@ export default function App() {
           <a href="https://www.psychiatry.org/psychiatrists/practice/dsm" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:text-blue-400 mt-1 inline-block">psychiatry.org/psychiatrists/practice/dsm ↗</a>
         </div>
 
+        {/* MMPI info section */}
+        <div className="p-4 rounded-xl bg-gray-900/40 border border-gray-800/40 mb-8">
+          <div className="font-bold text-sm mb-2 text-red-400">MMPI — Minnesota Multiphasic Personality Inventory</div>
+          <p className="text-xs text-gray-400 leading-relaxed mb-2">
+            {lang === 'cs'
+              ? 'MMPI je jedním z nejznámějších psychodiagnostických nástrojů pro posouzení osobnosti a psychopatologie. V této aplikaci není zahrnut z důvodu licenčních omezení a ochrany autorských práv. Pokud vás MMPI zajímá, můžete využít následující zdroje pro studium nebo orientační online verze:'
+              : 'MMPI is one of the most well-known psychodiagnostic tools for personality and psychopathology assessment. It is not included in this app due to licensing restrictions and copyright protection. If you are interested in MMPI, you can use the following sources for study or unofficial online versions:'
+            }
+          </p>
+          <ul className="list-disc pl-5 text-xs text-gray-400 space-y-1">
+            <li>
+              <a href="https://is.muni.cz/th/b8prs/Martin_Hajny_Diplomova_prace.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{lang === 'cs' ? 'Diplomová práce Martin Hajný (Masarykova univerzita)' : 'Martin Hajný Thesis (Masaryk University)'}</a>
+            </li>
+            <li>
+              <a href="https://docs.google.com/spreadsheets/d/1zn-o0o_qLqDu5ib2BCmJQ4unEaBBseULkDT2uei_ano/edit?gid=2088090629#gid=2088090629" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Google Sheets — {lang === 'cs' ? 'Kompletní tabulka' : 'Complete spreadsheet'}</a>
+            </li>
+            <li>
+              <a href="https://www.idrlabs.com/multiphasic-personality/test.php" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{lang === 'cs' ? 'IDRlabs: Neoficiální online MMPI test' : 'IDRlabs: Unofficial online MMPI test'}</a>
+            </li>
+          </ul>
+          <p className="text-xs text-gray-500 mt-2">
+            {lang === 'cs'
+              ? '⚠️ MMPI je chráněn autorskými právy. Online verze nejsou oficiální a slouží pouze pro orientační účely.'
+              : '⚠️ MMPI is copyright protected. Online versions are unofficial and for informational purposes only.'
+            }
+          </p>
+        </div>
+
         <div className="p-4 rounded-xl bg-gray-900/40 border border-gray-800/40">
           <p className="text-xs text-gray-500 leading-relaxed">
             {lang === 'cs'
