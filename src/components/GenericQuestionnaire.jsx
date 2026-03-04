@@ -1,6 +1,6 @@
 /**
  * GenericQuestionnaire — Reusable questionnaire component for clinical screening tools
- * Used by PHQ-9, GAD-7, DASS-42, PCL-5
+ * Used by PHQ-9, GAD-7, DASS-42, PCL-5, CATI, ISI, ASRS, EAT-26, MDQ, CUDIT-R
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
@@ -12,6 +12,7 @@ export function QuestionnaireScreen({
   answers, setAnswers, idx, setIdx, onComplete,
   color, lang, t, toggleLang, onBack,
   instruction,
+  liveScoreConfig, // { severityLevels, maxScore, label, scoreFn? }
 }) {
   const total = questions.length;
   const answered = Object.keys(answers).length;
@@ -116,6 +117,34 @@ export function QuestionnaireScreen({
             />
           ))}
         </div>
+
+        {/* Live Score Panel */}
+        {liveScoreConfig && answered > 0 && (() => {
+          const { severityLevels, maxScore, label, scoreFn } = liveScoreConfig;
+          const liveTotal = scoreFn ? scoreFn(answers) : Object.values(answers).reduce((s, v) => s + (v ?? 0), 0);
+          const pct = maxScore > 0 ? Math.min(liveTotal / maxScore * 100, 100) : 0;
+          const currentSev = severityLevels?.find(s => liveTotal >= s.min && liveTotal <= s.max);
+          return (
+            <div className="mt-6 p-4 rounded-2xl bg-gray-900/60 border border-gray-800 backdrop-blur-xl">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-gray-500">{lang === 'cs' ? 'Průběžné skóre' : 'Live Score'}</span>
+                <span className="text-xs font-mono text-gray-400">{label}</span>
+              </div>
+              <div className="flex items-end gap-3 mb-2">
+                <span className="text-2xl font-bold text-white">{liveTotal}</span>
+                <span className="text-sm text-gray-600 mb-0.5">/ {maxScore}</span>
+                {currentSev && (
+                  <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ background: currentSev.color + '20', color: currentSev.color }}>
+                    {currentSev[lang] || currentSev.cs}
+                  </span>
+                )}
+              </div>
+              <div className="bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: currentSev?.color || color }} />
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

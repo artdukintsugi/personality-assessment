@@ -12,6 +12,10 @@ import { DASS42_QUESTIONS, DASS42_SCALE, DASS42_SUBSCALES, DASS42_SEVERITY } fro
 import { PCL5_QUESTIONS, PCL5_SCALE, PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from './data/pcl5';
 import { CATI_QUESTIONS, CATI_SCALE, CATI_SUBSCALES, CATI_SEVERITY, scoreCATI } from './data/cati';
 import { ISI_QUESTIONS, ISI_SCALE_SIMPLE, ISI_SEVERITY } from './data/isi';
+import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY } from './data/asrs';
+import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, scoreEAT26 } from './data/eat26';
+import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from './data/mdq';
+import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE } from './data/cuditr';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
@@ -19,6 +23,10 @@ import DASS42Results from './components/DASS42Results';
 import PCL5Results from './components/PCL5Results';
 import CATIResults from './components/CATIResults';
 import ISIResults from './components/ISIResults';
+import ASRSResults from './components/ASRSResults';
+import EAT26Results from './components/EAT26Results';
+import MDQResults from './components/MDQResults';
+import CUDITRResults from './components/CUDITRResults';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
@@ -296,7 +304,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -316,6 +324,10 @@ export default function App() {
     if (p === '/pcl5') return 'pcl5';
     if (p === '/cati') return 'cati';
     if (p === '/isi') return 'isi';
+    if (p === '/asrs') return 'asrs';
+    if (p === '/eat26') return 'eat26';
+    if (p === '/mdq') return 'mdq';
+    if (p === '/cuditr') return 'cuditr';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/phq9/results') return 'phq9_results';
@@ -324,6 +336,10 @@ export default function App() {
     if (p === '/pcl5/results') return 'pcl5_results';
     if (p === '/cati/results') return 'cati_results';
     if (p === '/isi/results') return 'isi_results';
+    if (p === '/asrs/results') return 'asrs_results';
+    if (p === '/eat26/results') return 'eat26_results';
+    if (p === '/mdq/results') return 'mdq_results';
+    if (p === '/cuditr/results') return 'cuditr_results';
     if (p === '/history') return 'history';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
     if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
@@ -332,7 +348,7 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', history: '/history' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', history: '/history' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
@@ -352,6 +368,14 @@ export default function App() {
   const [catiIdx, setCatiIdx] = useState(() => lsGet(LS_KEYS.catiIdx, 0));
   const [isiAns, setIsiAns] = useState(() => lsGet(LS_KEYS.isiAns, {}));
   const [isiIdx, setIsiIdx] = useState(() => lsGet(LS_KEYS.isiIdx, 0));
+  const [asrsAns, setAsrsAns] = useState(() => lsGet(LS_KEYS.asrsAns, {}));
+  const [asrsIdx, setAsrsIdx] = useState(() => lsGet(LS_KEYS.asrsIdx, 0));
+  const [eat26Ans, setEat26Ans] = useState(() => lsGet(LS_KEYS.eat26Ans, {}));
+  const [eat26Idx, setEat26Idx] = useState(() => lsGet(LS_KEYS.eat26Idx, 0));
+  const [mdqAns, setMdqAns] = useState(() => lsGet(LS_KEYS.mdqAns, {}));
+  const [mdqIdx, setMdqIdx] = useState(() => lsGet(LS_KEYS.mdqIdx, 0));
+  const [cuditrAns, setCuditrAns] = useState(() => lsGet(LS_KEYS.cuditrAns, {}));
+  const [cuditrIdx, setCuditrIdx] = useState(() => lsGet(LS_KEYS.cuditrIdx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -388,6 +412,14 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.catiIdx, catiIdx); }, [catiIdx]);
   useEffect(() => { lsSet(LS_KEYS.isiAns, isiAns); }, [isiAns]);
   useEffect(() => { lsSet(LS_KEYS.isiIdx, isiIdx); }, [isiIdx]);
+  useEffect(() => { lsSet(LS_KEYS.asrsAns, asrsAns); }, [asrsAns]);
+  useEffect(() => { lsSet(LS_KEYS.asrsIdx, asrsIdx); }, [asrsIdx]);
+  useEffect(() => { lsSet(LS_KEYS.eat26Ans, eat26Ans); }, [eat26Ans]);
+  useEffect(() => { lsSet(LS_KEYS.eat26Idx, eat26Idx); }, [eat26Idx]);
+  useEffect(() => { lsSet(LS_KEYS.mdqAns, mdqAns); }, [mdqAns]);
+  useEffect(() => { lsSet(LS_KEYS.mdqIdx, mdqIdx); }, [mdqIdx]);
+  useEffect(() => { lsSet(LS_KEYS.cuditrAns, cuditrAns); }, [cuditrAns]);
+  useEffect(() => { lsSet(LS_KEYS.cuditrIdx, cuditrIdx); }, [cuditrIdx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -507,6 +539,29 @@ export default function App() {
     saveToHistory('isi', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: isiAns } });
   }, [isiAns, saveToHistory]);
 
+  const saveAsrsResult = useCallback(() => {
+    const total = Object.values(asrsAns).reduce((a,b) => a+b, 0);
+    const sev = ASRS_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('asrs', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: asrsAns } });
+  }, [asrsAns, saveToHistory]);
+
+  const saveEat26Result = useCallback(() => {
+    const total = scoreEAT26(eat26Ans);
+    const sev = EAT26_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('eat26', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: eat26Ans } });
+  }, [eat26Ans, saveToHistory]);
+
+  const saveMdqResult = useCallback(() => {
+    const { part1Yes, part2Yes, part3Severity, positive } = scoreMDQ(mdqAns);
+    saveToHistory('mdq', { score: part1Yes, positive, fullData: { part1Yes, part2Yes, part3Severity, positive, odpovedi: mdqAns } });
+  }, [mdqAns, saveToHistory]);
+
+  const saveCuditrResult = useCallback(() => {
+    const total = Object.values(cuditrAns).reduce((a,b) => a+b, 0);
+    const sev = CUDITR_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('cuditr', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: cuditrAns } });
+  }, [cuditrAns, saveToHistory]);
+
   // View saved result — loads answers into state and navigates to full results page
   const viewSavedResult = useCallback((result) => {
     const fd = result.fullData || result;
@@ -536,6 +591,10 @@ export default function App() {
         pcl5: { setAns: setPcl5Ans, setIdx: setPcl5Idx, count: 20, results: 'pcl5_results' },
         cati: { setAns: setCatiAns, setIdx: setCatiIdx, count: 42, results: 'cati_results' },
         isi: { setAns: setIsiAns, setIdx: setIsiIdx, count: 7, results: 'isi_results' },
+        asrs: { setAns: setAsrsAns, setIdx: setAsrsIdx, count: 6, results: 'asrs_results' },
+        eat26: { setAns: setEat26Ans, setIdx: setEat26Idx, count: 26, results: 'eat26_results' },
+        mdq: { setAns: setMdqAns, setIdx: setMdqIdx, count: 15, results: 'mdq_results' },
+        cuditr: { setAns: setCuditrAns, setIdx: setCuditrIdx, count: 8, results: 'cuditr_results' },
       };
       const cfg = typeMap[result.type];
       if (cfg) {
@@ -636,6 +695,10 @@ export default function App() {
   const fillSamplePcl5 = useCallback(() => { const s = {}; for (let i = 0; i < 20; i++) s[i] = Math.floor(Math.random() * 5); setPcl5Ans(s); setPcl5Idx(19); setMode("pcl5_results"); }, []);
   const fillSampleCati = useCallback(() => { const s = {}; for (let i = 0; i < 42; i++) s[i] = Math.floor(Math.random() * 5) + 1; setCatiAns(s); setCatiIdx(41); setMode("cati_results"); }, []);
   const fillSampleIsi = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); setIsiAns(s); setIsiIdx(6); setMode("isi_results"); }, []);
+  const fillSampleAsrs = useCallback(() => { const s = {}; for (let i = 0; i < 6; i++) s[i] = Math.floor(Math.random() * 5); setAsrsAns(s); setAsrsIdx(5); setMode("asrs_results"); }, []);
+  const fillSampleEat26 = useCallback(() => { const s = {}; for (let i = 0; i < 26; i++) s[i] = Math.floor(Math.random() * 6); setEat26Ans(s); setEat26Idx(25); setMode("eat26_results"); }, []);
+  const fillSampleMdq = useCallback(() => { const s = {}; for (let i = 0; i < 13; i++) s[i] = Math.random() > 0.5 ? 0 : 1; s[13] = Math.random() > 0.5 ? 0 : 1; s[14] = Math.floor(Math.random() * 4); setMdqAns(s); setMdqIdx(14); setMode("mdq_results"); }, []);
+  const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 8; i++) s[i] = Math.floor(Math.random() * 5); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -874,6 +937,50 @@ export default function App() {
               </div>
             )}
           </button>
+          {/* ASRS */}
+          <button onClick={() => setMode("asrs")} className="p-4 rounded-2xl bg-gradient-to-br from-sky-900/40 to-sky-800/20 border border-sky-500/20 hover:border-sky-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-sky-300 group-hover:text-sky-200 transition-colors">ASRS</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '6 otázek — ADHD' : '6 items — ADHD'}</div>
+            {Object.keys(asrsAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-sky-500 rounded-full" style={{width: `${(Object.keys(asrsAns).length/6)*100}%`}} /></div>
+                <span className="text-xs text-sky-400 shrink-0">{Object.keys(asrsAns).length}/6</span>
+              </div>
+            )}
+          </button>
+          {/* EAT-26 */}
+          <button onClick={() => setMode("eat26")} className="p-4 rounded-2xl bg-gradient-to-br from-pink-900/40 to-pink-800/20 border border-pink-500/20 hover:border-pink-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-pink-300 group-hover:text-pink-200 transition-colors">EAT-26</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '26 otázek — poruchy příjmu potravy' : '26 items — eating disorders'}</div>
+            {Object.keys(eat26Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-pink-500 rounded-full" style={{width: `${(Object.keys(eat26Ans).length/26)*100}%`}} /></div>
+                <span className="text-xs text-pink-400 shrink-0">{Object.keys(eat26Ans).length}/26</span>
+              </div>
+            )}
+          </button>
+          {/* MDQ */}
+          <button onClick={() => setMode("mdq")} className="p-4 rounded-2xl bg-gradient-to-br from-amber-900/40 to-amber-800/20 border border-amber-500/20 hover:border-amber-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-amber-300 group-hover:text-amber-200 transition-colors">MDQ</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '15 otázek — bipolární porucha' : '15 items — bipolar disorder'}</div>
+            {Object.keys(mdqAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-amber-500 rounded-full" style={{width: `${(Object.keys(mdqAns).length/15)*100}%`}} /></div>
+                <span className="text-xs text-amber-400 shrink-0">{Object.keys(mdqAns).length}/15</span>
+              </div>
+            )}
+          </button>
+          {/* CUDIT-R */}
+          <button onClick={() => setMode("cuditr")} className="p-4 rounded-2xl bg-gradient-to-br from-lime-900/40 to-lime-800/20 border border-lime-500/20 hover:border-lime-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-lime-300 group-hover:text-lime-200 transition-colors">CUDIT-R</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '8 otázek — konopí' : '8 items — cannabis'}</div>
+            {Object.keys(cuditrAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-lime-500 rounded-full" style={{width: `${(Object.keys(cuditrAns).length/8)*100}%`}} /></div>
+                <span className="text-xs text-lime-400 shrink-0">{Object.keys(cuditrAns).length}/8</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Quick result buttons */}
@@ -886,6 +993,10 @@ export default function App() {
           {Object.keys(pcl5Ans).length === 20 && <button onClick={() => setMode("pcl5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PCL-5</button>}
           {Object.keys(catiAns).length === 42 && <button onClick={() => setMode("cati_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CATI</button>}
           {Object.keys(isiAns).length === 7 && <button onClick={() => setMode("isi_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ISI</button>}
+          {Object.keys(asrsAns).length === 6 && <button onClick={() => setMode("asrs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ASRS</button>}
+          {Object.keys(eat26Ans).length === 26 && <button onClick={() => setMode("eat26_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 EAT-26</button>}
+          {Object.keys(mdqAns).length === 15 && <button onClick={() => setMode("mdq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 MDQ</button>}
+          {Object.keys(cuditrAns).length === 8 && <button onClick={() => setMode("cuditr_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CUDIT-R</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -911,6 +1022,10 @@ export default function App() {
                           h.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
                           h.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
                           h.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
+                          h.type === 'asrs' ? 'bg-sky-500/20 text-sky-400' :
+                          h.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
+                          h.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
+                          h.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>{
                           { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[h.type] || h.type
@@ -929,8 +1044,13 @@ export default function App() {
                       </div>
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
-                    {['phq9','gad7','dass42','pcl5','cati','isi'].includes(h.type) && h.score != null && (
+                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr'].includes(h.type) && h.score != null && (
                       <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
+                    )}
+                    {h.type === 'mdq' && (
+                      <div className="text-xs mb-3" style={{ color: h.positive ? '#F87171' : '#4ADE80' }}>
+                        {h.positive ? (lang === 'cs' ? '⚠️ Pozitivní screening' : '⚠️ Positive Screen') : (lang === 'cs' ? '✓ Negativní screening' : '✓ Negative Screen')}
+                      </div>
                     )}
                     <div className="flex gap-2">
                       <button onClick={() => viewSavedResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
@@ -961,9 +1081,13 @@ export default function App() {
                               cr.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
                               cr.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
                               cr.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
+                              cr.type === 'asrs' ? 'bg-sky-500/20 text-sky-400' :
+                              cr.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
+                              cr.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
+                              cr.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
                               'bg-gray-500/20 text-gray-400'
                             }`}>{
-                              { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[cr.type] || cr.type
+                              { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', asrs: 'ASRS', eat26: 'EAT-26', mdq: 'MDQ', cuditr: 'CUDIT-R' }[cr.type] || cr.type
                             }</span>
                             <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                             <span className="text-xs text-gray-700">☁</span>
@@ -1005,8 +1129,12 @@ export default function App() {
             <button onClick={fillSamplePcl5} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PCL-5</button>
             <button onClick={fillSampleCati} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CATI</button>
             <button onClick={fillSampleIsi} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ISI</button>
+            <button onClick={fillSampleAsrs} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ASRS</button>
+            <button onClick={fillSampleEat26} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 EAT</button>
+            <button onClick={fillSampleMdq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 MDQ</button>
+            <button onClick={fillSampleCuditr} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CUDIT</button>
           </div>
-          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
+          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
         </div>
       </div>
     </div>
@@ -1690,6 +1818,7 @@ export default function App() {
       color="#10B981" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Za poslední 2 týdny, jak často vás trápil některý z následujících problémů?' : 'Over the last 2 weeks, how often have you been bothered by any of the following problems?'}
+      liveScoreConfig={{ severityLevels: PHQ9_SEVERITY, maxScore: 27, label: 'PHQ-9' }}
     />
   );
 
@@ -1706,6 +1835,7 @@ export default function App() {
       color="#14B8A6" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Za poslední 2 týdny, jak často vás trápil některý z následujících problémů?' : 'Over the last 2 weeks, how often have you been bothered by any of the following problems?'}
+      liveScoreConfig={{ severityLevels: GAD7_SEVERITY, maxScore: 21, label: 'GAD-7' }}
     />
   );
 
@@ -1722,6 +1852,7 @@ export default function App() {
       color="#F97316" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a zakroužkujte číslo 0, 1, 2 nebo 3, které nejlépe vyjadřuje, jak moc se na vás tvrzení vztahovalo v uplynulém týdnu.' : 'Please read each statement and select 0, 1, 2 or 3 which indicates how much the statement applied to you over the past week.'}
+      liveScoreConfig={{ maxScore: 126, label: 'DASS-42' }}
     />
   );
 
@@ -1738,6 +1869,7 @@ export default function App() {
       color="#F43F5E" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Níže je uveden seznam problémů, které lidé někdy mívají v reakci na velmi stresující zážitek. Uveďte prosím, jak moc vás každý problém trápil v uplynulém měsíci.' : 'Below is a list of problems that people sometimes have in response to a very stressful experience. Please indicate how much you have been bothered by each problem in the past month.'}
+      liveScoreConfig={{ severityLevels: PCL5_SEVERITY, maxScore: 80, label: 'PCL-5' }}
     />
   );
 
@@ -1774,6 +1906,7 @@ export default function App() {
       color="#8B5CF6" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a vyberte, nakolik s ním souhlasíte.' : 'Please read each statement and indicate how much you agree with it.'}
+      liveScoreConfig={{ severityLevels: CATI_SEVERITY, maxScore: 210, label: 'CATI', scoreFn: (ans) => scoreCATI(ans).total }}
     />
   );
 
@@ -1790,6 +1923,7 @@ export default function App() {
       color="#6366F1" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Prosím ohodnoťte závažnost vašich současných problémů se spánkem.' : 'Please rate the severity of your current sleep problems.'}
+      liveScoreConfig={{ severityLevels: ISI_SEVERITY, maxScore: 28, label: 'ISI' }}
     />
   );
 
@@ -1801,6 +1935,103 @@ export default function App() {
   // ═══ ISI RESULTS ═══
   if (mode === 'isi_results') return (
     <ISIResults answers={isiAns} questions={ISI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveIsiResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ ASRS QUESTIONNAIRE ═══
+  if (mode === 'asrs') return (
+    <QuestionnaireScreen
+      title="ASRS v1.1"
+      questions={ASRS_QUESTIONS[lang]}
+      scaleLabels={ASRS_SCALE[lang]}
+      scaleMin={0} scaleMax={4}
+      answers={asrsAns} setAnswers={setAsrsAns}
+      idx={asrsIdx} setIdx={setAsrsIdx}
+      onComplete={() => setMode('asrs_results')}
+      color="#0EA5E9" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Jak často se u vás projevují následující příznaky?' : 'How often do you experience the following symptoms?'}
+      liveScoreConfig={{ severityLevels: ASRS_SEVERITY, maxScore: 24, label: 'ASRS' }}
+    />
+  );
+
+  // ═══ ASRS RESULTS ═══
+  if (mode === 'asrs_results') return (
+    <ASRSResults answers={asrsAns} questions={ASRS_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAsrsResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ EAT-26 QUESTIONNAIRE ═══
+  if (mode === 'eat26') return (
+    <QuestionnaireScreen
+      title="EAT-26"
+      questions={EAT26_QUESTIONS[lang]}
+      scaleLabels={EAT26_SCALE[lang]}
+      scaleMin={0} scaleMax={5}
+      answers={eat26Ans} setAnswers={setEat26Ans}
+      idx={eat26Idx} setIdx={setEat26Idx}
+      onComplete={() => setMode('eat26_results')}
+      color="#EC4899" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Označte odpověď, která nejlépe vystihuje vaše chování.' : 'Check the answer that best applies to your behavior.'}
+      liveScoreConfig={{ severityLevels: EAT26_SEVERITY, maxScore: 78, label: 'EAT-26', scoreFn: scoreEAT26 }}
+    />
+  );
+
+  // ═══ EAT-26 RESULTS ═══
+  if (mode === 'eat26_results') return (
+    <EAT26Results answers={eat26Ans} questions={EAT26_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveEat26Result(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ MDQ QUESTIONNAIRE ═══
+  if (mode === 'mdq') {
+    // MDQ is special: Part 1 (13 yes/no), Part 2 (1 yes/no), Part 3 (1 severity 0-3)
+    // We use items 0-12 as yes/no (scale 0-1), item 13 as yes/no (scale 0-1), item 14 as severity (scale 0-3)
+    const mdqAllQuestions = [...(MDQ_PART1[lang] || MDQ_PART1.cs), MDQ_PART2[lang] || MDQ_PART2.cs, MDQ_PART3[lang] || MDQ_PART3.cs];
+    const mdqCurrentIdx = mdqIdx;
+    const isYesNo = mdqCurrentIdx < 14;
+    const scaleLabels = isYesNo ? (MDQ_YESNO[lang] || MDQ_YESNO.cs) : (MDQ_PART3_SCALE[lang] || MDQ_PART3_SCALE.cs);
+    const scaleMax = isYesNo ? 1 : 3;
+
+    return (
+      <QuestionnaireScreen
+        title="MDQ"
+        questions={mdqAllQuestions}
+        scaleLabels={scaleLabels}
+        scaleMin={0} scaleMax={scaleMax}
+        answers={mdqAns} setAnswers={setMdqAns}
+        idx={mdqIdx} setIdx={setMdqIdx}
+        onComplete={() => setMode('mdq_results')}
+        color="#F59E0B" lang={lang} t={t} toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        instruction={lang === 'cs' ? 'Prosím odpovězte na následující otázky o vašich zážitcích.' : 'Please answer the following questions about your experiences.'}
+      />
+    );
+  }
+
+  // ═══ MDQ RESULTS ═══
+  if (mode === 'mdq_results') return (
+    <MDQResults answers={mdqAns} questions={[]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveMdqResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ CUDIT-R QUESTIONNAIRE ═══
+  if (mode === 'cuditr') return (
+    <QuestionnaireScreen
+      title="CUDIT-R"
+      questions={CUDITR_QUESTIONS[lang]}
+      scaleLabels={CUDITR_SCALE_SIMPLE[lang]}
+      scaleMin={0} scaleMax={4}
+      answers={cuditrAns} setAnswers={setCuditrAns}
+      idx={cuditrIdx} setIdx={setCuditrIdx}
+      onComplete={() => setMode('cuditr_results')}
+      color="#84CC16" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Odpovězte na otázky o vašem užívání konopí za posledních 6 měsíců.' : 'Answer questions about your cannabis use over the past 6 months.'}
+      liveScoreConfig={{ severityLevels: CUDITR_SEVERITY, maxScore: 32, label: 'CUDIT-R' }}
+    />
+  );
+
+  // ═══ CUDIT-R RESULTS ═══
+  if (mode === 'cuditr_results') return (
+    <CUDITRResults answers={cuditrAns} questions={CUDITR_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCuditrResult(); alert(t('resultSaved')); }} />
   );
 
   // ═══ QUESTIONNAIRE UI ═══
