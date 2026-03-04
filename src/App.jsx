@@ -51,12 +51,13 @@ function scoreDiagnostics(fScores) {
 }
 
 // ═══ TOOLTIP COMPONENT ═══
-function HoverTip({ children, text, wide }) {
+function HoverTip({ children, text, wide, block }) {
   const [show, setShow] = useState(false);
   const ref = useRef(null);
   if (!text) return children;
+  const Tag = block ? 'div' : 'span';
   return (
-    <span className="relative inline-block" ref={ref} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+    <Tag className={`relative ${block ? 'block' : 'inline-block'}`} ref={ref} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
       {children}
       {show && (
         <span className={`absolute z-[100] bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs leading-relaxed text-gray-200 bg-gray-800/95 border border-gray-600/40 backdrop-blur-xl shadow-2xl pointer-events-none animate-in fade-in ${wide ? 'w-72' : 'w-56'}`}
@@ -65,7 +66,7 @@ function HoverTip({ children, text, wide }) {
           <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-700/80" />
         </span>
       )}
-    </span>
+    </Tag>
   );
 }
 
@@ -129,7 +130,7 @@ export default function App() {
     const fScores = scoreFacets(answers);
     const diags = scoreDiagnostics(fScores);
     saveToHistory('pid5', {
-      topDiags: diags.filter(d => d.flag).map(d => ({ name: d.name, score: d.score, color: d.color })),
+      topDiags: diags.filter(d => d.flag).map(d => ({ id: d.id, name: d.name, score: d.score, color: d.color })),
       fullData: { domeny: scoreDomains(fScores), facety: fScores, diagnostika: diags.map(d => ({id:d.id,name:d.name,score:d.score,flag:d.flag})), odpovedi: answers }
     });
   }, [answers, saveToHistory]);
@@ -406,7 +407,7 @@ export default function App() {
                         {h.topDiags.slice(0, 4).map((d, j) => (
                           <span key={j} className="text-xs text-gray-400 flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
-                            {d.name.split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}
+                            {(d.id ? diagName(d.id, d.name, lang) : d.name).split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}
                           </span>
                         ))}
                       </div>
@@ -438,7 +439,7 @@ export default function App() {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => setViewingResult({ type: cr.type, fullData: cr.data, date: cr.created_at })}
+                          <button onClick={() => setViewingResult({ type: cr.type, fullData: cr.data?.fullData || cr.data, date: cr.created_at })}
                             className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                           <button onClick={() => {
                             const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
@@ -588,7 +589,7 @@ export default function App() {
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('domainsOverview')}</h3>
           {Object.entries(domainScores).map(([d, v]) => (
-            <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide>
+            <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide block>
               <div className="cursor-help mb-3">
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-sm font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
@@ -621,7 +622,7 @@ export default function App() {
                   const meta = FACET_META[f];
                   const sevColor = SEV_CLR(v);
                   return (
-                    <HoverTip key={f} text={meta?.desc} wide>
+                    <HoverTip key={f} text={meta?.desc} wide block>
                       <div className="cursor-help group rounded-xl border border-gray-800/60 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/40 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
                         <div className="flex items-start justify-between mb-3">
                           <div className="min-w-0 flex-1">
@@ -637,7 +638,7 @@ export default function App() {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full" style={{background: sevColor + '20', color: sevColor}}>{SEV(v)}</span>
-                          <span className="text-[10px] text-gray-600 font-mono">{meta?.items?.length || '—'} items</span>
+                          <span className="text-[10px] text-gray-600 font-mono">{meta?.items?.length || '—'} {t('items')}</span>
                         </div>
                       </div>
                     </HoverTip>
@@ -708,7 +709,7 @@ export default function App() {
                   const explanation = DIAG_EXPLANATIONS[d.id];
                   const displayName = diagName(d.id, d.name, lang);
                   return (
-                    <HoverTip key={d.id} text={explanation} wide>
+                    <HoverTip key={d.id} text={explanation} wide block>
                       <div className="cursor-help group rounded-xl border border-gray-700/40 bg-gray-900/40 p-4 hover:border-gray-600/60 hover:bg-gray-800/30 hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-3 h-3 rounded-full" style={{background: d.color, opacity: 0.6}} />
@@ -736,7 +737,7 @@ export default function App() {
               {diagnostics.map(d => {
                 const displayName = diagName(d.id, d.name, lang);
                 return (
-                  <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide>
+                  <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide block>
                     <div className="cursor-help group flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-lg hover:bg-gray-800/40 transition-all">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
                       <div className="flex-1 text-sm truncate min-w-0 group-hover:text-gray-200 transition-colors" style={{ color: d.flag ? d.color : '#6B7280' }}>{displayName.split('(')[0].trim()}</div>
@@ -967,7 +968,7 @@ export default function App() {
                     const base = domainScores[d] || 0;
                     const diff = hoveredVal !== null ? v - base : 0;
                     return (
-                      <HoverTip key={d} text={DOMAIN_META[d]?.desc}>
+                      <HoverTip key={d} text={DOMAIN_META[d]?.desc} block>
                         <div className="flex items-center gap-2 cursor-help">
                           <div className="w-28 text-xs font-medium truncate" style={{color: DC[d]}}>{domainName(d, lang)}</div>
                           <div className="flex-1 bg-gray-800/60 rounded-full h-1.5 overflow-hidden relative">
@@ -990,7 +991,7 @@ export default function App() {
                       const base = facetScores[f] || 0;
                       const diff = hoveredVal !== null ? v - base : 0;
                       return (
-                        <HoverTip key={f} text={FACET_META[f]?.desc}>
+                        <HoverTip key={f} text={FACET_META[f]?.desc} block>
                           <div className="flex items-center gap-2 cursor-help">
                             <div className="w-28 text-xs text-gray-400 truncate">↳ {facetName(f, lang)}</div>
                             <div className="flex-1 bg-gray-800/60 rounded-full h-1 overflow-hidden relative">
@@ -1021,7 +1022,7 @@ export default function App() {
                       const baseDiag = diagnostics.find(x => x.id === d.id);
                       const diff = baseDiag && hoveredVal !== null ? d.score - baseDiag.score : 0;
                       return (
-                        <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]}>
+                        <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} block>
                           <div className="flex items-center gap-1.5 py-0.5 cursor-help">
                             <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
                             <div className="w-28 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()}</div>
