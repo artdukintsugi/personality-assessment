@@ -240,14 +240,16 @@ export default function App() {
             const v = fScores[f] || 0;
             const meta = FACET_META[f];
             return (
-              <div key={f} className="flex items-center gap-2">
-                <HoverTip text={meta?.desc}>
-                  <div className="w-36 text-xs text-gray-400 truncate cursor-help">↳ {f}</div>
-                </HoverTip>
-                <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden">
+              <div key={f}>
+                <div className="flex items-center justify-between mb-0.5">
+                  <HoverTip text={meta?.desc}>
+                    <div className="text-xs text-gray-400 truncate cursor-help">↳ {f}</div>
+                  </HoverTip>
+                  <div className="text-xs font-mono text-gray-400 shrink-0">{v.toFixed(2)}</div>
+                </div>
+                <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${(v/3)*100}%`, background: SEV_CLR(v) }} />
                 </div>
-                <div className="w-10 text-right text-xs font-mono text-gray-400">{v.toFixed(2)}</div>
               </div>
             );
           })}
@@ -314,11 +316,11 @@ export default function App() {
               <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">Odhlásit</button>
             </div>
           ) : auth?.isConfigured ? (
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">💾 Data jen lokálně — přihlaste se pro synchronizaci</span>
-              <div className="flex gap-2">
-                <button onClick={() => setAuthForm('login')} className="text-xs px-3 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all">Přihlásit</button>
-                <button onClick={() => setAuthForm('signup')} className="text-xs px-3 py-1.5 rounded-lg text-gray-500 hover:text-gray-300 transition-all">Registrace</button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span className="text-xs text-gray-500">💾 Data jen lokálně</span>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => setAuthForm('login')} className="text-xs px-4 py-2 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all font-medium">Přihlásit</button>
+                <button onClick={() => setAuthForm('signup')} className="text-xs px-4 py-2 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-300 transition-all">Registrace</button>
               </div>
             </div>
           ) : (
@@ -569,13 +571,17 @@ export default function App() {
           <h3 className="text-lg font-semibold text-gray-300 mb-4">Domény — Přehled</h3>
           {Object.entries(domainScores).map(([d, v]) => (
             <HoverTip key={d} text={DOMAIN_META[d]?.desc} wide>
-              <div className="flex items-center gap-3 mb-3 cursor-help">
-                <div className="w-40 text-sm font-medium" style={{color: DC[d]}}>{d}</div>
-                <div className="flex-1 bg-gray-800 rounded-full h-3 overflow-hidden">
+              <div className="cursor-help mb-3">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-sm font-medium truncate" style={{color: DC[d]}}>{d}</div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-sm font-mono">{v.toFixed(2)}</span>
+                    <span className="text-xs" style={{color: SEV_CLR(v)}}>{SEV(v)}</span>
+                  </div>
+                </div>
+                <div className="bg-gray-800 rounded-full h-2.5 overflow-hidden">
                   <div className="h-full rounded-full transition-all" style={{width: `${(v/3)*100}%`, background: DC[d]}} />
                 </div>
-                <div className="w-12 text-right text-sm font-mono">{v.toFixed(2)}</div>
-                <div className="w-16 text-xs text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</div>
               </div>
             </HoverTip>
           ))}
@@ -592,13 +598,17 @@ export default function App() {
                   const meta = FACET_META[f];
                   return (
                     <HoverTip key={f} text={meta?.desc} wide>
-                      <div className="flex items-center gap-2 py-1 cursor-help">
-                        <div className="w-48 text-sm text-gray-400">{f}</div>
-                        <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                      <div className="cursor-help py-1">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <div className="text-xs text-gray-400 truncate">{f}</div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs font-mono text-gray-300">{v.toFixed(2)}</span>
+                            <span className="text-xs w-14 text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</span>
+                          </div>
+                        </div>
+                        <div className="bg-gray-800 rounded-full h-1.5 overflow-hidden">
                           <div className="h-full rounded-full" style={{width: `${(v/3)*100}%`, background: SEV_CLR(v)}} />
                         </div>
-                        <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
-                        <div className="w-14 text-xs text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</div>
                       </div>
                     </HoverTip>
                   );
@@ -612,17 +622,19 @@ export default function App() {
           <h3 className="text-lg font-semibold text-gray-300 mb-2">Diagnostické profily</h3>
           <p className="text-xs text-gray-500 mb-6">Orientační mapování — nenahrazuje klinické hodnocení.</p>
           <div className="mb-6 p-4 rounded-xl bg-gray-800/40 border border-gray-700/30">
-            <div className="space-y-1">
+            <div className="space-y-2">
               {diagnostics.map(d => (
                 <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide>
-                  <div className="flex items-center gap-2 cursor-help">
-                    <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
-                    <div className="w-44 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].trim()}</div>
-                    <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div className="cursor-help">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
+                      <div className="text-xs font-medium truncate min-w-0 flex-1" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.name.split('(')[0].trim()}</div>
+                      <div className="text-xs font-mono shrink-0" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
+                      <div className="text-xs shrink-0 w-16 text-right" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? '⚠ Zvýšené' : d.score >= 1.0 ? 'Mírné' : 'Nízké'}</div>
+                    </div>
+                    <div className="ml-5 bg-gray-800 rounded-full h-1.5 overflow-hidden">
                       <div className="h-full rounded-full" style={{ width: `${(d.score/3)*100}%`, background: d.color, opacity: d.flag ? 1 : 0.4 }} />
                     </div>
-                    <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? d.color : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                    <div className="w-16 text-right text-xs" style={{ color: d.flag ? d.color : '#4B5563' }}>{d.flag ? '⚠ Zvýšené' : d.score >= 1.0 ? 'Mírné' : 'Nízké'}</div>
                   </div>
                 </HoverTip>
               ))}
