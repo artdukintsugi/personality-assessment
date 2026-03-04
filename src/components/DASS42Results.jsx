@@ -1,7 +1,7 @@
 /**
  * DASS-42 Results page (with DASS-21 subset view)
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { DASS42_SUBSCALES, DASS42_SEVERITY, DASS21_SUBSET, DASS21_SEVERITY } from '../data/dass42';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -49,6 +49,17 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
     const MDD_AVG = { depression: 18, anxiety: 10, stress: 14 };
     const GAD_AVG = { depression: 10, anxiety: 16, stress: 12 };
   const validity = useMemo(() => checkSimpleValidity(answers, questions.length, 0, 3, lang), [answers, questions.length, lang]);
+
+  const [showLive, setShowLive] = useState(() => {
+    try {
+      const v = localStorage.getItem('dass42_showLiveResults');
+      return v === null ? true : v === 'true';
+    } catch (e) { return true; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('dass42_showLiveResults', showLive); } catch (e) {}
+  }, [showLive]);
 
   // Score DASS-42 subscales
   const subscaleScores42 = useMemo(() => {
@@ -164,18 +175,22 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
           </div>
         )}
 
-        {/* DASS-42 / DASS-21 toggle */}
-        <div className="flex gap-2 mb-6">
+        {/* DASS-42 / DASS-21 toggle + show/hide live results */}
+        <div className="flex gap-2 mb-6 items-center">
           <button onClick={() => setShowDass21(false)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${!showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-gray-700/30 text-gray-500 hover:text-gray-300'}`}>
             DASS-42 {lang === 'cs' ? '(plná verze)' : '(full version)'}
           </button>
           <button onClick={() => setShowDass21(true)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-gray-700/30 text-gray-500 hover:text-gray-300'}`}>
             DASS-21 {lang === 'cs' ? '(zkrácená)' : '(short form)'}
           </button>
+          <button onClick={() => setShowLive(s => !s)} className={`ml-auto px-3 py-1 rounded-lg text-xs font-semibold border ${showLive ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-gray-700/30 text-gray-400 border-gray-700/20'}`}>
+            {showLive ? (lang === 'cs' ? 'Skrýt živé výsledky' : 'Hide live results') : (lang === 'cs' ? 'Zobrazit živé výsledky' : 'Show live results')}
+          </button>
         </div>
 
-        {/* Overview */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Overview (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-gray-200 mb-2">{lang === 'cs' ? 'Přehled subškál' : 'Subscale Overview'}</h2>
           <p className="text-gray-500 text-xs mb-6">{lang === 'cs' ? `Celkové skóre: ${totalScore} (DASS-${showDass21 ? '21' : '42'})` : `Total score: ${totalScore} (DASS-${showDass21 ? '21' : '42'})`}</p>
           
@@ -203,10 +218,12 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
 
-        {/* Severity cutoffs table */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Severity cutoffs table (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-sm font-semibold text-gray-400 mb-4">{lang === 'cs' ? 'Škála závažnosti' : 'Severity Scale'} (DASS-{showDass21 ? '21' : '42'})</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -236,10 +253,12 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
               </tbody>
             </table>
           </div>
-        </div>
+          </div>
+        )}
 
-        {/* Item breakdown by subscale */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Item breakdown by subscale (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí podle subškál' : 'Answers by Subscale'}</h3>
           {['depression', 'anxiety', 'stress'].map(sub => {
             const indices = showDass21 ? DASS21_SUBSET[sub] : DASS42_SUBSCALES[sub];
@@ -270,7 +289,8 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
 
         {/* Validity */}
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />

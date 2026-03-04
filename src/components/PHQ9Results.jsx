@@ -1,7 +1,7 @@
 /**
  * PHQ-9 Results page
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '../data/phq9';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -41,6 +41,17 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
     },
   };
 
+  const [showLive, setShowLive] = useState(() => {
+    try {
+      const v = localStorage.getItem('phq9_showLiveResults');
+      return v === null ? true : v === 'true';
+    } catch (e) { return true; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('phq9_showLiveResults', showLive); } catch (e) {}
+  }, [showLive]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
       <div className="max-w-2xl mx-auto px-4 py-6">
@@ -52,9 +63,12 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
         </div>
 
         {/* Compare button */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center gap-3">
           <button onClick={() => setShowCompare(true)} className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/60 transition-all">
             {lang === 'cs' ? 'Porovnat s…' : 'Compare with…'}
+          </button>
+          <button onClick={() => setShowLive(s => !s)} className={`ml-auto px-3 py-1 rounded-lg text-xs font-semibold border ${showLive ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-gray-700/30 text-gray-400 border-gray-700/20'}`}>
+            {showLive ? (lang === 'cs' ? 'Skrýt živé výsledky' : 'Hide live results') : (lang === 'cs' ? 'Zobrazit živé výsledky' : 'Show live results')}
           </button>
         </div>
 
@@ -115,8 +129,9 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
           </div>
         )}
 
-        {/* Total score */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Total score (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -127,7 +142,8 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
             <SeverityBadge score={total} severityLevels={PHQ9_SEVERITY} lang={lang} />
           </div>
           <p className="text-gray-400 text-sm mt-4 leading-relaxed">{SEVERITY_DESC[lang]?.[severity.key]}</p>
-        </div>
+          </div>
+        )}
 
         {/* Critical item warning */}
         {criticalScore > 0 && (
@@ -147,8 +163,9 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
           </div>
         )}
 
-        {/* Item breakdown */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Item breakdown (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           <div className="space-y-3">
             {questions.map((q, i) => {
@@ -168,10 +185,12 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
               );
             })}
           </div>
-        </div>
+          </div>
+        )}
 
-        {/* Severity scale reference */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        {/* Severity scale reference (live) */}
+        {showLive && (
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
           <h3 className="text-sm font-semibold text-gray-400 mb-3">{lang === 'cs' ? 'Škála závažnosti PHQ-9' : 'PHQ-9 Severity Scale'}</h3>
           <div className="space-y-2">
             {PHQ9_SEVERITY.map(s => (
@@ -182,7 +201,8 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
               </div>
             ))}
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Validity */}
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />
