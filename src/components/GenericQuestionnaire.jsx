@@ -120,7 +120,7 @@ export function QuestionnaireScreen({
 
         {/* Live Score Panel */}
         {liveScoreConfig && answered > 0 && (() => {
-          const { severityLevels, maxScore, label, scoreFn } = liveScoreConfig;
+          const { severityLevels, maxScore, label, scoreFn, subscales } = liveScoreConfig;
           const liveTotal = scoreFn ? scoreFn(answers) : Object.values(answers).reduce((s, v) => s + (v ?? 0), 0);
           const pct = maxScore > 0 ? Math.min(liveTotal / maxScore * 100, 100) : 0;
           const currentSev = severityLevels?.find(s => liveTotal >= s.min && liveTotal <= s.max);
@@ -135,13 +135,45 @@ export function QuestionnaireScreen({
                 <span className="text-sm text-gray-600 mb-0.5">/ {maxScore}</span>
                 {currentSev && (
                   <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ background: currentSev.color + '20', color: currentSev.color }}>
-                    {currentSev[lang] || currentSev.cs}
+                    {currentSev[lang] || currentSev.cs || currentSev.key}
                   </span>
                 )}
               </div>
               <div className="bg-gray-800 rounded-full h-2 overflow-hidden">
                 <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: currentSev?.color || color }} />
               </div>
+
+              {/* Subscale breakdown */}
+              {subscales && subscales.length > 0 && answered >= 2 && (
+                <div className="mt-3 pt-3 border-t border-gray-800/60">
+                  <div className="text-xs text-gray-600 mb-2">{lang === 'cs' ? 'Subškály' : 'Subscales'}</div>
+                  <div className="space-y-1.5">
+                    {subscales.map((sub, si) => {
+                      const subScore = sub.scoreFn ? sub.scoreFn(answers) : sub.items.reduce((s, idx) => s + (answers[idx] ?? 0), 0);
+                      const subPct = sub.max > 0 ? Math.min(subScore / sub.max * 100, 100) : 0;
+                      const subSev = sub.severityLevels?.find(sv => subScore >= sv.min && subScore <= sv.max);
+                      return (
+                        <div key={si}>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-xs text-gray-500 truncate flex-1 mr-2">{sub[lang] || sub.cs || sub.label}</span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-xs font-mono text-gray-400">{subScore}/{sub.max}</span>
+                              {subSev && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: subSev.color + '20', color: subSev.color }}>
+                                  {subSev[lang] || subSev.cs || subSev.key}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-300" style={{ width: `${subPct}%`, background: sub.color || subSev?.color || color }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })()}

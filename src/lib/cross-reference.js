@@ -1,7 +1,7 @@
 /**
  * Cross-Reference Engine
  * 
- * Maps clinical relationships between all 12 questionnaires.
+ * Maps clinical relationships between all 13 questionnaires.
  * Based on established comorbidity patterns and clinical literature.
  * 
  * Each cross-reference defines:
@@ -16,6 +16,7 @@ import { DASS42_SUBSCALES } from '../data/dass42';
 import { PCL5_CUTOFF } from '../data/pcl5';
 import { EAT26_CUTOFF } from '../data/eat26';
 import { CUDITR_CUTOFF } from '../data/cuditr';
+import { AUDIT_CUTOFF } from '../data/audit';
 
 // ════════════════════════════════════════════════
 // Helper: get latest result of a given type from history
@@ -49,6 +50,7 @@ export function generateCrossReferences(history, lang = 'cs') {
   const isi  = getLatestScore(history, 'isi');
   const asrs = getLatestScore(history, 'asrs');
   const cuditr = getLatestScore(history, 'cuditr');
+  const audit = getLatestScore(history, 'audit');
   const eat26H = getLatest(history, 'eat26');
   const eat26 = eat26H?.score ?? (eat26H?.fullData?.score ?? null);
   const mdqH = getLatest(history, 'mdq');
@@ -508,6 +510,120 @@ export function generateCrossReferences(history, lang = 'cs') {
     });
   }
 
+  // ─── 23. Alcohol + Depression ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && phq9 !== null && phq9 >= 10) {
+    refs.push({
+      id: 'alcohol_depression',
+      tests: ['audit', 'phq9'],
+      strength: 'strong',
+      icon: '🍷',
+      color: '#EAB308',
+      title: {
+        cs: 'Rizikové pití alkoholu s depresí',
+        en: 'Hazardous Alcohol Use with Depression',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a PHQ-9 (${phq9}) ukazují na rizikové pití alkoholu provázené depresivními symptomy. Alkohol a deprese se vzájemně posilují — alkohol je depresogenní substance a deprese zvyšuje riziko pití jako „sebemedikace". Integrovaná léčba obou stavů je doporučena.`,
+        en: `AUDIT (${audit}) and PHQ-9 (${phq9}) indicate hazardous alcohol use accompanied by depressive symptoms. Alcohol and depression reinforce each other — alcohol is a depressogenic substance and depression increases risk of self-medicating with alcohol. Integrated treatment of both conditions is recommended.`,
+      },
+    });
+  }
+
+  // ─── 24. Alcohol + Anxiety ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && gad7 !== null && gad7 >= 10) {
+    refs.push({
+      id: 'alcohol_anxiety',
+      tests: ['audit', 'gad7'],
+      strength: 'moderate',
+      icon: '🍷',
+      color: '#EAB308',
+      title: {
+        cs: 'Rizikové pití a úzkostná porucha',
+        en: 'Hazardous Alcohol Use with Anxiety',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a GAD-7 (${gad7}) naznačují komorbiditu rizikového pití a úzkosti. Alkohol je často užíván ke zmírnění úzkosti, ale paradoxně úzkost dlouhodobě zhoršuje (rebound efekt, abstinenční stavy).`,
+        en: `AUDIT (${audit}) and GAD-7 (${gad7}) suggest co-occurring hazardous drinking and anxiety. Alcohol is often used to self-medicate anxiety, but paradoxically worsens it long-term (rebound effect, withdrawal states).`,
+      },
+    });
+  }
+
+  // ─── 25. Alcohol + Cannabis dual use ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && cuditr !== null && cuditr >= CUDITR_CUTOFF) {
+    refs.push({
+      id: 'alcohol_cannabis',
+      tests: ['audit', 'cuditr'],
+      strength: 'strong',
+      icon: '⚠️',
+      color: '#EF4444',
+      title: {
+        cs: 'Duální užívání: alkohol + konopí',
+        en: 'Dual Use: Alcohol + Cannabis',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a CUDIT-R (${cuditr}) ukazují na souběžné rizikové užívání alkoholu i konopí. Polysubstanční užívání výrazně zvyšuje riziko závislosti, kognitivního poškození a komplikací léčby. Nutno zohlednit oba vzorce užívání v terapeutickém plánu.`,
+        en: `AUDIT (${audit}) and CUDIT-R (${cuditr}) indicate concurrent hazardous use of both alcohol and cannabis. Polysubstance use significantly increases risk of dependence, cognitive impairment, and treatment complications. Both use patterns must be addressed in the treatment plan.`,
+      },
+    });
+  }
+
+  // ─── 26. Alcohol + PTSD ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && pcl5 !== null && pcl5 >= PCL5_CUTOFF) {
+    refs.push({
+      id: 'alcohol_ptsd',
+      tests: ['audit', 'pcl5'],
+      strength: 'strong',
+      icon: '⚡',
+      color: '#EF4444',
+      title: {
+        cs: 'Rizikové pití v kontextu PTSD',
+        en: 'Hazardous Drinking in Context of PTSD',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a PCL-5 (${pcl5}) ukazují na problematické užívání alkoholu v kontextu PTSD. Alkohol je nejčastěji užívaná substance k regulaci traumatických symptomů. Trauma-specifická léčba by měla být primární, doplněná o intervenci adiktologickou.`,
+        en: `AUDIT (${audit}) and PCL-5 (${pcl5}) indicate problematic alcohol use in the context of PTSD. Alcohol is the most commonly used substance to manage traumatic symptoms. Trauma-specific treatment should be primary, complemented by addiction intervention.`,
+      },
+    });
+  }
+
+  // ─── 27. Alcohol + Bipolar ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && mdqPositive) {
+    refs.push({
+      id: 'alcohol_bipolar',
+      tests: ['audit', 'mdq'],
+      strength: 'moderate',
+      icon: '🌊',
+      color: '#F59E0B',
+      title: {
+        cs: 'Rizikové pití s pozitivním screeningem bipolární poruchy',
+        en: 'Hazardous Drinking with Positive Bipolar Screen',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a pozitivní MDQ naznačují komorbiditu alkoholového problému a možné bipolární poruchy. Alkohol je nejčastěji zneužívanou substancí u bipolární poruchy (až 40 % pacientů). Manické epizody zvyšují impulzivní pití, depresivní epizody sebemedikaci.`,
+        en: `AUDIT (${audit}) and positive MDQ suggest co-occurring alcohol problem and possible bipolar disorder. Alcohol is the most commonly abused substance in bipolar disorder (up to 40% of patients). Manic episodes increase impulsive drinking, depressive episodes increase self-medication.`,
+      },
+    });
+  }
+
+  // ─── 28. Alcohol + Insomnia ───
+  if (audit !== null && audit >= AUDIT_CUTOFF && isi !== null && isi >= 15) {
+    refs.push({
+      id: 'alcohol_insomnia',
+      tests: ['audit', 'isi'],
+      strength: 'suggestive',
+      icon: '🌙',
+      color: '#6366F1',
+      title: {
+        cs: 'Alkohol a nespavost',
+        en: 'Alcohol and Insomnia',
+      },
+      description: {
+        cs: `AUDIT (${audit}) a ISI (${isi}) naznačují souvislost mezi pitím a nespavostí. Alkohol narušuje architekturu spánku (snižuje REM fázi), paradoxně zhoršuje kvalitu spánku navzdory počátečnímu sedativnímu efektu.`,
+        en: `AUDIT (${audit}) and ISI (${isi}) suggest a link between drinking and insomnia. Alcohol disrupts sleep architecture (reduces REM phase), paradoxically worsening sleep quality despite initial sedative effect.`,
+      },
+    });
+  }
+
   // Sort by strength
   const order = { strong: 0, moderate: 1, suggestive: 2 };
   refs.sort((a, b) => (order[a.strength] ?? 9) - (order[b.strength] ?? 9));
@@ -557,7 +673,7 @@ export const CLINICAL_DOMAINS = [
     icon: '🔄',
     color: '#F59E0B',
     title: { cs: 'Behaviorální', en: 'Behavioral' },
-    tests: ['eat26', 'cuditr', 'mdq'],
+    tests: ['eat26', 'cuditr', 'audit', 'mdq'],
     description: { cs: 'Příjem potravy, substance, nálady', en: 'Eating, substances, moods' },
   },
   {
@@ -584,6 +700,7 @@ export const TEST_META = {
   eat26:  { name: 'EAT-26',   items: 26,  color: '#EC4899', category: { cs: 'Poruchy příjmu potravy', en: 'Eating Disorders' } },
   mdq:    { name: 'MDQ',      items: 15,  color: '#F59E0B', category: { cs: 'Bipolární porucha', en: 'Bipolar Disorder' } },
   cuditr: { name: 'CUDIT-R',  items: 8,   color: '#84CC16', category: { cs: 'Užívání konopí', en: 'Cannabis Use' } },
+  audit:  { name: 'AUDIT',    items: 10,  color: '#EAB308', category: { cs: 'Užívání alkoholu', en: 'Alcohol Use' } },
 };
 
 /**
@@ -640,6 +757,12 @@ export function getTestStatus(history, lang = 'cs') {
       const s = h.score ?? 0;
       if (s >= 12) { status = 'critical'; label = lang === 'cs' ? 'Možná porucha' : 'Possible CUD'; }
       else if (s >= CUDITR_CUTOFF) { status = 'elevated'; label = lang === 'cs' ? 'Rizikové užívání' : 'Hazardous'; }
+      else { status = 'ok'; label = lang === 'cs' ? 'Nízké riziko' : 'Low Risk'; }
+    } else if (h.type === 'audit') {
+      const s = h.score ?? 0;
+      if (s >= 20) { status = 'critical'; label = lang === 'cs' ? 'Možná závislost' : 'Possible Dependence'; }
+      else if (s >= 16) { status = 'elevated'; label = lang === 'cs' ? 'Škodlivé pití' : 'Harmful'; }
+      else if (s >= AUDIT_CUTOFF) { status = 'warning'; label = lang === 'cs' ? 'Rizikové pití' : 'Hazardous'; }
       else { status = 'ok'; label = lang === 'cs' ? 'Nízké riziko' : 'Low Risk'; }
     } else if (h.type === 'cati') {
       const s = h.score ?? 0;

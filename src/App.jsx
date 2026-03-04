@@ -10,12 +10,13 @@ import { PHQ9_QUESTIONS, PHQ9_SCALE, PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '.
 import { GAD7_QUESTIONS, GAD7_SCALE, GAD7_SEVERITY } from './data/gad7';
 import { DASS42_QUESTIONS, DASS42_SCALE, DASS42_SUBSCALES, DASS42_SEVERITY } from './data/dass42';
 import { PCL5_QUESTIONS, PCL5_SCALE, PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from './data/pcl5';
-import { CATI_QUESTIONS, CATI_SCALE, CATI_SUBSCALES, CATI_SEVERITY, scoreCATI } from './data/cati';
+import { CATI_QUESTIONS, CATI_SCALE, CATI_SUBSCALES, CATI_SUBSCALE_ITEMS, CATI_REVERSE_ITEMS, CATI_SEVERITY, scoreCATI } from './data/cati';
 import { ISI_QUESTIONS, ISI_SCALE_SIMPLE, ISI_SEVERITY } from './data/isi';
-import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY } from './data/asrs';
-import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, scoreEAT26 } from './data/eat26';
+import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES } from './data/asrs';
+import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, EAT26_SUBSCALES, scoreEAT26, EAT26_REVERSE_ITEM } from './data/eat26';
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from './data/mdq';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE, scoreCUDITR } from './data/cuditr';
+import { AUDIT_QUESTIONS, AUDIT_SCALES, AUDIT_SEVERITY, AUDIT_CUTOFF, AUDIT_SUBSCALES, scoreAUDIT, Q910_SCORE_MAP } from './data/audit';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
@@ -27,6 +28,7 @@ import ASRSResults from './components/ASRSResults';
 import EAT26Results from './components/EAT26Results';
 import MDQResults from './components/MDQResults';
 import CUDITRResults from './components/CUDITRResults';
+import AUDITResults from './components/AUDITResults';
 import PatientProfile from './components/PatientProfile';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
@@ -305,7 +307,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx', auditAns: 'diag_audit_answers', auditIdx: 'diag_audit_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -329,6 +331,7 @@ export default function App() {
     if (p === '/eat26') return 'eat26';
     if (p === '/mdq') return 'mdq';
     if (p === '/cuditr') return 'cuditr';
+    if (p === '/audit') return 'audit';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/phq9/results') return 'phq9_results';
@@ -341,6 +344,8 @@ export default function App() {
     if (p === '/eat26/results') return 'eat26_results';
     if (p === '/mdq/results') return 'mdq_results';
     if (p === '/cuditr/results') return 'cuditr_results';
+    if (p === '/audit/results') return 'audit_results';
+    if (p === '/sources') return 'sources';
     if (p === '/history') return 'history';
     if (p === '/profile') return 'profile';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
@@ -350,7 +355,7 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', history: '/history', profile: '/profile' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', audit: '/audit', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', audit_results: '/audit/results', history: '/history', profile: '/profile', sources: '/sources' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
@@ -378,6 +383,8 @@ export default function App() {
   const [mdqIdx, setMdqIdx] = useState(() => lsGet(LS_KEYS.mdqIdx, 0));
   const [cuditrAns, setCuditrAns] = useState(() => lsGet(LS_KEYS.cuditrAns, {}));
   const [cuditrIdx, setCuditrIdx] = useState(() => lsGet(LS_KEYS.cuditrIdx, 0));
+  const [auditAns, setAuditAns] = useState(() => lsGet(LS_KEYS.auditAns, {}));
+  const [auditIdx, setAuditIdx] = useState(() => lsGet(LS_KEYS.auditIdx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -424,6 +431,8 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.mdqIdx, mdqIdx); }, [mdqIdx]);
   useEffect(() => { lsSet(LS_KEYS.cuditrAns, cuditrAns); }, [cuditrAns]);
   useEffect(() => { lsSet(LS_KEYS.cuditrIdx, cuditrIdx); }, [cuditrIdx]);
+  useEffect(() => { lsSet(LS_KEYS.auditAns, auditAns); }, [auditAns]);
+  useEffect(() => { lsSet(LS_KEYS.auditIdx, auditIdx); }, [auditIdx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -566,6 +575,12 @@ export default function App() {
     saveToHistory('cuditr', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: cuditrAns } });
   }, [cuditrAns, saveToHistory]);
 
+  const saveAuditResult = useCallback(() => {
+    const total = scoreAUDIT(auditAns);
+    const sev = AUDIT_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('audit', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: auditAns } });
+  }, [auditAns, saveToHistory]);
+
   // View saved result — loads answers into state and navigates to full results page
   const viewSavedResult = useCallback((result) => {
     const fd = result.fullData || result;
@@ -599,6 +614,7 @@ export default function App() {
         eat26: { setAns: setEat26Ans, setIdx: setEat26Idx, count: 26, results: 'eat26_results' },
         mdq: { setAns: setMdqAns, setIdx: setMdqIdx, count: 15, results: 'mdq_results' },
         cuditr: { setAns: setCuditrAns, setIdx: setCuditrIdx, count: 8, results: 'cuditr_results' },
+        audit: { setAns: setAuditAns, setIdx: setAuditIdx, count: 10, results: 'audit_results' },
       };
       const cfg = typeMap[result.type];
       if (cfg) {
@@ -703,6 +719,7 @@ export default function App() {
   const fillSampleEat26 = useCallback(() => { const s = {}; for (let i = 0; i < 26; i++) s[i] = Math.floor(Math.random() * 6); setEat26Ans(s); setEat26Idx(25); setMode("eat26_results"); }, []);
   const fillSampleMdq = useCallback(() => { const s = {}; for (let i = 0; i < 13; i++) s[i] = Math.random() > 0.5 ? 0 : 1; s[13] = Math.random() > 0.5 ? 0 : 1; s[14] = Math.floor(Math.random() * 4); setMdqAns(s); setMdqIdx(14); setMode("mdq_results"); }, []);
   const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); s[7] = Math.floor(Math.random() * 3); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
+  const fillSampleAudit = useCallback(() => { const s = {}; for (let i = 0; i < 8; i++) s[i] = Math.floor(Math.random() * 5); s[8] = Math.floor(Math.random() * 3); s[9] = Math.floor(Math.random() * 3); setAuditAns(s); setAuditIdx(9); setMode("audit_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -786,13 +803,13 @@ export default function App() {
 
   // ═══ ONBOARDING POPUP ═══
   const ONBOARD_STEPS = useMemo(() => lang === 'cs' ? [
-    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 12 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
+    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 13 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
     { icon: '📋', title: 'Jak to funguje', desc: 'Vyberte si dotazník, odpovídejte na otázky a na konci uvidíte své výsledky s podrobným skórováním. Odpovědi se automaticky ukládají — můžete se kdykoliv vrátit a pokračovat.' },
     { icon: '🔗', title: 'Cross-reference analýza', desc: 'Po vyplnění více dotazníků systém automaticky analyzuje vztahy mezi vašimi výsledky — například jak spolu souvisí deprese, úzkost a nespavost.' },
     { icon: '🔒', title: 'Soukromí a bezpečnost', desc: 'Vaše data jsou uložena pouze lokálně ve vašem prohlížeči. Po přihlášení se synchronizují do cloudu a zpřístupní Klinický profil. Žádná data nesdílíme s třetími stranami.' },
     { icon: '⚕️', title: 'Důležité upozornění', desc: 'Tato aplikace je sebeposuzovací screeningový nástroj a nepředstavuje klinickou diagnózu. Pro odborné posouzení vždy konzultujte klinického psychologa nebo psychiatra.' },
   ] : [
-    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 12 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
+    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 13 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
     { icon: '📋', title: 'How It Works', desc: 'Choose a questionnaire, answer the questions, and see your results with detailed scoring at the end. Answers are saved automatically — you can return and continue anytime.' },
     { icon: '🔗', title: 'Cross-Reference Analysis', desc: 'After completing multiple questionnaires, the system automatically analyzes relationships between your results — e.g., how depression, anxiety, and insomnia are interconnected.' },
     { icon: '🔒', title: 'Privacy & Security', desc: 'Your data is stored locally in your browser only. After signing in, data syncs to the cloud and unlocks the Clinical Profile. We never share data with third parties.' },
@@ -869,7 +886,7 @@ export default function App() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-              {lang === 'cs' ? '12 validovaných nástrojů' : '12 validated instruments'}
+              {lang === 'cs' ? '13 validovaných nástrojů' : '13 validated instruments'}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">{t('appTitle')}</h1>
             <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto leading-relaxed">
@@ -886,6 +903,7 @@ export default function App() {
               { icon: '💭', label: lang === 'cs' ? 'Nálada' : 'Mood' },
               { icon: '⚡', label: lang === 'cs' ? 'Trauma' : 'Trauma' },
               { icon: '🧩', label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment' },
+              { icon: '🍷', label: lang === 'cs' ? 'Substance' : 'Substances' },
               { icon: '🔗', label: lang === 'cs' ? 'Cross-reference' : 'Cross-reference' },
             ].map(f => (
               <span key={f.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/60 border border-gray-700/40 text-xs text-gray-400">
@@ -1101,6 +1119,17 @@ export default function App() {
               </div>
             )}
           </button>
+          {/* AUDIT */}
+          <button onClick={() => setMode("audit")} className="p-4 rounded-2xl bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 border border-yellow-500/20 hover:border-yellow-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-yellow-300 group-hover:text-yellow-200 transition-colors">AUDIT</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — alkohol' : '10 items — alcohol'}</div>
+            {Object.keys(auditAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-yellow-500 rounded-full" style={{width: `${(Object.keys(auditAns).length/10)*100}%`}} /></div>
+                <span className="text-xs text-yellow-400 shrink-0">{Object.keys(auditAns).length}/10</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Quick result buttons */}
@@ -1117,6 +1146,7 @@ export default function App() {
           {Object.keys(eat26Ans).length === 26 && <button onClick={() => setMode("eat26_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 EAT-26</button>}
           {Object.keys(mdqAns).length === 15 && <button onClick={() => setMode("mdq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 MDQ</button>}
           {Object.keys(cuditrAns).length === 8 && <button onClick={() => setMode("cuditr_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CUDIT-R</button>}
+          {Object.keys(auditAns).length === 10 && <button onClick={() => setMode("audit_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AUDIT</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -1146,6 +1176,7 @@ export default function App() {
                           h.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
                           h.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
                           h.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
+                          h.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>{
                           { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[h.type] || h.type
@@ -1164,7 +1195,7 @@ export default function App() {
                       </div>
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
-                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr'].includes(h.type) && h.score != null && (
+                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit'].includes(h.type) && h.score != null && (
                       <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
                     )}
                     {h.type === 'mdq' && (
@@ -1205,6 +1236,7 @@ export default function App() {
                               cr.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
                               cr.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
                               cr.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
+                              cr.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
                               'bg-gray-500/20 text-gray-400'
                             }`}>{
                               { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', asrs: 'ASRS', eat26: 'EAT-26', mdq: 'MDQ', cuditr: 'CUDIT-R' }[cr.type] || cr.type
@@ -1253,8 +1285,9 @@ export default function App() {
             <button onClick={fillSampleEat26} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 EAT</button>
             <button onClick={fillSampleMdq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 MDQ</button>
             <button onClick={fillSampleCuditr} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CUDIT</button>
+            <button onClick={fillSampleAudit} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AUDIT</button>
           </div>
-          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
+          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
         </details>
 
         {/* Footer */}
@@ -1265,11 +1298,14 @@ export default function App() {
               : 'Self-report screening tool. Does not constitute a clinical diagnosis. Consult a clinical psychologist or psychiatrist for professional assessment.'}
           </p>
           <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-800">
-            <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span>
+            <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span><span>·</span><span>CATI</span>
           </div>
           <div className="flex items-center justify-center gap-3 mt-1 text-xs text-gray-800">
-            <span>CATI</span><span>·</span><span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span>
+            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span>
           </div>
+          <button onClick={() => setMode('sources')} className="mt-4 text-xs text-purple-500/60 hover:text-purple-400 transition-all">
+            📚 {lang === 'cs' ? 'Zdroje a reference' : 'Sources & References'}
+          </button>
         </div>
       </div>
     </div>
@@ -2009,7 +2045,12 @@ export default function App() {
       color="#10B981" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Za poslední 2 týdny, jak často vás trápil některý z následujících problémů?' : 'Over the last 2 weeks, how often have you been bothered by any of the following problems?'}
-      liveScoreConfig={{ severityLevels: PHQ9_SEVERITY, maxScore: 27, label: 'PHQ-9' }}
+      liveScoreConfig={{ severityLevels: PHQ9_SEVERITY, maxScore: 27, label: 'PHQ-9',
+        subscales: [
+          { items: [0,1,2,3,4], max: 15, color: '#60A5FA', cs: 'Somatický', en: 'Somatic' },
+          { items: [5,6,7,8], max: 12, color: '#A78BFA', cs: 'Kognitivně-afektivní', en: 'Cognitive-Affective' },
+        ]
+      }}
     />
   );
 
@@ -2043,7 +2084,13 @@ export default function App() {
       color="#F97316" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a zakroužkujte číslo 0, 1, 2 nebo 3, které nejlépe vyjadřuje, jak moc se na vás tvrzení vztahovalo v uplynulém týdnu.' : 'Please read each statement and select 0, 1, 2 or 3 which indicates how much the statement applied to you over the past week.'}
-      liveScoreConfig={{ maxScore: 126, label: 'DASS-42' }}
+      liveScoreConfig={{ maxScore: 126, label: 'DASS-42',
+        subscales: [
+          { items: DASS42_SUBSCALES.depression, max: 42, color: '#60A5FA', cs: 'Deprese', en: 'Depression', severityLevels: DASS42_SEVERITY.depression },
+          { items: DASS42_SUBSCALES.anxiety, max: 42, color: '#F87171', cs: 'Úzkost', en: 'Anxiety', severityLevels: DASS42_SEVERITY.anxiety },
+          { items: DASS42_SUBSCALES.stress, max: 42, color: '#FBBF24', cs: 'Stres', en: 'Stress', severityLevels: DASS42_SEVERITY.stress },
+        ]
+      }}
     />
   );
 
@@ -2060,7 +2107,14 @@ export default function App() {
       color="#F43F5E" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Níže je uveden seznam problémů, které lidé někdy mívají v reakci na velmi stresující zážitek. Uveďte prosím, jak moc vás každý problém trápil v uplynulém měsíci.' : 'Below is a list of problems that people sometimes have in response to a very stressful experience. Please indicate how much you have been bothered by each problem in the past month.'}
-      liveScoreConfig={{ severityLevels: PCL5_SEVERITY, maxScore: 80, label: 'PCL-5' }}
+      liveScoreConfig={{ severityLevels: PCL5_SEVERITY, maxScore: 80, label: 'PCL-5',
+        subscales: [
+          { items: PCL5_CLUSTERS.clusterB.items, max: 20, color: '#F87171', cs: 'B: Intruzivní', en: 'B: Intrusion' },
+          { items: PCL5_CLUSTERS.clusterC.items, max: 8, color: '#FBBF24', cs: 'C: Vyhýbání', en: 'C: Avoidance' },
+          { items: PCL5_CLUSTERS.clusterD.items, max: 28, color: '#60A5FA', cs: 'D: Kognice/Nálada', en: 'D: Cognition/Mood' },
+          { items: PCL5_CLUSTERS.clusterE.items, max: 24, color: '#A78BFA', cs: 'E: Arousal', en: 'E: Arousal' },
+        ]
+      }}
     />
   );
 
@@ -2097,7 +2151,19 @@ export default function App() {
       color="#8B5CF6" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a vyberte, nakolik s ním souhlasíte.' : 'Please read each statement and indicate how much you agree with it.'}
-      liveScoreConfig={{ severityLevels: CATI_SEVERITY, maxScore: 210, label: 'CATI', scoreFn: (ans) => scoreCATI(ans).total }}
+      liveScoreConfig={{ severityLevels: CATI_SEVERITY, maxScore: 210, label: 'CATI', scoreFn: (ans) => scoreCATI(ans).total,
+        subscales: Object.entries(CATI_SUBSCALE_ITEMS).map(([key, items]) => ({
+          items,
+          max: 35,
+          color: CATI_SUBSCALES[key].color,
+          cs: CATI_SUBSCALES[key].cs,
+          en: CATI_SUBSCALES[key].en,
+          scoreFn: (ans) => items.reduce((s, i) => {
+            const v = ans[i]; if (v === undefined || v === null) return s;
+            return s + (CATI_REVERSE_ITEMS.includes(i) ? (6 - v) : v);
+          }, 0),
+        }))
+      }}
     />
   );
 
@@ -2141,7 +2207,12 @@ export default function App() {
       color="#0EA5E9" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Jak často se u vás projevují následující příznaky?' : 'How often do you experience the following symptoms?'}
-      liveScoreConfig={{ severityLevels: ASRS_SEVERITY, maxScore: 24, label: 'ASRS' }}
+      liveScoreConfig={{ severityLevels: ASRS_SEVERITY, maxScore: 24, label: 'ASRS',
+        subscales: [
+          { items: ASRS_SUBSCALES.inattention, max: 12, color: '#60A5FA', cs: 'Nepozornost', en: 'Inattention' },
+          { items: ASRS_SUBSCALES.hyperactivity, max: 12, color: '#F87171', cs: 'Hyperaktivita/Impulzivita', en: 'Hyperactivity/Impulsivity' },
+        ]
+      }}
     />
   );
 
@@ -2163,7 +2234,22 @@ export default function App() {
       color="#EC4899" lang={lang} t={t} toggleLang={toggleLang}
       onBack={() => setMode('menu')}
       instruction={lang === 'cs' ? 'Označte odpověď, která nejlépe vystihuje vaše chování.' : 'Check the answer that best applies to your behavior.'}
-      liveScoreConfig={{ severityLevels: EAT26_SEVERITY, maxScore: 78, label: 'EAT-26', scoreFn: scoreEAT26 }}
+      liveScoreConfig={{ severityLevels: EAT26_SEVERITY, maxScore: 78, label: 'EAT-26', scoreFn: scoreEAT26,
+        subscales: Object.entries(EAT26_SUBSCALES).map(([key, sub]) => ({
+          items: sub.items,
+          max: key === 'oralControl' ? 21 : (key === 'dieting' ? 36 : 18),
+          color: key === 'dieting' ? '#EC4899' : key === 'bulimia' ? '#F97316' : '#8B5CF6',
+          cs: sub.cs,
+          en: sub.en,
+          scoreFn: (ans) => sub.items.reduce((s, i) => {
+            const v = ans[i]; if (v === undefined || v === null) return s;
+            if (i === EAT26_REVERSE_ITEM) {
+              return s + (v === 5 ? 3 : v === 4 ? 2 : v === 3 ? 1 : 0);
+            }
+            return s + (v === 0 ? 3 : v === 1 ? 2 : v === 2 ? 1 : 0);
+          }, 0),
+        }))
+      }}
     />
   );
 
@@ -2231,6 +2317,101 @@ export default function App() {
   // ═══ CUDIT-R RESULTS ═══
   if (mode === 'cuditr_results') return (
     <CUDITRResults answers={cuditrAns} questions={CUDITR_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCuditrResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ AUDIT QUESTIONNAIRE ═══
+  if (mode === 'audit') {
+    const auditScales = AUDIT_SCALES[lang] || AUDIT_SCALES.cs;
+    const isQ910 = auditIdx >= 8;
+    const auditScaleLabels = auditScales[auditIdx] || auditScales[0];
+    const auditScaleMax = isQ910 ? 2 : 4;
+
+    return (
+      <QuestionnaireScreen
+        title="AUDIT"
+        questions={AUDIT_QUESTIONS[lang]}
+        scaleLabels={auditScaleLabels}
+        scaleMin={0} scaleMax={auditScaleMax}
+        answers={auditAns} setAnswers={setAuditAns}
+        idx={auditIdx} setIdx={setAuditIdx}
+        onComplete={() => setMode('audit_results')}
+        color="#EAB308" lang={lang} t={t} toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        instruction={lang === 'cs' ? 'Odpovězte prosím na otázky o vašem užívání alkoholu.' : 'Please answer questions about your alcohol use.'}
+        liveScoreConfig={{ severityLevels: AUDIT_SEVERITY, maxScore: 40, label: 'AUDIT', scoreFn: scoreAUDIT,
+          subscales: [
+            { items: AUDIT_SUBSCALES.hazardous.items, max: 12, color: AUDIT_SUBSCALES.hazardous.color, cs: AUDIT_SUBSCALES.hazardous.cs, en: AUDIT_SUBSCALES.hazardous.en },
+            { items: AUDIT_SUBSCALES.dependence.items, max: 12, color: AUDIT_SUBSCALES.dependence.color, cs: AUDIT_SUBSCALES.dependence.cs, en: AUDIT_SUBSCALES.dependence.en },
+            { items: AUDIT_SUBSCALES.harmful.items, max: 16, color: AUDIT_SUBSCALES.harmful.color, cs: AUDIT_SUBSCALES.harmful.cs, en: AUDIT_SUBSCALES.harmful.en,
+              scoreFn: (ans) => AUDIT_SUBSCALES.harmful.items.reduce((s, i) => {
+                const v = ans[i]; if (v === undefined || v === null) return s;
+                return s + (i >= 8 ? (Q910_SCORE_MAP[v] ?? 0) : v);
+              }, 0)
+            },
+          ]
+        }}
+      />
+    );
+  }
+
+  // ═══ AUDIT RESULTS ═══
+  if (mode === 'audit_results') return (
+    <AUDITResults answers={auditAns} questions={AUDIT_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAuditResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ SOURCES / REFERENCES PAGE ═══
+  if (mode === 'sources') return (
+    <div className="min-h-screen bg-gray-950 text-white font-sans">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">{lang === 'cs' ? '📚 Zdroje & Reference' : '📚 Sources & References'}</h1>
+          <div className="flex gap-2">
+            <button onClick={toggleLang} className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">{lang === 'cs' ? 'EN' : 'CZ'}</button>
+            <button onClick={() => setMode('menu')} className="px-4 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">{t('menu')}</button>
+          </div>
+        </div>
+        <p className="text-gray-400 text-sm mb-6">{lang === 'cs'
+          ? 'Tento nástroj využívá následující validované psychodiagnostické instrumenty. Všechny dotazníky jsou použity v souladu s jejich původními publikacemi.'
+          : 'This tool uses the following validated psychodiagnostic instruments. All questionnaires are used in accordance with their original publications.'
+        }</p>
+        <div className="space-y-4">
+          {[
+            { title: 'PID-5', desc: 'Personality Inventory for DSM-5', ref: 'Krueger RF, Derringer J, Markon KE, Watson D, Skodol AE. (2012). Initial construction of a maladaptive personality trait model and inventory for DSM-5. Psychological Medicine, 42(9), 1879-1890.' },
+            { title: 'LPFS-SR', desc: 'Level of Personality Functioning Scale – Self Report', ref: 'Morey LC. (2017). Development and initial evaluation of a self-report form of the DSM-5 Level of Personality Functioning Scale. Psychological Assessment, 29(10), 1302-1308.' },
+            { title: 'PHQ-9', desc: 'Patient Health Questionnaire-9', ref: 'Kroenke K, Spitzer RL, Williams JBW. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine, 16(9), 606-613.' },
+            { title: 'GAD-7', desc: 'Generalized Anxiety Disorder 7-item scale', ref: 'Spitzer RL, Kroenke K, Williams JBW, Löwe B. (2006). A brief measure for assessing generalized anxiety disorder: the GAD-7. Archives of Internal Medicine, 166(10), 1092-1097.' },
+            { title: 'DASS-42', desc: 'Depression Anxiety Stress Scales', ref: 'Lovibond SH, Lovibond PF. (1995). Manual for the Depression Anxiety Stress Scales (2nd ed.). Psychology Foundation of Australia.' },
+            { title: 'PCL-5', desc: 'PTSD Checklist for DSM-5', ref: 'Weathers FW, Litz BT, Keane TM, Palmieri PA, Marx BP, Schnurr PP. (2013). The PTSD Checklist for DSM-5 (PCL-5). National Center for PTSD.' },
+            { title: 'CATI', desc: 'Comprehensive Autistic Trait Inventory', ref: 'English MCW, Gignac GE, Visser TAW, Whitehouse AJO, Maybery MT. (2021). A comprehensive psychometric analysis of autism-spectrum quotient factor models using two large samples. Autism Research, 14(10), 2183-2200.' },
+            { title: 'ISI', desc: 'Insomnia Severity Index', ref: 'Bastien CH, Vallières A, Morin CM. (2001). Validation of the Insomnia Severity Index as an outcome measure for insomnia research. Sleep Medicine, 2(4), 297-307.' },
+            { title: 'ASRS v1.1', desc: 'Adult ADHD Self-Report Scale', ref: 'Kessler RC, Adler L, Ames M, et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): a short screening scale for use in the general population. Psychological Medicine, 35(2), 245-256.' },
+            { title: 'EAT-26', desc: 'Eating Attitudes Test', ref: 'Garner DM, Olmsted MP, Bohr Y, Garfinkel PE. (1982). The Eating Attitudes Test: psychometric features and clinical correlates. Psychological Medicine, 12(4), 871-878.' },
+            { title: 'MDQ', desc: 'Mood Disorder Questionnaire', ref: 'Hirschfeld RMA, Williams JBW, Spitzer RL, et al. (2000). Development and Validation of a Screening Instrument for Bipolar Spectrum Disorder: The Mood Disorder Questionnaire. American Journal of Psychiatry, 157(11), 1873-1875.' },
+            { title: 'CUDIT-R', desc: 'Cannabis Use Disorder Identification Test – Revised', ref: 'Adamson SJ, Kay-Lambkin FJ, Baker AL, et al. (2010). An improved brief measure of cannabis misuse: The Cannabis Use Disorders Identification Test-Revised (CUDIT-R). Drug and Alcohol Dependence, 110(1-2), 137-143.' },
+            { title: 'AUDIT', desc: 'Alcohol Use Disorders Identification Test', ref: 'Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with Harmful Alcohol Consumption-II. Addiction, 88(6), 791-804.' },
+          ].map((src, i) => (
+            <div key={i} className="p-4 rounded-xl bg-gray-900/60 border border-gray-800/60">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="font-bold text-white">{src.title}</span>
+                <span className="text-xs text-gray-500">{src.desc}</span>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed">{src.ref}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 p-4 rounded-xl bg-gray-900/40 border border-gray-800/40">
+          <p className="text-xs text-gray-500 leading-relaxed">
+            {lang === 'cs'
+              ? '⚠️ Disclaimer: Tento nástroj je určen pouze pro edukační a screeningové účely. Nenahrazuje odborné klinické vyšetření. Výsledky by měly být interpretovány kvalifikovaným odborníkem.'
+              : '⚠️ Disclaimer: This tool is intended for educational and screening purposes only. It does not replace professional clinical evaluation. Results should be interpreted by a qualified professional.'
+            }
+          </p>
+        </div>
+        <div className="mt-6 text-center">
+          <button onClick={() => setMode('menu')} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
+        </div>
+      </div>
+    </div>
   );
 
   // ═══ QUESTIONNAIRE UI ═══
