@@ -28,7 +28,7 @@ const STRENGTH_STYLES = {
 // ════════════════════════════════════════════════
 // Main component
 // ════════════════════════════════════════════════
-export default function PatientProfile({ history, lang, onGoToTest, onViewResult, toggleLang, onBack }) {
+export default function PatientProfile({ history, lang, onGoToTest, onViewResult, toggleLang, onBack, userEmail }) {
   const t = useMemo(() => createT(lang), [lang]);
   const [expandedRef, setExpandedRef] = useState(null);
   const [showAllTests, setShowAllTests] = useState(false);
@@ -97,6 +97,12 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         </div>
 
         <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-sm font-bold shrink-0">
+              {userEmail?.[0]?.toUpperCase() || '?'}
+            </div>
+            {userEmail && <span className="text-sm text-gray-400 truncate max-w-[200px]">{userEmail}</span>}
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
             {lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}
           </h1>
@@ -440,7 +446,8 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                       </div>
 
                       {/* Date */}
-                      <div className="text-xs text-gray-600 shrink-0">
+                      <div className="text-xs text-gray-600 shrink-0 flex items-center gap-1">
+                        {h._source === 'cloud' && <span title="Cloud">☁</span>}
                         {new Date(h.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'cs-CZ')}
                       </div>
 

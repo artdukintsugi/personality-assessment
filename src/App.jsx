@@ -822,8 +822,8 @@ export default function App() {
           )}
         </div>
 
-        {/* Patient Profile Button */}
-        {history.length > 0 && (
+        {/* Patient Profile Button — auth only */}
+        {auth?.user && (history.length > 0 || cloudResults.length > 0) && (
           <button onClick={() => setMode('profile')} className="w-full mb-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-purple-900/20 border border-cyan-500/20 hover:border-cyan-400/40 transition-all text-left group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -1158,17 +1158,61 @@ export default function App() {
     </div>
   );
 
-  // ── PATIENT PROFILE ──
-  if (mode === "profile") return (
-    <PatientProfile
-      history={history}
-      lang={lang}
-      toggleLang={toggleLang}
-      onBack={() => setMode('menu')}
-      onGoToTest={(test) => setMode(test)}
-      onViewResult={(h) => viewSavedResult(h)}
-    />
-  );
+  // ── PATIENT PROFILE (auth-gated) ──
+  if (mode === "profile") {
+    if (!auth?.user) {
+      // Not logged in — show login prompt
+      return (
+        <div className="min-h-screen bg-gray-950 text-white font-sans flex items-center justify-center p-4">
+          <AuthModal />
+          <div className="text-center max-w-sm">
+            <div className="text-5xl mb-4">🔒</div>
+            <h2 className="text-xl font-bold text-gray-200 mb-2">{lang === 'cs' ? 'Přihlášení vyžadováno' : 'Login Required'}</h2>
+            <p className="text-sm text-gray-500 mb-6">{lang === 'cs' ? 'Klinický profil je dostupný pouze pro přihlášené uživatele. Vaše data jsou bezpečně uložena na vašem účtu.' : 'Clinical profile is only available for logged-in users. Your data is securely stored in your account.'}</p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setAuthForm('login')} className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all">{lang === 'cs' ? 'Přihlásit se' : 'Log in'}</button>
+              <button onClick={() => setMode('menu')} className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold text-sm transition-all">{lang === 'cs' ? 'Zpět' : 'Back'}</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    // Merge local history + cloud results into unified list for profile
+    const cloudAsHistory = cloudResults.map(cr => ({
+      id: cr.id,
+      type: cr.type,
+      date: cr.created_at,
+      score: cr.data?.score ?? cr.data?.fullData?.score ?? undefined,
+      severity: cr.data?.severity ?? cr.data?.fullData?.severity ?? undefined,
+      positive: cr.data?.positive ?? cr.data?.fullData?.positive ?? undefined,
+      topDiags: cr.data?.topDiags ?? cr.data?.fullData?.topDiags ?? undefined,
+      fullData: cr.data?.fullData || cr.data,
+      _source: 'cloud',
+    }));
+    // Deduplicate: prefer cloud version if same id exists, otherwise merge
+    const localWithSource = history.map(h => ({ ...h, _source: 'local' }));
+    const allResults = [...cloudAsHistory, ...localWithSource];
+    // Dedupe by type+date (keep latest per type, but preserve all for timeline)
+    const seen = new Set();
+    const dedupedResults = allResults.filter(h => {
+      const key = `${h.type}_${h.date}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return (
+      <PatientProfile
+        history={dedupedResults}
+        lang={lang}
+        toggleLang={toggleLang}
+        onBack={() => setMode('menu')}
+        onGoToTest={(test) => setMode(test)}
+        onViewResult={(h) => viewSavedResult(h)}
+        userEmail={auth.user.email}
+      />
+    );
+  }
 
   // ── DIAGNOSTIC DETAIL PAGE ──
   if (mode === "diag_detail") {
