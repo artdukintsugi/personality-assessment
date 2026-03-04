@@ -10,11 +10,15 @@ import { PHQ9_QUESTIONS, PHQ9_SCALE, PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '.
 import { GAD7_QUESTIONS, GAD7_SCALE, GAD7_SEVERITY } from './data/gad7';
 import { DASS42_QUESTIONS, DASS42_SCALE, DASS42_SUBSCALES, DASS42_SEVERITY } from './data/dass42';
 import { PCL5_QUESTIONS, PCL5_SCALE, PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from './data/pcl5';
+import { CATI_QUESTIONS, CATI_SCALE, CATI_SUBSCALES, CATI_SEVERITY, scoreCATI } from './data/cati';
+import { ISI_QUESTIONS, ISI_SCALE_SIMPLE, ISI_SEVERITY } from './data/isi';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
 import DASS42Results from './components/DASS42Results';
 import PCL5Results from './components/PCL5Results';
+import CATIResults from './components/CATIResults';
+import ISIResults from './components/ISIResults';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
@@ -292,7 +296,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -310,12 +314,16 @@ export default function App() {
     if (p === '/gad7') return 'gad7';
     if (p === '/dass42') return 'dass42';
     if (p === '/pcl5') return 'pcl5';
+    if (p === '/cati') return 'cati';
+    if (p === '/isi') return 'isi';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/phq9/results') return 'phq9_results';
     if (p === '/gad7/results') return 'gad7_results';
     if (p === '/dass42/results') return 'dass42_results';
     if (p === '/pcl5/results') return 'pcl5_results';
+    if (p === '/cati/results') return 'cati_results';
+    if (p === '/isi/results') return 'isi_results';
     if (p === '/history') return 'history';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
     if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
@@ -324,7 +332,7 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', history: '/history' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', history: '/history' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
@@ -340,6 +348,10 @@ export default function App() {
   const [dass42Idx, setDass42Idx] = useState(() => lsGet(LS_KEYS.dass42Idx, 0));
   const [pcl5Ans, setPcl5Ans] = useState(() => lsGet(LS_KEYS.pcl5Ans, {}));
   const [pcl5Idx, setPcl5Idx] = useState(() => lsGet(LS_KEYS.pcl5Idx, 0));
+  const [catiAns, setCatiAns] = useState(() => lsGet(LS_KEYS.catiAns, {}));
+  const [catiIdx, setCatiIdx] = useState(() => lsGet(LS_KEYS.catiIdx, 0));
+  const [isiAns, setIsiAns] = useState(() => lsGet(LS_KEYS.isiAns, {}));
+  const [isiIdx, setIsiIdx] = useState(() => lsGet(LS_KEYS.isiIdx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -372,6 +384,10 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.dass42Idx, dass42Idx); }, [dass42Idx]);
   useEffect(() => { lsSet(LS_KEYS.pcl5Ans, pcl5Ans); }, [pcl5Ans]);
   useEffect(() => { lsSet(LS_KEYS.pcl5Idx, pcl5Idx); }, [pcl5Idx]);
+  useEffect(() => { lsSet(LS_KEYS.catiAns, catiAns); }, [catiAns]);
+  useEffect(() => { lsSet(LS_KEYS.catiIdx, catiIdx); }, [catiIdx]);
+  useEffect(() => { lsSet(LS_KEYS.isiAns, isiAns); }, [isiAns]);
+  useEffect(() => { lsSet(LS_KEYS.isiIdx, isiIdx); }, [isiIdx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -457,6 +473,40 @@ export default function App() {
     saveToHistory('lpfs', { score: avg, fullData: { prumer: avg, subskaly: scoreLpfsSubscales(lpfsAns), odpovedi: lpfsAns } });
   }, [lpfsAns, saveToHistory]);
 
+  const savePhq9Result = useCallback(() => {
+    const total = Object.values(phq9Ans).reduce((a,b) => a+b, 0);
+    const sev = PHQ9_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('phq9', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: phq9Ans } });
+  }, [phq9Ans, saveToHistory]);
+
+  const saveGad7Result = useCallback(() => {
+    const total = Object.values(gad7Ans).reduce((a,b) => a+b, 0);
+    const sev = GAD7_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('gad7', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: gad7Ans } });
+  }, [gad7Ans, saveToHistory]);
+
+  const saveDass42Result = useCallback(() => {
+    const total = Object.values(dass42Ans).reduce((a,b) => a+b, 0);
+    saveToHistory('dass42', { score: total, fullData: { score: total, odpovedi: dass42Ans } });
+  }, [dass42Ans, saveToHistory]);
+
+  const savePcl5Result = useCallback(() => {
+    const total = Object.values(pcl5Ans).reduce((a,b) => a+b, 0);
+    saveToHistory('pcl5', { score: total, cutoffMet: total >= PCL5_CUTOFF, fullData: { score: total, cutoffMet: total >= PCL5_CUTOFF, odpovedi: pcl5Ans } });
+  }, [pcl5Ans, saveToHistory]);
+
+  const saveCatiResult = useCallback(() => {
+    const { total, subscales } = scoreCATI(catiAns);
+    const sev = CATI_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('cati', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, subscales, odpovedi: catiAns } });
+  }, [catiAns, saveToHistory]);
+
+  const saveIsiResult = useCallback(() => {
+    const total = Object.values(isiAns).reduce((a,b) => a+b, 0);
+    const sev = ISI_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('isi', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: isiAns } });
+  }, [isiAns, saveToHistory]);
+
   // View saved result — loads answers into state and navigates to full results page
   const viewSavedResult = useCallback((result) => {
     const fd = result.fullData || result;
@@ -477,6 +527,24 @@ export default function App() {
       setViewingResult(result);
       setViewingSource('saved');
       setMode('lpfs_results');
+    } else if (fd?.odpovedi) {
+      // Generic handler for new test types (phq9, gad7, dass42, pcl5, cati, isi)
+      const typeMap = {
+        phq9: { setAns: setPhq9Ans, setIdx: setPhq9Idx, count: 9, results: 'phq9_results' },
+        gad7: { setAns: setGad7Ans, setIdx: setGad7Idx, count: 7, results: 'gad7_results' },
+        dass42: { setAns: setDass42Ans, setIdx: setDass42Idx, count: 42, results: 'dass42_results' },
+        pcl5: { setAns: setPcl5Ans, setIdx: setPcl5Idx, count: 20, results: 'pcl5_results' },
+        cati: { setAns: setCatiAns, setIdx: setCatiIdx, count: 42, results: 'cati_results' },
+        isi: { setAns: setIsiAns, setIdx: setIsiIdx, count: 7, results: 'isi_results' },
+      };
+      const cfg = typeMap[result.type];
+      if (cfg) {
+        cfg.setAns(fd.odpovedi);
+        cfg.setIdx(cfg.count - 1);
+        setViewingResult(result);
+        setViewingSource('saved');
+        setMode(cfg.results);
+      }
     }
   }, [setMode]);
 
@@ -562,6 +630,12 @@ export default function App() {
 
   const fillSample = useCallback(() => { const s = {}; for (let i = 0; i < 220; i++) { const r = Math.random(); s[i] = r < 0.2 ? 0 : r < 0.5 ? 1 : r < 0.8 ? 2 : 3; } setAnswers(s); setIdx(219); setMode("pid5_results"); }, []);
   const fillSampleLpfs = useCallback(() => { const s = {}; for (let i = 0; i < 80; i++) { const r = Math.random(); s[i] = r < 0.2 ? 1 : r < 0.5 ? 2 : r < 0.8 ? 3 : 4; } setLpfsAns(s); setLpfsIdx(79); setMode("lpfs_results"); }, []);
+  const fillSamplePhq9 = useCallback(() => { const s = {}; for (let i = 0; i < 9; i++) s[i] = Math.floor(Math.random() * 4); setPhq9Ans(s); setPhq9Idx(8); setMode("phq9_results"); }, []);
+  const fillSampleGad7 = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 4); setGad7Ans(s); setGad7Idx(6); setMode("gad7_results"); }, []);
+  const fillSampleDass42 = useCallback(() => { const s = {}; for (let i = 0; i < 42; i++) s[i] = Math.floor(Math.random() * 4); setDass42Ans(s); setDass42Idx(41); setMode("dass42_results"); }, []);
+  const fillSamplePcl5 = useCallback(() => { const s = {}; for (let i = 0; i < 20; i++) s[i] = Math.floor(Math.random() * 5); setPcl5Ans(s); setPcl5Idx(19); setMode("pcl5_results"); }, []);
+  const fillSampleCati = useCallback(() => { const s = {}; for (let i = 0; i < 42; i++) s[i] = Math.floor(Math.random() * 5) + 1; setCatiAns(s); setCatiIdx(41); setMode("cati_results"); }, []);
+  const fillSampleIsi = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); setIsiAns(s); setIsiIdx(6); setMode("isi_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -778,6 +852,28 @@ export default function App() {
               </div>
             )}
           </button>
+          {/* CATI */}
+          <button onClick={() => setMode("cati")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-violet-800/20 border border-violet-500/20 hover:border-violet-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-violet-300 group-hover:text-violet-200 transition-colors">CATI</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '42 otázek — autistické rysy' : '42 items — autistic traits'}</div>
+            {Object.keys(catiAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(catiAns).length/42)*100}%`}} /></div>
+                <span className="text-xs text-violet-400 shrink-0">{Object.keys(catiAns).length}/42</span>
+              </div>
+            )}
+          </button>
+          {/* ISI */}
+          <button onClick={() => setMode("isi")} className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-indigo-800/20 border border-indigo-500/20 hover:border-indigo-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-indigo-300 group-hover:text-indigo-200 transition-colors">ISI</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '7 otázek — nespavost' : '7 items — insomnia'}</div>
+            {Object.keys(isiAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-indigo-500 rounded-full" style={{width: `${(Object.keys(isiAns).length/7)*100}%`}} /></div>
+                <span className="text-xs text-indigo-400 shrink-0">{Object.keys(isiAns).length}/7</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Quick result buttons */}
@@ -788,6 +884,8 @@ export default function App() {
           {Object.keys(gad7Ans).length === 7 && <button onClick={() => setMode("gad7_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 GAD-7</button>}
           {Object.keys(dass42Ans).length === 42 && <button onClick={() => setMode("dass42_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DASS-42</button>}
           {Object.keys(pcl5Ans).length === 20 && <button onClick={() => setMode("pcl5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PCL-5</button>}
+          {Object.keys(catiAns).length === 42 && <button onClick={() => setMode("cati_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CATI</button>}
+          {Object.keys(isiAns).length === 7 && <button onClick={() => setMode("isi_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ISI</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -804,7 +902,19 @@ export default function App() {
                   <div key={h.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${h.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{h.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
+                          h.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' :
+                          h.type === 'lpfs' ? 'bg-blue-500/20 text-blue-400' :
+                          h.type === 'phq9' ? 'bg-emerald-500/20 text-emerald-400' :
+                          h.type === 'gad7' ? 'bg-teal-500/20 text-teal-400' :
+                          h.type === 'dass42' ? 'bg-orange-500/20 text-orange-400' :
+                          h.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
+                          h.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
+                          h.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }`}>{
+                          { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[h.type] || h.type
+                        }</span>
                         <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                       </div>
                     </div>
@@ -819,6 +929,9 @@ export default function App() {
                       </div>
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
+                    {['phq9','gad7','dass42','pcl5','cati','isi'].includes(h.type) && h.score != null && (
+                      <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
+                    )}
                     <div className="flex gap-2">
                       <button onClick={() => viewSavedResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                       <button onClick={() => {
@@ -839,7 +952,19 @@ export default function App() {
                       <div key={cr.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${cr.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>{cr.type === 'pid5' ? 'PID-5' : 'LPFS'}</span>
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
+                              cr.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' :
+                              cr.type === 'lpfs' ? 'bg-blue-500/20 text-blue-400' :
+                              cr.type === 'phq9' ? 'bg-emerald-500/20 text-emerald-400' :
+                              cr.type === 'gad7' ? 'bg-teal-500/20 text-teal-400' :
+                              cr.type === 'dass42' ? 'bg-orange-500/20 text-orange-400' :
+                              cr.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
+                              cr.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
+                              cr.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
+                              'bg-gray-500/20 text-gray-400'
+                            }`}>{
+                              { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[cr.type] || cr.type
+                            }</span>
                             <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                             <span className="text-xs text-gray-700">☁</span>
                           </div>
@@ -871,11 +996,17 @@ export default function App() {
         {/* Debug tools */}
         <div className="mt-6 pt-4 border-t border-gray-800/40">
           <div className="text-xs text-gray-700 mb-2">{t('debug')}</div>
-          <div className="flex gap-2">
-            <button onClick={fillSample} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
-            <button onClick={fillSampleLpfs} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
-            <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); }} className="flex-1 p-2.5 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')}</button>
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            <button onClick={fillSample} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
+            <button onClick={fillSampleLpfs} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
+            <button onClick={fillSamplePhq9} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PHQ-9</button>
+            <button onClick={fillSampleGad7} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 GAD-7</button>
+            <button onClick={fillSampleDass42} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 DASS</button>
+            <button onClick={fillSamplePcl5} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PCL-5</button>
+            <button onClick={fillSampleCati} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CATI</button>
+            <button onClick={fillSampleIsi} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ISI</button>
           </div>
+          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
         </div>
       </div>
     </div>
@@ -1612,22 +1743,64 @@ export default function App() {
 
   // ═══ PHQ-9 RESULTS ═══
   if (mode === 'phq9_results') return (
-    <PHQ9Results answers={phq9Ans} questions={PHQ9_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+    <PHQ9Results answers={phq9Ans} questions={PHQ9_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePhq9Result(); alert(t('resultSaved')); }} />
   );
 
   // ═══ GAD-7 RESULTS ═══
   if (mode === 'gad7_results') return (
-    <GAD7Results answers={gad7Ans} questions={GAD7_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+    <GAD7Results answers={gad7Ans} questions={GAD7_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveGad7Result(); alert(t('resultSaved')); }} />
   );
 
   // ═══ DASS-42 RESULTS ═══
   if (mode === 'dass42_results') return (
-    <DASS42Results answers={dass42Ans} questions={DASS42_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+    <DASS42Results answers={dass42Ans} questions={DASS42_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDass42Result(); alert(t('resultSaved')); }} />
   );
 
   // ═══ PCL-5 RESULTS ═══
   if (mode === 'pcl5_results') return (
-    <PCL5Results answers={pcl5Ans} questions={PCL5_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+    <PCL5Results answers={pcl5Ans} questions={PCL5_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePcl5Result(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ CATI QUESTIONNAIRE ═══
+  if (mode === 'cati') return (
+    <QuestionnaireScreen
+      title="CATI"
+      questions={CATI_QUESTIONS[lang]}
+      scaleLabels={CATI_SCALE[lang]}
+      scaleMin={1} scaleMax={5}
+      answers={catiAns} setAnswers={setCatiAns}
+      idx={catiIdx} setIdx={setCatiIdx}
+      onComplete={() => setMode('cati_results')}
+      color="#8B5CF6" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a vyberte, nakolik s ním souhlasíte.' : 'Please read each statement and indicate how much you agree with it.'}
+    />
+  );
+
+  // ═══ ISI QUESTIONNAIRE ═══
+  if (mode === 'isi') return (
+    <QuestionnaireScreen
+      title="ISI"
+      questions={ISI_QUESTIONS[lang]}
+      scaleLabels={ISI_SCALE_SIMPLE[lang]}
+      scaleMin={0} scaleMax={4}
+      answers={isiAns} setAnswers={setIsiAns}
+      idx={isiIdx} setIdx={setIsiIdx}
+      onComplete={() => setMode('isi_results')}
+      color="#6366F1" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Prosím ohodnoťte závažnost vašich současných problémů se spánkem.' : 'Please rate the severity of your current sleep problems.'}
+    />
+  );
+
+  // ═══ CATI RESULTS ═══
+  if (mode === 'cati_results') return (
+    <CATIResults answers={catiAns} questions={CATI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCatiResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ ISI RESULTS ═══
+  if (mode === 'isi_results') return (
+    <ISIResults answers={isiAns} questions={ISI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveIsiResult(); alert(t('resultSaved')); }} />
   );
 
   // ═══ QUESTIONNAIRE UI ═══

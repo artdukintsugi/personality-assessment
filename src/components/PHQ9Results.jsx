@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '../data/phq9';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
-export default function PHQ9Results({ answers, questions, lang, t, onBack, toggleLang }) {
+export default function PHQ9Results({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const total = Object.values(answers).reduce((a, b) => a + b, 0);
   const maxScore = questions.length * 3; // 27
   const severity = PHQ9_SEVERITY.find(s => total >= s.min && total <= s.max) || PHQ9_SEVERITY[0];
@@ -126,17 +126,15 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
           </p>
         </div>
 
-        {/* Export */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3">📦 {t('exportResults')}</h3>
+        {/* Actions */}
+        <div className="flex gap-3 mb-6">
+          {onSave && <button onClick={onSave} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
           <button onClick={() => {
             const data = { test: 'PHQ-9', score: total, severity: severity.key, item9: criticalScore, answers, date: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'phq9_results.json'; a.click();
-          }} className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left w-full">
-            <div className="text-sm font-semibold text-gray-300">{lang === 'cs' ? 'JSON Export' : 'JSON Export'}</div>
-            <div className="text-xs text-gray-500">{lang === 'cs' ? 'Stáhnout výsledky jako JSON' : 'Download results as JSON'}</div>
-          </button>
+          }} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">📦 JSON</button>
+          <button onClick={onBack} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>

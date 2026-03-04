@@ -38,7 +38,7 @@ const SUBSCALE_DESC = {
   },
 };
 
-export default function DASS42Results({ answers, questions, lang, t, onBack, toggleLang }) {
+export default function DASS42Results({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const [showDass21, setShowDass21] = useState(false);
   const validity = useMemo(() => checkSimpleValidity(answers, questions.length, 0, 3, lang), [answers, questions.length, lang]);
 
@@ -196,9 +196,9 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
           </p>
         </div>
 
-        {/* Export */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3">📦 {t('exportResults')}</h3>
+        {/* Actions */}
+        <div className="flex gap-3 mb-6">
+          {onSave && <button onClick={onSave} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
           <button onClick={() => {
             const data = {
               test: showDass21 ? 'DASS-21' : 'DASS-42',
@@ -209,10 +209,8 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `dass${showDass21 ? '21' : '42'}_results.json`; a.click();
-          }} className="p-3 rounded-xl bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/60 transition-all text-left w-full">
-            <div className="text-sm font-semibold text-gray-300">JSON Export</div>
-            <div className="text-xs text-gray-500">{lang === 'cs' ? 'Stáhnout výsledky jako JSON' : 'Download results as JSON'}</div>
-          </button>
+          }} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">📦 JSON</button>
+          <button onClick={onBack} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>
