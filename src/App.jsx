@@ -6,6 +6,15 @@ import { getQuestionHint, getDiagExplanation, getLpfsSubscale, LPFS_SUBSCALE_NAM
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson, exportPid5AnswerSheet, exportLpfsAnswerSheet } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
 import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES, DIAG_DETAILS } from './data';
+import { PHQ9_QUESTIONS, PHQ9_SCALE, PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from './data/phq9';
+import { GAD7_QUESTIONS, GAD7_SCALE, GAD7_SEVERITY } from './data/gad7';
+import { DASS42_QUESTIONS, DASS42_SCALE, DASS42_SUBSCALES, DASS42_SEVERITY } from './data/dass42';
+import { PCL5_QUESTIONS, PCL5_SCALE, PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from './data/pcl5';
+import { QuestionnaireScreen } from './components/GenericQuestionnaire';
+import PHQ9Results from './components/PHQ9Results';
+import GAD7Results from './components/GAD7Results';
+import DASS42Results from './components/DASS42Results';
+import PCL5Results from './components/PCL5Results';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
@@ -283,7 +292,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -297,8 +306,16 @@ export default function App() {
     const p = location.pathname;
     if (p === '/pid5') return 'pid5';
     if (p === '/lpfs') return 'lpfs';
+    if (p === '/phq9') return 'phq9';
+    if (p === '/gad7') return 'gad7';
+    if (p === '/dass42') return 'dass42';
+    if (p === '/pcl5') return 'pcl5';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
+    if (p === '/phq9/results') return 'phq9_results';
+    if (p === '/gad7/results') return 'gad7_results';
+    if (p === '/dass42/results') return 'dass42_results';
+    if (p === '/pcl5/results') return 'pcl5_results';
     if (p === '/history') return 'history';
     if (p.startsWith('/r/pid5/')) return 'shared_pid5';
     if (p.startsWith('/r/lpfs/')) return 'shared_lpfs';
@@ -307,13 +324,22 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', history: '/history' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', history: '/history' };
     navigate(routes[m] || '/');
   }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
   const [answers, setAnswers] = useState(() => lsGet(LS_KEYS.answers, {}));
   const [lpfsIdx, setLpfsIdx] = useState(() => lsGet(LS_KEYS.lpfsIdx, 0));
   const [lpfsAns, setLpfsAns] = useState(() => lsGet(LS_KEYS.lpfsAns, {}));
+  // New questionnaires state
+  const [phq9Ans, setPhq9Ans] = useState(() => lsGet(LS_KEYS.phq9Ans, {}));
+  const [phq9Idx, setPhq9Idx] = useState(() => lsGet(LS_KEYS.phq9Idx, 0));
+  const [gad7Ans, setGad7Ans] = useState(() => lsGet(LS_KEYS.gad7Ans, {}));
+  const [gad7Idx, setGad7Idx] = useState(() => lsGet(LS_KEYS.gad7Idx, 0));
+  const [dass42Ans, setDass42Ans] = useState(() => lsGet(LS_KEYS.dass42Ans, {}));
+  const [dass42Idx, setDass42Idx] = useState(() => lsGet(LS_KEYS.dass42Idx, 0));
+  const [pcl5Ans, setPcl5Ans] = useState(() => lsGet(LS_KEYS.pcl5Ans, {}));
+  const [pcl5Idx, setPcl5Idx] = useState(() => lsGet(LS_KEYS.pcl5Idx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -338,6 +364,14 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.lpfsAns, lpfsAns); }, [lpfsAns]);
   useEffect(() => { lsSet(LS_KEYS.lpfsIdx, lpfsIdx); }, [lpfsIdx]);
   useEffect(() => { lsSet(LS_KEYS.history, history); }, [history]);
+  useEffect(() => { lsSet(LS_KEYS.phq9Ans, phq9Ans); }, [phq9Ans]);
+  useEffect(() => { lsSet(LS_KEYS.phq9Idx, phq9Idx); }, [phq9Idx]);
+  useEffect(() => { lsSet(LS_KEYS.gad7Ans, gad7Ans); }, [gad7Ans]);
+  useEffect(() => { lsSet(LS_KEYS.gad7Idx, gad7Idx); }, [gad7Idx]);
+  useEffect(() => { lsSet(LS_KEYS.dass42Ans, dass42Ans); }, [dass42Ans]);
+  useEffect(() => { lsSet(LS_KEYS.dass42Idx, dass42Idx); }, [dass42Idx]);
+  useEffect(() => { lsSet(LS_KEYS.pcl5Ans, pcl5Ans); }, [pcl5Ans]);
+  useEffect(() => { lsSet(LS_KEYS.pcl5Idx, pcl5Idx); }, [pcl5Idx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -649,6 +683,14 @@ export default function App() {
           )}
         </div>
 
+        {/* ═══ Personality Assessment ═══ */}
+        <div className="mb-2">
+          <div className="flex items-center gap-3 mb-3 px-1">
+            <span className="h-px flex-1 bg-gray-800" />
+            <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">{lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
+            <span className="h-px flex-1 bg-gray-800" />
+          </div>
+        </div>
         {/* Test cards */}
         <div className="grid gap-3 mb-6">
           <button onClick={() => setMode("pid5")} className="p-5 rounded-2xl bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/20 hover:border-purple-400/40 transition-all text-left group">
@@ -683,10 +725,69 @@ export default function App() {
           </button>
         </div>
 
+        {/* ═══ Clinical Screening Tools ═══ */}
+        <div className="mb-2 mt-6">
+          <div className="flex items-center gap-3 mb-3 px-1">
+            <span className="h-px flex-1 bg-gray-800" />
+            <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
+            <span className="h-px flex-1 bg-gray-800" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* PHQ-9 */}
+          <button onClick={() => setMode("phq9")} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/20 hover:border-emerald-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">PHQ-9</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '9 otázek — deprese' : '9 items — depression'}</div>
+            {Object.keys(phq9Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{width: `${(Object.keys(phq9Ans).length/9)*100}%`}} /></div>
+                <span className="text-xs text-emerald-400 shrink-0">{Object.keys(phq9Ans).length}/9</span>
+              </div>
+            )}
+          </button>
+          {/* GAD-7 */}
+          <button onClick={() => setMode("gad7")} className="p-4 rounded-2xl bg-gradient-to-br from-teal-900/40 to-teal-800/20 border border-teal-500/20 hover:border-teal-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-teal-300 group-hover:text-teal-200 transition-colors">GAD-7</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '7 otázek — úzkost' : '7 items — anxiety'}</div>
+            {Object.keys(gad7Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-teal-500 rounded-full" style={{width: `${(Object.keys(gad7Ans).length/7)*100}%`}} /></div>
+                <span className="text-xs text-teal-400 shrink-0">{Object.keys(gad7Ans).length}/7</span>
+              </div>
+            )}
+          </button>
+          {/* DASS-42 */}
+          <button onClick={() => setMode("dass42")} className="p-4 rounded-2xl bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/20 hover:border-orange-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-orange-300 group-hover:text-orange-200 transition-colors">DASS-42</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '42 otázek — deprese, úzkost, stres' : '42 items — depression, anxiety, stress'}</div>
+            {Object.keys(dass42Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-orange-500 rounded-full" style={{width: `${(Object.keys(dass42Ans).length/42)*100}%`}} /></div>
+                <span className="text-xs text-orange-400 shrink-0">{Object.keys(dass42Ans).length}/42</span>
+              </div>
+            )}
+          </button>
+          {/* PCL-5 */}
+          <button onClick={() => setMode("pcl5")} className="p-4 rounded-2xl bg-gradient-to-br from-rose-900/40 to-rose-800/20 border border-rose-500/20 hover:border-rose-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-rose-300 group-hover:text-rose-200 transition-colors">PCL-5</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '20 otázek — PTSD' : '20 items — PTSD'}</div>
+            {Object.keys(pcl5Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-rose-500 rounded-full" style={{width: `${(Object.keys(pcl5Ans).length/20)*100}%`}} /></div>
+                <span className="text-xs text-rose-400 shrink-0">{Object.keys(pcl5Ans).length}/20</span>
+              </div>
+            )}
+          </button>
+        </div>
+
         {/* Quick result buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('pid5Results')}</button>}
           {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('lpfsResults')}</button>}
+          {Object.keys(phq9Ans).length === 9 && <button onClick={() => setMode("phq9_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PHQ-9</button>}
+          {Object.keys(gad7Ans).length === 7 && <button onClick={() => setMode("gad7_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 GAD-7</button>}
+          {Object.keys(dass42Ans).length === 42 && <button onClick={() => setMode("dass42_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DASS-42</button>}
+          {Object.keys(pcl5Ans).length === 20 && <button onClick={() => setMode("pcl5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PCL-5</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -1443,6 +1544,90 @@ export default function App() {
         </div>
       </div>
     </div>
+  );
+
+  // ═══ PHQ-9 QUESTIONNAIRE ═══
+  if (mode === 'phq9') return (
+    <QuestionnaireScreen
+      title="PHQ-9"
+      questions={PHQ9_QUESTIONS[lang]}
+      scaleLabels={PHQ9_SCALE[lang]}
+      scaleMin={0} scaleMax={3}
+      answers={phq9Ans} setAnswers={setPhq9Ans}
+      idx={phq9Idx} setIdx={setPhq9Idx}
+      onComplete={() => setMode('phq9_results')}
+      color="#10B981" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Za poslední 2 týdny, jak často vás trápil některý z následujících problémů?' : 'Over the last 2 weeks, how often have you been bothered by any of the following problems?'}
+    />
+  );
+
+  // ═══ GAD-7 QUESTIONNAIRE ═══
+  if (mode === 'gad7') return (
+    <QuestionnaireScreen
+      title="GAD-7"
+      questions={GAD7_QUESTIONS[lang]}
+      scaleLabels={GAD7_SCALE[lang]}
+      scaleMin={0} scaleMax={3}
+      answers={gad7Ans} setAnswers={setGad7Ans}
+      idx={gad7Idx} setIdx={setGad7Idx}
+      onComplete={() => setMode('gad7_results')}
+      color="#14B8A6" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Za poslední 2 týdny, jak často vás trápil některý z následujících problémů?' : 'Over the last 2 weeks, how often have you been bothered by any of the following problems?'}
+    />
+  );
+
+  // ═══ DASS-42 QUESTIONNAIRE ═══
+  if (mode === 'dass42') return (
+    <QuestionnaireScreen
+      title="DASS-42"
+      questions={DASS42_QUESTIONS[lang]}
+      scaleLabels={DASS42_SCALE[lang]}
+      scaleMin={0} scaleMax={3}
+      answers={dass42Ans} setAnswers={setDass42Ans}
+      idx={dass42Idx} setIdx={setDass42Idx}
+      onComplete={() => setMode('dass42_results')}
+      color="#F97316" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Přečtěte si prosím každé tvrzení a zakroužkujte číslo 0, 1, 2 nebo 3, které nejlépe vyjadřuje, jak moc se na vás tvrzení vztahovalo v uplynulém týdnu.' : 'Please read each statement and select 0, 1, 2 or 3 which indicates how much the statement applied to you over the past week.'}
+    />
+  );
+
+  // ═══ PCL-5 QUESTIONNAIRE ═══
+  if (mode === 'pcl5') return (
+    <QuestionnaireScreen
+      title="PCL-5"
+      questions={PCL5_QUESTIONS[lang]}
+      scaleLabels={PCL5_SCALE[lang]}
+      scaleMin={0} scaleMax={4}
+      answers={pcl5Ans} setAnswers={setPcl5Ans}
+      idx={pcl5Idx} setIdx={setPcl5Idx}
+      onComplete={() => setMode('pcl5_results')}
+      color="#F43F5E" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Níže je uveden seznam problémů, které lidé někdy mívají v reakci na velmi stresující zážitek. Uveďte prosím, jak moc vás každý problém trápil v uplynulém měsíci.' : 'Below is a list of problems that people sometimes have in response to a very stressful experience. Please indicate how much you have been bothered by each problem in the past month.'}
+    />
+  );
+
+  // ═══ PHQ-9 RESULTS ═══
+  if (mode === 'phq9_results') return (
+    <PHQ9Results answers={phq9Ans} questions={PHQ9_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+  );
+
+  // ═══ GAD-7 RESULTS ═══
+  if (mode === 'gad7_results') return (
+    <GAD7Results answers={gad7Ans} questions={GAD7_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+  );
+
+  // ═══ DASS-42 RESULTS ═══
+  if (mode === 'dass42_results') return (
+    <DASS42Results answers={dass42Ans} questions={DASS42_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
+  );
+
+  // ═══ PCL-5 RESULTS ═══
+  if (mode === 'pcl5_results') return (
+    <PCL5Results answers={pcl5Ans} questions={PCL5_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} />
   );
 
   // ═══ QUESTIONNAIRE UI ═══
