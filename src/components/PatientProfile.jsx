@@ -88,9 +88,9 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         
         {/* ── Header ── */}
         <div className="flex items-center justify-between mb-8">
-          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm transition-colors flex items-center gap-1">
-            ← {lang === 'cs' ? 'Menu' : 'Menu'}
-          </button>
+            <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm transition-colors flex items-center gap-1">
+              {lang === 'cs' ? 'Menu' : 'Menu'}
+            </button>
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>
             {lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}
           </button>
@@ -515,7 +515,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* Back button */}
         <div className="flex justify-center pb-8">
           <button onClick={onBack} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">
-            ← {lang === 'cs' ? 'Zpět na menu' : 'Back to menu'}
+          {lang === 'cs' ? 'Zpět na menu' : 'Back to menu'}
           </button>
         </div>
 

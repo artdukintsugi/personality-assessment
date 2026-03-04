@@ -64,7 +64,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">← {t('back')}</button>
+          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-rose-400">PCL-5 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>

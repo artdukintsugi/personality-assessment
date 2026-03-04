@@ -868,7 +868,7 @@ export default function App() {
         <div className="px-8 pb-6 flex gap-3">
           {onboardStep > 0 && (
             <button onClick={() => setOnboardStep(s => s - 1)} className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition-all">
-              ← {lang === 'cs' ? 'Zpět' : 'Back'}
+              {lang === 'cs' ? 'Zpět' : 'Back'}
             </button>
           )}
           {onboardStep < ONBOARD_STEPS.length - 1 ? (

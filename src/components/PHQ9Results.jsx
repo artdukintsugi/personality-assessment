@@ -57,7 +57,7 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">← {t('back')}</button>
+          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-emerald-400">PHQ-9 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
