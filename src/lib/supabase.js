@@ -9,7 +9,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        flowType: 'pkce',
+        flowType: 'implicit',
         storageKey: 'diag-auth-token',
         storage: window.localStorage,
       },

@@ -107,11 +107,11 @@ export default function App() {
   // Load cloud results when user signs in
   useEffect(() => {
     if (auth?.user) {
-      loadResultsFromCloud(auth.user).then(setCloudResults);
+      loadResultsFromCloud(auth.user).then(setCloudResults).catch(() => setCloudResults([]));
     } else {
       setCloudResults([]);
     }
-  }, [auth?.user]);
+  }, [auth?.user?.id]);
 
   const saveToHistory = useCallback((type, data) => {
     const entry = { id: Date.now(), type, date: new Date().toISOString(), ...data };
