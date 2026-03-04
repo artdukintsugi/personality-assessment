@@ -165,6 +165,20 @@ const translations = {
     sevMild: 'Mírné',
     sevElevated: 'Zvýšené',
     sevHigh: 'Vysoké',
+    summaryTitle: '📝 Shrnutí výsledků',
+    summaryIntro: 'Na základě vašich odpovědí v dotazníku PID-5 (220 položek) jsme identifikovali následující vzorce osobnostních rysů:',
+    summaryDomains: 'Nejvýraznějšími oblastmi jsou',
+    summaryElevated: 'Zvýšené profily naznačují možnou přítomnost rysů spojených s:',
+    summaryNote: '⚠ Tyto výsledky jsou orientační a NEJSOU klinickou diagnózou. Pro přesné posouzení je nutné konzultovat s odborníkem na duševní zdraví.',
+    summaryNoElevated: 'Žádný z diagnostických profilů nedosáhl zvýšené úrovně, což naznačuje, že vaše osobnostní rysy se pohybují v běžném rozmezí.',
+    summaryLpfsIntro: 'Na základě vašich odpovědí v dotazníku LPFS-SR (80 položek) bylo vaše celkové skóre úrovně fungování osobnosti:',
+    summaryLpfsHigh: 'Vaše skóre přesahuje klinický práh (≥ 1.5), což naznačuje možné obtíže v oblasti fungování osobnosti. Nejvíce se to projevuje v oblastech:',
+    summaryLpfsOk: 'Vaše skóre je pod klinickým prahem, což naznačuje přiměřenou úroveň fungování osobnosti.',
+    history: 'Historie',
+    navPid5: 'PID-5 Test',
+    navLpfs: 'LPFS-SR Test',
+    navResults: 'Výsledky',
+    viewFullResults: 'Zobrazit plné výsledky',
   },
   en: {
     appTitle: 'Personality Assessment',
@@ -257,6 +271,20 @@ const translations = {
     sevMild: 'Mild',
     sevElevated: 'Elevated',
     sevHigh: 'High',
+    summaryTitle: '📝 Results Summary',
+    summaryIntro: 'Based on your answers to the PID-5 questionnaire (220 items), we identified the following personality trait patterns:',
+    summaryDomains: 'The most prominent domains are',
+    summaryElevated: 'Elevated profiles suggest possible presence of traits associated with:',
+    summaryNote: '⚠ These results are indicative and are NOT a clinical diagnosis. For accurate assessment, consult a mental health professional.',
+    summaryNoElevated: 'None of the diagnostic profiles reached elevated levels, suggesting your personality traits fall within the normal range.',
+    summaryLpfsIntro: 'Based on your answers to the LPFS-SR questionnaire (80 items), your overall level of personality functioning score was:',
+    summaryLpfsHigh: 'Your score exceeds the clinical threshold (≥ 1.5), suggesting possible difficulties in personality functioning. This is most evident in the areas of:',
+    summaryLpfsOk: 'Your score is below the clinical threshold, suggesting adequate personality functioning.',
+    history: 'History',
+    navPid5: 'PID-5 Test',
+    navLpfs: 'LPFS-SR Test',
+    navResults: 'Results',
+    viewFullResults: 'View Full Results',
   },
 };
 
@@ -300,6 +328,13 @@ export function facetName(name, lang) {
 export function diagName(id, csName, lang) {
   if (lang === 'cs') return csName;
   return DIAG_NAMES.en[id] || csName;
+}
+
+/** Translate a diagnostic profile description (bilingual object or plain string) */
+export function diagDesc(desc, lang) {
+  if (!desc) return '';
+  if (typeof desc === 'string') return desc;
+  return desc[lang] || desc.cs || '';
 }
 
 /** Short domain name for radar chart */

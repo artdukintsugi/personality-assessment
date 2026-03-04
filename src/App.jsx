@@ -1,11 +1,12 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
 import { SOURCES, FACET_META, DOMAIN_META, SCORING_INFO } from './lib/scoring-meta';
-import { getQuestionHint, DIAG_EXPLANATIONS, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
+import { getQuestionHint, getDiagExplanation, getLpfsSubscale, LPFS_SUBSCALE_NAMES, LPFS_SUBSCALES } from './lib/question-hints';
 import { exportPid5Report, exportInstagramStory, exportQuickSummary, exportLpfsReport, exportRawJson } from './lib/export-v2';
 import { useAuth, saveResultToCloud, loadResultsFromCloud, deleteResultFromCloud } from './lib/auth';
 import { Q, Q_EN, LPFS_Q, FM, DF, DF_ALL, DC, REVERSE_SCORED, DIAG_PROFILES } from './data';
-import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, domainShort } from './lib/i18n';
+import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort } from './lib/i18n';
 
 // ═══ REVERSE LOOKUP: item → facets ═══
 const REVERSE = {};
@@ -77,7 +78,24 @@ function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val));
 
 export default function App() {
   const auth = useAuth();
-  const [mode, setMode] = useState("menu");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Derive mode from URL path
+  const mode = useMemo(() => {
+    const p = location.pathname;
+    if (p === '/pid5') return 'pid5';
+    if (p === '/lpfs') return 'lpfs';
+    if (p === '/pid5/results') return 'pid5_results';
+    if (p === '/lpfs/results') return 'lpfs_results';
+    if (p === '/history') return 'history';
+    return 'menu';
+  }, [location.pathname]);
+
+  const setMode = useCallback((m) => {
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', history: '/history' };
+    navigate(routes[m] || '/');
+  }, [navigate]);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
   const [answers, setAnswers] = useState(() => lsGet(LS_KEYS.answers, {}));
   const [lpfsIdx, setLpfsIdx] = useState(() => lsGet(LS_KEYS.lpfsIdx, 0));
@@ -93,7 +111,8 @@ export default function App() {
   const [authPass, setAuthPass] = useState('');
   const [authError, setAuthError] = useState('');
   const [cloudResults, setCloudResults] = useState([]);
-  const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result
+  const [viewingResult, setViewingResult] = useState(null); // for viewing a saved result in full-page mode
+  const [viewingSource, setViewingSource] = useState(null); // 'local' | 'cloud' — indicates we're viewing saved data
   const [lang, setLang] = useState(() => lsGet(LS_KEYS.lang, 'cs')); // 'cs' | 'en'
   const t = useMemo(() => createT(lang), [lang]);
   const SEV = useCallback((v) => sevLabel(v, lang), [lang]);
@@ -140,6 +159,29 @@ export default function App() {
     const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
     saveToHistory('lpfs', { score: avg, fullData: { prumer: avg, subskaly: scoreLpfsSubscales(lpfsAns), odpovedi: lpfsAns } });
   }, [lpfsAns, saveToHistory]);
+
+  // View saved result — loads answers into state and navigates to full results page
+  const viewSavedResult = useCallback((result) => {
+    const fd = result.fullData || result;
+    if (result.type === 'pid5' && fd) {
+      // If we have raw answers, load them into state for full interactivity
+      if (fd.odpovedi && Object.keys(fd.odpovedi).length > 0) {
+        setAnswers(fd.odpovedi);
+        setIdx(219);
+      }
+      setViewingResult(result);
+      setViewingSource('saved');
+      setMode('pid5_results');
+    } else if (result.type === 'lpfs' && fd) {
+      if (fd.odpovedi && Object.keys(fd.odpovedi).length > 0) {
+        setLpfsAns(fd.odpovedi);
+        setLpfsIdx(79);
+      }
+      setViewingResult(result);
+      setViewingSource('saved');
+      setMode('lpfs_results');
+    }
+  }, [setMode]);
 
   const curAns = mode === "pid5" ? answers : lpfsAns;
   const answered = Object.keys(curAns).length;
@@ -234,7 +276,7 @@ export default function App() {
   // ═══ DiagCard component ═══
   const DiagCard = ({ diag, fScores }) => {
     const { name, color, desc, facets: dFacets, score, flag, id } = diag;
-    const explanation = DIAG_EXPLANATIONS[id];
+    const explanation = getDiagExplanation(id, lang);
     const displayName = diagName(id, name, lang);
     return (
       <div className={`mb-4 p-4 rounded-xl border transition-all ${flag ? 'border-opacity-40' : 'border-gray-700/30 bg-gray-800/20'}`} style={flag ? { borderColor: color + '50', background: color + '08' } : {}}>
@@ -247,7 +289,7 @@ export default function App() {
             {score.toFixed(2)} — {flag ? t('sevElevated') : score >= 1.0 ? t('sevMild') : t('sevLow')}
           </span>
         </div>
-        <p className="text-xs text-gray-500 mb-3">{desc}</p>
+        <p className="text-xs text-gray-500 mb-3">{diagDesc(desc, lang)}</p>
         <div className="space-y-1">
           {dFacets.map(f => {
             const v = fScores[f] || 0;
@@ -414,7 +456,7 @@ export default function App() {
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
                     <div className="flex gap-2">
-                      <button onClick={() => setViewingResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
+                      <button onClick={() => viewSavedResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                       <button onClick={() => {
                         const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'});
                         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
@@ -439,7 +481,7 @@ export default function App() {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => setViewingResult({ type: cr.type, fullData: cr.data?.fullData || cr.data, date: cr.created_at })}
+                          <button onClick={() => viewSavedResult({ type: cr.type, fullData: cr.data?.fullData || cr.data, date: cr.created_at })}
                             className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
                           <button onClick={() => {
                             const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
@@ -461,91 +503,6 @@ export default function App() {
             )}
           </div>
         )}
-
-        {/* ═══ VIEW SAVED RESULT MODAL ═══ */}
-        {viewingResult && (() => {
-          const vr = viewingResult;
-          const fd = vr.fullData;
-          if (vr.type === 'pid5' && fd) {
-            const vDomains = fd.domeny || {};
-            const vFacets = fd.facety || {};
-            const vDiags = (fd.diagnostika || []).sort((a,b) => b.score - a.score);
-            return (
-              <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 pt-12 overflow-y-auto" onClick={() => setViewingResult(null)}>
-                <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-2xl mb-12" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-lg font-semibold text-purple-300">{t('pid5ResultsTitle')}</h3>
-                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
-                    </div>
-                    <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
-                  </div>
-                  {/* Domains */}
-                  <div className="mb-6">
-                    <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t('domains')}</div>
-                    {Object.entries(vDomains).map(([d, v]) => (
-                      <div key={d} className="flex items-center gap-3 mb-2">
-                        <div className="w-36 text-sm font-medium" style={{color: DC[d]}}>{domainName(d, lang)}</div>
-                        <div className="flex-1 bg-gray-800 rounded-full h-2.5 overflow-hidden">
-                          <div className="h-full rounded-full" style={{width: `${(v/3)*100}%`, background: DC[d]}} />
-                        </div>
-                        <div className="w-12 text-right text-sm font-mono">{v.toFixed(2)}</div>
-                        <div className="w-16 text-xs text-right" style={{color: SEV_CLR(v)}}>{SEV(v)}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Top diagnostics */}
-                  {vDiags.length > 0 && (
-                    <div className="mb-4">
-                      <div className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t('diagnosticProfiles')}</div>
-                      <div className="space-y-1.5">
-                        {vDiags.map(d => (
-                          <div key={d.id} className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full shrink-0" style={{ background: d.flag ? (DIAG_PROFILES.find(p=>p.id===d.id)?.color || '#6B7280') : '#374151' }} />
-                            <div className="flex-1 text-xs truncate" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{diagName(d.id, d.name, lang)}</div>
-                            <div className="w-10 text-right text-xs font-mono" style={{ color: d.flag ? '#F3F4F6' : '#6B7280' }}>{d.score.toFixed(2)}</div>
-                            <div className="w-16 text-xs text-right" style={{ color: d.flag ? '#FB923C' : '#4B5563' }}>{d.flag ? `⚠ ${t('sevElevated')}` : t('sevLow')}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <button onClick={() => setViewingResult(null)} className="w-full mt-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">{t('close')}</button>
-                </div>
-              </div>
-            );
-          }
-          if (vr.type === 'lpfs' && fd) {
-            return (
-              <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setViewingResult(null)}>
-                <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-lg font-semibold text-blue-300">{t('lpfsResultsTitle')}</h3>
-                      <span className="text-xs text-gray-600">{new Date(vr.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
-                    </div>
-                    <button onClick={() => setViewingResult(null)} className="text-gray-500 hover:text-gray-300 text-xl px-2">×</button>
-                  </div>
-                  <div className="text-center mb-6">
-                    <div className="text-5xl font-bold" style={{color: SEV_CLR(fd.prumer)}}>{fd.prumer?.toFixed(2)}</div>
-                    <div className="text-gray-500 text-sm mt-1">{SEV(fd.prumer)}</div>
-                  </div>
-                  {fd.subskaly && Object.entries(fd.subskaly).map(([sub, v]) => (
-                    <div key={sub} className="flex items-center gap-3 mb-2">
-                      <div className="w-28 text-sm text-blue-200/70">{lpfsSubName(sub, lang)}</div>
-                      <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
-                        <div className="h-full rounded-full bg-blue-500" style={{width: `${(v/4)*100}%`}} />
-                      </div>
-                      <div className="w-10 text-right text-xs font-mono text-gray-300">{v.toFixed(2)}</div>
-                    </div>
-                  ))}
-                  <button onClick={() => setViewingResult(null)} className="w-full mt-6 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-all">{t('close')}</button>
-                </div>
-              </div>
-            );
-          }
-          return null;
-        })()}
 
         {/* Debug tools */}
         <div className="mt-6 pt-4 border-t border-gray-800/40">
@@ -569,7 +526,13 @@ export default function App() {
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
         <h2 className="text-3xl font-bold text-purple-300 mb-2">{t('pid5ResultsHeading')}</h2>
-        <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
+        <p className="text-gray-400 mb-4">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
+        {viewingSource === 'saved' && viewingResult && (
+          <div className="mb-6 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-center justify-between">
+            <span className="text-xs text-amber-400">📋 {lang === 'cs' ? 'Prohlížíte uložený výsledek' : 'Viewing saved result'}{viewingResult.date ? ` — ${new Date(viewingResult.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}` : ''}</span>
+            <button onClick={() => { setViewingResult(null); setViewingSource(null); setMode('menu'); }} className="text-xs text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-800 transition-all">{t('close')}</button>
+          </div>
+        )}
 
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('domainsRadar')}</h3>
@@ -662,7 +625,7 @@ export default function App() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {diagnostics.filter(d => d.flag).map(d => {
-                  const explanation = DIAG_EXPLANATIONS[d.id];
+                  const explanation = getDiagExplanation(d.id, lang);
                   const displayName = diagName(d.id, d.name, lang);
                   return (
                     <div key={d.id} className="group rounded-2xl border-2 p-5 hover:shadow-xl hover:shadow-black/30 transition-all duration-200" style={{borderColor: d.color + '40', background: d.color + '08'}}>
@@ -706,7 +669,7 @@ export default function App() {
               <div className="text-sm font-semibold text-gray-500 mb-4">{t('subclinical')}</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {diagnostics.filter(d => !d.flag && d.score >= 0.8).map(d => {
-                  const explanation = DIAG_EXPLANATIONS[d.id];
+                  const explanation = getDiagExplanation(d.id, lang);
                   const displayName = diagName(d.id, d.name, lang);
                   return (
                     <HoverTip key={d.id} text={explanation} wide block>
@@ -737,7 +700,7 @@ export default function App() {
               {diagnostics.map(d => {
                 const displayName = diagName(d.id, d.name, lang);
                 return (
-                  <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} wide block>
+                  <HoverTip key={d.id} text={getDiagExplanation(d.id, lang)} wide block>
                     <div className="cursor-help group flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-lg hover:bg-gray-800/40 transition-all">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
                       <div className="flex-1 text-sm truncate min-w-0 group-hover:text-gray-200 transition-colors" style={{ color: d.flag ? d.color : '#6B7280' }}>{displayName.split('(')[0].trim()}</div>
@@ -751,6 +714,31 @@ export default function App() {
                 );
               })}
             </div>
+          </div>
+        </div>
+
+        {/* ═══ SUMMARY PARAGRAPH ═══ */}
+        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('summaryTitle')}</h3>
+          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-3">
+            <p>{t('summaryIntro')}</p>
+            {(() => {
+              const elevated = Object.entries(domainScores).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]);
+              const mild = Object.entries(domainScores).filter(([, v]) => v >= 1.0 && v < 1.5);
+              if (elevated.length > 0) {
+                return <p>{t('summaryDomains')} <strong>{elevated.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong>{mild.length > 0 ? `, ${lang === 'cs' ? 'a mírně zvýšené' : 'with mildly elevated'}: ${mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}` : ''}.</p>;
+              }
+              if (mild.length > 0) {
+                return <p>{t('summaryDomains')} <strong>{mild.map(([d, v]) => `${domainName(d, lang)} (${v.toFixed(2)})`).join(', ')}</strong> ({lang === 'cs' ? 'mírná úroveň' : 'mild level'}).</p>;
+              }
+              return null;
+            })()}
+            {diagnostics.filter(d => d.flag).length > 0 ? (
+              <p>{t('summaryElevated')} <strong>{diagnostics.filter(d => d.flag).map(d => diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()).join(', ')}</strong>.</p>
+            ) : (
+              <p className="text-green-400/80">{t('summaryNoElevated')}</p>
+            )}
+            <p className="text-amber-400/80 text-xs mt-4 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">{t('summaryNote')}</p>
           </div>
         </div>
 
@@ -793,7 +781,13 @@ export default function App() {
           <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
         </div>
         <h2 className="text-3xl font-bold text-blue-300 mb-2">{t('lpfsResultsHeading')}</h2>
-        <p className="text-gray-400 mb-8">{t('filledItems')} {Object.keys(lpfsAns).length}/80 {t('items')}</p>
+        {viewingSource === 'saved' && viewingResult && (
+          <div className="mb-6 p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-300 text-sm flex items-center justify-between">
+            <span>📂 {lang === 'cs' ? 'Zobrazujete uložený výsledek' : 'Viewing saved result'}{viewingResult.created_at ? ` (${new Date(viewingResult.created_at).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US')})` : ''}</span>
+            <button onClick={() => { setViewingSource(null); setViewingResult(null); setMode('history'); }} className="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs transition-all">✕ {lang === 'cs' ? 'Zavřít' : 'Close'}</button>
+          </div>
+        )}
+        <p className="text-gray-400 mb-4">{t('filledItems')} {Object.keys(lpfsAns).length}/80 {t('items')}</p>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
           <div className="text-center">
             <div className="text-6xl font-bold" style={{color: SEV_CLR(lpfsTotal)}}>{lpfsTotal.toFixed(2)}</div>
@@ -816,6 +810,26 @@ export default function App() {
           <div className="border-t border-gray-700/30 pt-3 mt-3 flex gap-4 text-xs">
             <span className="text-purple-400">{t('selfFunctioning')}: {((lpfsSubscaleScores.identity + lpfsSubscaleScores.selfDirection) / 2).toFixed(2)}</span>
             <span className="text-pink-400">{t('interpersonal')}: {((lpfsSubscaleScores.empathy + lpfsSubscaleScores.intimacy) / 2).toFixed(2)}</span>
+          </div>
+        </div>
+        {/* ═══ LPFS SUMMARY ═══ */}
+        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">{t('summaryTitle')}</h3>
+          <div className="prose prose-invert max-w-none text-sm leading-relaxed text-gray-300 space-y-3">
+            <p>{t('summaryLpfsIntro')} <strong className="text-xl" style={{color: SEV_CLR(lpfsTotal)}}>{lpfsTotal.toFixed(2)}</strong> ({SEV(lpfsTotal)})</p>
+            {lpfsTotal >= 1.5 ? (
+              <>
+                <p>{t('summaryLpfsHigh')}</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {Object.entries(lpfsSubscaleScores).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]).map(([sub, v]) => (
+                    <li key={sub}><strong>{lpfsSubName(sub, lang)}</strong>: {v.toFixed(2)}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="text-green-400/80">{t('summaryLpfsOk')}</p>
+            )}
+            <p className="text-amber-400/80 text-xs mt-4 p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">{t('summaryNote')}</p>
           </div>
         </div>
         <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 backdrop-blur-xl mb-6">
@@ -853,7 +867,7 @@ export default function App() {
   const domain = facets.length ? facetDomain(facets[0]) : null;
   const progress = (answered / (isPid ? Q.length : LPFS_Q.length)) * 100;
   const liveDiags = hoveredVal !== null ? previewDiagnostics : diagnostics;
-  const questionHint = getQuestionHint(mode, curI, facets);
+  const questionHint = getQuestionHint(mode, curI, facets, lang);
   const lpfsSub = !isPid ? getLpfsSubscale(curI) : null;
 
   return (
@@ -1022,7 +1036,7 @@ export default function App() {
                       const baseDiag = diagnostics.find(x => x.id === d.id);
                       const diff = baseDiag && hoveredVal !== null ? d.score - baseDiag.score : 0;
                       return (
-                        <HoverTip key={d.id} text={DIAG_EXPLANATIONS[d.id]} block>
+                        <HoverTip key={d.id} text={getDiagExplanation(d.id, lang)} block>
                           <div className="flex items-center gap-1.5 py-0.5 cursor-help">
                             <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.flag ? d.color : '#374151' }} />
                             <div className="w-28 text-xs truncate" style={{ color: d.flag ? d.color : '#6B7280' }}>{diagName(d.id, d.name, lang).split('(')[0].split('—')[0].trim()}</div>
