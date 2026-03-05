@@ -1,0 +1,25 @@
+name: Sync feedback (Supabase → GitHub Issues)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # hourly
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps
+        run: npm ci --prefer-offline
+      - name: Run Supabase→GitHub sync
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: node scripts/sync-supabase-to-github.js

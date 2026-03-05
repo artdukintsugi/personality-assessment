@@ -3,6 +3,8 @@
  * Stores reports in localStorage, with optional sync to GitHub Issues.
  */
 
+import { supabase, isSupabaseConfigured } from './supabase';
+
 const STORAGE_KEY = 'app_feedback_reports';
 
 /** Get all stored feedback reports */
@@ -34,7 +36,30 @@ export function addReport(report) {
   };
   reports.push(entry);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+  // Fire-and-forget attempt to sync to Supabase if configured
+  if (isSupabaseConfigured()) {
+    // insert without awaiting so UI stays snappy
+    try {
+      supabase.from('feedback_reports').insert([{ ...entry }]).then(() => {}).catch(() => {});
+    } catch (e) {
+      // ignore
+    }
+  }
   return entry;
+}
+
+/**
+ * Try to sync a single report to Supabase explicitly
+ */
+export async function syncReportToSupabase(report) {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase.from('feedback_reports').insert([{ ...report }]);
+    if (error) throw error;
+    return data;
+  } catch (e) {
+    return null;
+  }
 }
 
 /** Mark a report as resolved */
