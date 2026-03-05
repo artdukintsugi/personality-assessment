@@ -1,7 +1,8 @@
 /**
  * ISI Results page — Insomnia Severity Index
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { ISI_SEVERITY } from '../data/isi';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
@@ -12,10 +13,7 @@ export default function ISIResults({ answers, questions, lang, t, onBack, toggle
   const severity = ISI_SEVERITY.find(s => total >= s.min && total <= s.max) || ISI_SEVERITY[0];
   const validity = useMemo(() => checkSimpleValidity(answers, 7, 0, 4, lang), [answers, lang]);
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('isi_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('isi_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('isi_showLiveResults', true);
 
   const [showCompare, setShowCompare] = useState(false);
 

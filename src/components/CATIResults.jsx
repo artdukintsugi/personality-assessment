@@ -1,7 +1,8 @@
 /**
  * CATI Results page — Camouflaging Autistic Traits Questionnaire
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { CATI_SUBSCALES, CATI_SUBSCALE_ITEMS, CATI_REVERSE_ITEMS, CATI_SEVERITY, scoreCATI } from '../data/cati';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
@@ -11,10 +12,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
   const severity = CATI_SEVERITY.find(s => total >= s.min && total <= s.max) || CATI_SEVERITY[0];
   const validity = useMemo(() => checkSimpleValidity(answers, 42, 1, 5, lang), [answers, lang]);
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('cati_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('cati_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('cati_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   return (

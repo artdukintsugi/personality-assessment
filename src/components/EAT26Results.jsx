@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, EAT26_SUBSCALES, EAT26_CUTOFF, scoreEAT26, EAT26_REVERSE_ITEM } from '../data/eat26';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -28,10 +29,7 @@ export default function EAT26Results({ answers, questions, lang, t, onBack, togg
 
   const aboveCutoff = total >= EAT26_CUTOFF;
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('eat26_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('eat26_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('eat26_showLiveResults', true);
 
   const [showCompare, setShowCompare] = useState(false);
 

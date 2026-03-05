@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { ITQ_QUESTIONS, ITQ_SCALE, ITQ_CLUSTERS, ITQ_SEVERITY, scoreITQ, scoreITQCluster, diagnoseITQ, ITQ_PTSD_ITEMS, ITQ_DSO_ITEMS } from '../data/itq';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -11,10 +12,7 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
   const validity = checkSimpleValidity(answers, 18, 0, 4, lang);
   const dx = diagnoseITQ(answers);
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('itq_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('itq_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('itq_showLiveResults', true);
 
   const [showCompare, setShowCompare] = useState(false);
 

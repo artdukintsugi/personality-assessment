@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES } from '../data/asrs';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -6,13 +7,10 @@ import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from '.
 export default function ASRSResults({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const q = ASRS_QUESTIONS[lang] || ASRS_QUESTIONS.cs;
   const scaleLabels = ASRS_SCALE[lang] || ASRS_SCALE.cs;
-  const total = (answers || []).reduce((s, v) => s + (v ?? 0), 0);
+  const total = Object.values(answers || {}).reduce((s, v) => s + (v ?? 0), 0);
   const maxScore = 24;
   const validity = checkSimpleValidity(answers, 6, 0, 4, lang);
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('asrs_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('asrs_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('asrs_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   // Subscale scores

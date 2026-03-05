@@ -1,7 +1,8 @@
 /**
  * GAD-7 Results page
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { GAD7_SEVERITY } from '../data/gad7';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
@@ -12,10 +13,7 @@ export default function GAD7Results({ answers, questions, lang, t, onBack, toggl
   const severity = GAD7_SEVERITY.find(s => total >= s.min && total <= s.max) || GAD7_SEVERITY[0];
   const validity = useMemo(() => checkSimpleValidity(answers, questions.length, 0, 3, lang), [answers, questions.length, lang]);
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('gad7_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('gad7_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('gad7_showLiveResults', true);
 
   const [showCompare, setShowCompare] = useState(false);
 

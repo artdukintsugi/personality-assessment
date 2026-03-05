@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { DAST10_QUESTIONS, DAST10_SCALE, DAST10_SEVERITY, DAST10_REVERSE_ITEM, scoreDAST10, DAST10_CUTOFF } from '../data/dast10';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -11,10 +12,7 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
   const validity = checkSimpleValidity(answers, 10, 0, 1, lang);
   const aboveCutoff = total >= DAST10_CUTOFF;
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('dast10_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('dast10_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('dast10_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   return (

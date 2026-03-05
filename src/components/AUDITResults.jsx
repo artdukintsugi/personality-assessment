@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { AUDIT_QUESTIONS, AUDIT_SCALES, AUDIT_SEVERITY, AUDIT_SUBSCALES, scoreAUDIT, scoreAUDITSubscale, Q910_SCORE_MAP } from '../data/audit';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -9,10 +10,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
   const total = scoreAUDIT(answers);
   const maxScore = 40;
   const validity = checkSimpleValidity(answers, 10, 0, 4, lang);
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('audit_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('audit_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('audit_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   // Subscale scores

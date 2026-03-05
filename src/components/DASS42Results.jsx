@@ -1,7 +1,8 @@
 /**
  * DASS-42 Results page (with DASS-21 subset view)
  */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import { DASS42_SUBSCALES, DASS42_SEVERITY, DASS21_SUBSET, DASS21_SEVERITY } from '../data/dass42';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -50,16 +51,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
     const GAD_AVG = { depression: 10, anxiety: 16, stress: 12 };
   const validity = useMemo(() => checkSimpleValidity(answers, questions.length, 0, 3, lang), [answers, questions.length, lang]);
 
-  const [showLive, setShowLive] = useState(() => {
-    try {
-      const v = localStorage.getItem('dass42_showLiveResults');
-      return v === null ? true : v === 'true';
-    } catch (e) { return true; }
-  });
-
-  useEffect(() => {
-    try { localStorage.setItem('dass42_showLiveResults', showLive); } catch (e) {}
-  }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('dass42_showLiveResults', true);
 
   // Score DASS-42 subscales
   const subscaleScores42 = useMemo(() => {

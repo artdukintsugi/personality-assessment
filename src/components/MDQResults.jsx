@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from '../data/mdq';
 import { ScoreBar } from './GenericQuestionnaire';
@@ -10,13 +11,10 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
   const { part1Yes, part2Yes, part3Severity, positive } = scoreMDQ(answers || []);
 
   // Count answered items
-  const answeredCount = (answers || []).filter(v => v !== undefined && v !== null).length;
+  const answeredCount = Object.values(answers || {}).filter(v => v !== undefined && v !== null).length;
   const allAnswered = answeredCount === MDQ_TOTAL_ITEMS;
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('mdq_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('mdq_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('mdq_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   return (

@@ -67,7 +67,8 @@ export function scoreMDQ(answers) {
   // answers[0..12] = Part 1 (0=Yes, 1=No)
   // answers[13] = Part 2 (0=Yes, 1=No)
   // answers[14] = Part 3 (0-3)
-  const part1Yes = (answers || []).slice(0, 13).filter(v => v === 0).length;
+  let part1Yes = 0;
+  for (let i = 0; i < 13; i++) { if (answers?.[i] === 0) part1Yes++; }
   const part2Yes = answers?.[13] === 0;
   const part3Severity = answers?.[14] ?? 0;
   const positive = part1Yes >= 7 && part2Yes && part3Severity >= 2;

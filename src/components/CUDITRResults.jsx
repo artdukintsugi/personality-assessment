@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, scoreCUDITR, Q8_SCORE_MAP } from '../data/cuditr';
 import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
@@ -11,10 +12,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
   const validity = checkSimpleValidity(answers, 8, 0, 4, lang);
   const aboveCutoff = total >= CUDITR_CUTOFF;
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('cuditr_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('cuditr_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('cuditr_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
   return (

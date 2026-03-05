@@ -1,7 +1,8 @@
 /**
  * PCL-5 Results page
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
 import { PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from '../data/pcl5';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
@@ -55,10 +56,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
   // DSM-5 provisional diagnosis
   const dsm5Met = Object.values(clusterScores).every(c => c.met);
 
-  const [showLive, setShowLive] = useState(() => {
-    try { const v = localStorage.getItem('pcl5_showLiveResults'); return v === null ? true : v === 'true'; } catch (e) { return true; }
-  });
-  useEffect(() => { try { localStorage.setItem('pcl5_showLiveResults', showLive); } catch (e) {} }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('pcl5_showLiveResults', true);
 
   const [showCompare, setShowCompare] = useState(false);
 

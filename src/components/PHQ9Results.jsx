@@ -1,7 +1,8 @@
 /**
  * PHQ-9 Results page
  */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useLocalStorage } from '../lib/hooks';
 import { PHQ9_SEVERITY, PHQ9_CRITICAL_ITEM } from '../data/phq9';
 import { SeverityBadge, ScoreBar, ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
@@ -41,16 +42,7 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
     },
   };
 
-  const [showLive, setShowLive] = useState(() => {
-    try {
-      const v = localStorage.getItem('phq9_showLiveResults');
-      return v === null ? true : v === 'true';
-    } catch (e) { return true; }
-  });
-
-  useEffect(() => {
-    try { localStorage.setItem('phq9_showLiveResults', showLive); } catch (e) {}
-  }, [showLive]);
+  const [showLive, setShowLive] = useLocalStorage('phq9_showLiveResults', true);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
