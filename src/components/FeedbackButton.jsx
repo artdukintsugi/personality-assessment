@@ -35,9 +35,14 @@ export default function FeedbackButton({ lang = 'cs' }) {
         <button
           onClick={() => setOpen(true)}
           title={lang === 'cs' ? 'Nahlásit problém' : 'Report an issue'}
-          className="w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center shadow-lg border border-amber-700/30"
+          className="relative w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center shadow-lg border border-amber-700/30"
         >
           ⚑
+          {reports.filter(r => !r.resolved).length > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+              {reports.filter(r => !r.resolved).length}
+            </span>
+          )}
         </button>
       </div>
 

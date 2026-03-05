@@ -76,7 +76,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
       .map(k => {
         const s = testStatuses[k];
         const score = history.find(h => h.type === k)?.score ?? 0;
-        const maxScores = { phq9: 27, gad7: 21, dass42: 126, pcl5: 80, cati: 252, isi: 28, asrs: 24, eat26: 78, cuditr: 32 };
+        const maxScores = { phq9: 27, gad7: 21, dass42: 126, pcl5: 80, cati: 210, isi: 28, asrs: 24, eat26: 78, cuditr: 32, itq: 72, audit: 40, dast10: 10 };
         const pct = maxScores[k] ? Math.round((score / maxScores[k]) * 100) : 0;
         return { name: s.name, score, pct, color: s.color, status: s.status };
       });
