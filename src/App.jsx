@@ -932,12 +932,12 @@ export default function App() {
       <OnboardingModal />
 
       {/* ═══ HERO SECTION ═══ */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden hero-dots">
         {/* Gradient background glow */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-purple-500/10 via-pink-500/6 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-[-60px] left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-indigo-500/6 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-[-40px] right-1/4 w-[250px] h-[250px] bg-gradient-to-bl from-pink-500/5 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[420px] bg-gradient-to-b from-purple-500/15 via-pink-500/8 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-[-60px] left-1/4 w-[350px] h-[350px] bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-[-40px] right-1/4 w-[280px] h-[280px] bg-gradient-to-bl from-pink-500/8 to-transparent rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-2xl mx-auto px-4 pt-8 pb-4 md:pt-12 relative">
@@ -1011,7 +1011,7 @@ export default function App() {
 
         {/* Patient Profile Button — auth only */}
         {auth?.user && (history.length > 0 || cloudResults.length > 0) && (
-          <button onClick={() => setMode('profile')} className="w-full mb-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-purple-900/20 border border-cyan-500/20 hover:border-cyan-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
+          <button onClick={() => setMode('profile')} className="w-full mb-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-purple-900/20 border border-cyan-500/20 hover:border-cyan-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🏥</span>
@@ -1026,20 +1026,21 @@ export default function App() {
         )}
 
         {/* ═══ Personality Assessment ═══ */}
-        <div className="mb-2">
+        <div className="mb-3">
           <div className="flex items-center gap-3 mb-3 px-1">
-            <span className="h-px flex-1 bg-gray-800" />
-            <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">{lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
-            <span className="h-px flex-1 bg-gray-800" />
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-purple-500/30" />
+            <span className="text-xs text-purple-400/80 font-semibold uppercase tracking-widest flex items-center gap-1.5">🧠 {lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-purple-500/30" />
           </div>
         </div>
         {/* Test cards */}
         <div className="grid gap-3 mb-6">
-          <button onClick={() => setMode("pid5")} className="p-5 rounded-2xl bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
+          <button onClick={() => setMode("pid5")} className="p-5 rounded-2xl bg-gradient-to-br from-purple-900/70 to-gray-950 border border-purple-500/40 hover:border-purple-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500/90 via-purple-400/50 to-transparent" />
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-lg font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">PID-5</div>
-                <div className="text-xs text-gray-500 mt-1">{t('pid5Desc')}</div>
+                <div className="text-lg font-bold text-purple-300 group-hover:text-purple-200 transition-colors">PID-5</div>
+                <div className="text-xs text-gray-400 mt-1">{t('pid5Desc')}</div>
               </div>
               <span className="text-gray-600 group-hover:text-gray-400 text-lg inline-block group-hover:translate-x-1 transition-transform duration-200">→</span>
             </div>
@@ -1050,11 +1051,12 @@ export default function App() {
               </div>
             )}
           </button>
-          <button onClick={() => setMode("lpfs")} className="p-5 rounded-2xl bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
+          <button onClick={() => setMode("lpfs")} className="p-5 rounded-2xl bg-gradient-to-br from-blue-900/70 to-gray-950 border border-blue-500/40 hover:border-blue-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500/90 via-blue-400/50 to-transparent" />
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-lg font-semibold text-blue-300 group-hover:text-blue-200 transition-colors">LPFS-SR</div>
-                <div className="text-xs text-gray-500 mt-1">{t('lpfsDesc')}</div>
+                <div className="text-lg font-bold text-blue-300 group-hover:text-blue-200 transition-colors">LPFS-SR</div>
+                <div className="text-xs text-gray-400 mt-1">{t('lpfsDesc')}</div>
               </div>
               <span className="text-gray-600 group-hover:text-gray-400 text-lg inline-block group-hover:translate-x-1 transition-transform duration-200">→</span>
             </div>
@@ -1068,18 +1070,19 @@ export default function App() {
         </div>
 
         {/* ═══ Clinical Screening Tools ═══ */}
-        <div className="mb-2 mt-6">
+        <div className="mb-3 mt-6">
           <div className="flex items-center gap-3 mb-3 px-1">
-            <span className="h-px flex-1 bg-gray-800" />
-            <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
-            <span className="h-px flex-1 bg-gray-800" />
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-500/30" />
+            <span className="text-xs text-cyan-400/80 font-semibold uppercase tracking-widest flex items-center gap-1.5">🔬 {lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-500/30" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* PHQ-9 */}
-          <button onClick={() => setMode("phq9")} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/20 hover:border-emerald-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">PHQ-9</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '9 otázek — deprese' : '9 items — depression'}</div>
+          <button onClick={() => setMode("phq9")} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-900/70 to-gray-950 border border-emerald-500/40 hover:border-emerald-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-emerald-500/80 via-emerald-400/40 to-transparent" />
+            <div className="text-sm font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors">PHQ-9</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '9 otázek — deprese' : '9 items — depression'}</div>
             {Object.keys(phq9Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{width: `${(Object.keys(phq9Ans).length/9)*100}%`}} /></div>
@@ -1088,9 +1091,10 @@ export default function App() {
             )}
           </button>
           {/* GAD-7 */}
-          <button onClick={() => setMode("gad7")} className="p-4 rounded-2xl bg-gradient-to-br from-teal-900/40 to-teal-800/20 border border-teal-500/20 hover:border-teal-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-teal-300 group-hover:text-teal-200 transition-colors">GAD-7</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '7 otázek — úzkost' : '7 items — anxiety'}</div>
+          <button onClick={() => setMode("gad7")} className="p-4 rounded-2xl bg-gradient-to-br from-teal-900/70 to-gray-950 border border-teal-500/40 hover:border-teal-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500/80 via-teal-400/40 to-transparent" />
+            <div className="text-sm font-bold text-teal-300 group-hover:text-teal-200 transition-colors">GAD-7</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '7 otázek — úzkost' : '7 items — anxiety'}</div>
             {Object.keys(gad7Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-teal-500 rounded-full" style={{width: `${(Object.keys(gad7Ans).length/7)*100}%`}} /></div>
@@ -1099,9 +1103,10 @@ export default function App() {
             )}
           </button>
           {/* DASS-42 */}
-          <button onClick={() => setMode("dass42")} className="p-4 rounded-2xl bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/20 hover:border-orange-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-orange-300 group-hover:text-orange-200 transition-colors">DASS-42</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '42 otázek — deprese, úzkost, stres' : '42 items — depression, anxiety, stress'}</div>
+          <button onClick={() => setMode("dass42")} className="p-4 rounded-2xl bg-gradient-to-br from-orange-900/70 to-gray-950 border border-orange-500/40 hover:border-orange-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-orange-500/80 via-orange-400/40 to-transparent" />
+            <div className="text-sm font-bold text-orange-300 group-hover:text-orange-200 transition-colors">DASS-42</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '42 otázek — deprese, úzkost, stres' : '42 items — depression, anxiety, stress'}</div>
             {Object.keys(dass42Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-orange-500 rounded-full" style={{width: `${(Object.keys(dass42Ans).length/42)*100}%`}} /></div>
@@ -1110,9 +1115,10 @@ export default function App() {
             )}
           </button>
           {/* PCL-5 */}
-          <button onClick={() => setMode("pcl5")} className="p-4 rounded-2xl bg-gradient-to-br from-rose-900/40 to-rose-800/20 border border-rose-500/20 hover:border-rose-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-rose-300 group-hover:text-rose-200 transition-colors">PCL-5</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '20 otázek — PTSD' : '20 items — PTSD'}</div>
+          <button onClick={() => setMode("pcl5")} className="p-4 rounded-2xl bg-gradient-to-br from-rose-900/70 to-gray-950 border border-rose-500/40 hover:border-rose-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-rose-500/80 via-rose-400/40 to-transparent" />
+            <div className="text-sm font-bold text-rose-300 group-hover:text-rose-200 transition-colors">PCL-5</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '20 otázek — PTSD' : '20 items — PTSD'}</div>
             {Object.keys(pcl5Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-rose-500 rounded-full" style={{width: `${(Object.keys(pcl5Ans).length/20)*100}%`}} /></div>
@@ -1121,9 +1127,10 @@ export default function App() {
             )}
           </button>
           {/* CATI */}
-          <button onClick={() => setMode("cati")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-violet-800/20 border border-violet-500/20 hover:border-violet-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-violet-300 group-hover:text-violet-200 transition-colors">CATI</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '42 otázek — autistické rysy' : '42 items — autistic traits'}</div>
+          <button onClick={() => setMode("cati")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/70 to-gray-950 border border-violet-500/40 hover:border-violet-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-violet-500/80 via-violet-400/40 to-transparent" />
+            <div className="text-sm font-bold text-violet-300 group-hover:text-violet-200 transition-colors">CATI</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '42 otázek — autistické rysy' : '42 items — autistic traits'}</div>
             {Object.keys(catiAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(catiAns).length/42)*100}%`}} /></div>
@@ -1132,9 +1139,10 @@ export default function App() {
             )}
           </button>
           {/* ISI */}
-          <button onClick={() => setMode("isi")} className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-indigo-800/20 border border-indigo-500/20 hover:border-indigo-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-indigo-300 group-hover:text-indigo-200 transition-colors">ISI</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '7 otázek — nespavost' : '7 items — insomnia'}</div>
+          <button onClick={() => setMode("isi")} className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900/70 to-gray-950 border border-indigo-500/40 hover:border-indigo-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-indigo-500/80 via-indigo-400/40 to-transparent" />
+            <div className="text-sm font-bold text-indigo-300 group-hover:text-indigo-200 transition-colors">ISI</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '7 otázek — nespavost' : '7 items — insomnia'}</div>
             {Object.keys(isiAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-indigo-500 rounded-full" style={{width: `${(Object.keys(isiAns).length/7)*100}%`}} /></div>
@@ -1143,9 +1151,10 @@ export default function App() {
             )}
           </button>
           {/* ASRS */}
-          <button onClick={() => setMode("asrs")} className="p-4 rounded-2xl bg-gradient-to-br from-sky-900/40 to-sky-800/20 border border-sky-500/20 hover:border-sky-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-sky-300 group-hover:text-sky-200 transition-colors">ASRS</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '18 otázek — ADHD' : '18 items — ADHD'}</div>
+          <button onClick={() => setMode("asrs")} className="p-4 rounded-2xl bg-gradient-to-br from-sky-900/70 to-gray-950 border border-sky-500/40 hover:border-sky-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-sky-500/80 via-sky-400/40 to-transparent" />
+            <div className="text-sm font-bold text-sky-300 group-hover:text-sky-200 transition-colors">ASRS</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '18 otázek — ADHD' : '18 items — ADHD'}</div>
             {Object.keys(asrsAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-sky-500 rounded-full" style={{width: `${(Object.keys(asrsAns).length/18)*100}%`}} /></div>
@@ -1154,9 +1163,10 @@ export default function App() {
             )}
           </button>
           {/* EAT-26 */}
-          <button onClick={() => setMode("eat26")} className="p-4 rounded-2xl bg-gradient-to-br from-pink-900/40 to-pink-800/20 border border-pink-500/20 hover:border-pink-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-pink-300 group-hover:text-pink-200 transition-colors">EAT-26</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '26 otázek — poruchy příjmu potravy' : '26 items — eating disorders'}</div>
+          <button onClick={() => setMode("eat26")} className="p-4 rounded-2xl bg-gradient-to-br from-pink-900/70 to-gray-950 border border-pink-500/40 hover:border-pink-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-pink-500/80 via-pink-400/40 to-transparent" />
+            <div className="text-sm font-bold text-pink-300 group-hover:text-pink-200 transition-colors">EAT-26</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '26 otázek — poruchy příjmu potravy' : '26 items — eating disorders'}</div>
             {Object.keys(eat26Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-pink-500 rounded-full" style={{width: `${(Object.keys(eat26Ans).length/26)*100}%`}} /></div>
@@ -1165,9 +1175,10 @@ export default function App() {
             )}
           </button>
           {/* MDQ */}
-          <button onClick={() => setMode("mdq")} className="p-4 rounded-2xl bg-gradient-to-br from-amber-900/40 to-amber-800/20 border border-amber-500/20 hover:border-amber-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-amber-300 group-hover:text-amber-200 transition-colors">MDQ</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '15 otázek — bipolární porucha' : '15 items — bipolar disorder'}</div>
+          <button onClick={() => setMode("mdq")} className="p-4 rounded-2xl bg-gradient-to-br from-amber-900/70 to-gray-950 border border-amber-500/40 hover:border-amber-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-500/80 via-amber-400/40 to-transparent" />
+            <div className="text-sm font-bold text-amber-300 group-hover:text-amber-200 transition-colors">MDQ</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '15 otázek — bipolární porucha' : '15 items — bipolar disorder'}</div>
             {Object.keys(mdqAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-amber-500 rounded-full" style={{width: `${(Object.keys(mdqAns).length/15)*100}%`}} /></div>
@@ -1176,9 +1187,10 @@ export default function App() {
             )}
           </button>
           {/* CUDIT-R */}
-          <button onClick={() => setMode("cuditr")} className="p-4 rounded-2xl bg-gradient-to-br from-lime-900/40 to-lime-800/20 border border-lime-500/20 hover:border-lime-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-lime-300 group-hover:text-lime-200 transition-colors">CUDIT-R</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '8 otázek — konopí' : '8 items — cannabis'}</div>
+          <button onClick={() => setMode("cuditr")} className="p-4 rounded-2xl bg-gradient-to-br from-lime-900/70 to-gray-950 border border-lime-500/40 hover:border-lime-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-lime-500/80 via-lime-400/40 to-transparent" />
+            <div className="text-sm font-bold text-lime-300 group-hover:text-lime-200 transition-colors">CUDIT-R</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '8 otázek — konopí' : '8 items — cannabis'}</div>
             {Object.keys(cuditrAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-lime-500 rounded-full" style={{width: `${(Object.keys(cuditrAns).length/8)*100}%`}} /></div>
@@ -1187,9 +1199,10 @@ export default function App() {
             )}
           </button>
           {/* AUDIT */}
-          <button onClick={() => setMode("audit")} className="p-4 rounded-2xl bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 border border-yellow-500/20 hover:border-yellow-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-yellow-300 group-hover:text-yellow-200 transition-colors">AUDIT</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — alkohol' : '10 items — alcohol'}</div>
+          <button onClick={() => setMode("audit")} className="p-4 rounded-2xl bg-gradient-to-br from-yellow-900/70 to-gray-950 border border-yellow-500/40 hover:border-yellow-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-yellow-500/80 via-yellow-400/40 to-transparent" />
+            <div className="text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">AUDIT</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — alkohol' : '10 items — alcohol'}</div>
             {Object.keys(auditAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-yellow-500 rounded-full" style={{width: `${(Object.keys(auditAns).length/10)*100}%`}} /></div>
@@ -1198,9 +1211,10 @@ export default function App() {
             )}
           </button>
           {/* DAST-10 */}
-          <button onClick={() => setMode("dast10")} className="p-4 rounded-2xl bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/20 hover:border-red-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-red-300 group-hover:text-red-200 transition-colors">DAST-10</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — drogy' : '10 items — drug use'}</div>
+          <button onClick={() => setMode("dast10")} className="p-4 rounded-2xl bg-gradient-to-br from-red-900/70 to-gray-950 border border-red-500/40 hover:border-red-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500/80 via-red-400/40 to-transparent" />
+            <div className="text-sm font-bold text-red-300 group-hover:text-red-200 transition-colors">DAST-10</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — drogy' : '10 items — drug use'}</div>
             {Object.keys(dast10Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{width: `${(Object.keys(dast10Ans).length/10)*100}%`}} /></div>
@@ -1209,9 +1223,10 @@ export default function App() {
             )}
           </button>
           {/* ITQ */}
-          <button onClick={() => setMode("itq")} className="p-4 rounded-2xl bg-gradient-to-br from-fuchsia-900/40 to-fuchsia-800/20 border border-fuchsia-500/20 hover:border-fuchsia-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-fuchsia-300 group-hover:text-fuchsia-200 transition-colors">ITQ</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '18 otázek — CPTSD (ICD-11)' : '18 items — CPTSD (ICD-11)'}</div>
+          <button onClick={() => setMode("itq")} className="p-4 rounded-2xl bg-gradient-to-br from-fuchsia-900/70 to-gray-950 border border-fuchsia-500/40 hover:border-fuchsia-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-fuchsia-500/80 via-fuchsia-400/40 to-transparent" />
+            <div className="text-sm font-bold text-fuchsia-300 group-hover:text-fuchsia-200 transition-colors">ITQ</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '18 otázek — CPTSD (ICD-11)' : '18 items — CPTSD (ICD-11)'}</div>
             {Object.keys(itqAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-fuchsia-500 rounded-full" style={{width: `${(Object.keys(itqAns).length/18)*100}%`}} /></div>
@@ -1220,9 +1235,10 @@ export default function App() {
             )}
           </button>
           {/* AQ-50 */}
-          <button onClick={() => setMode("aq")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-violet-800/20 border border-violet-500/20 hover:border-violet-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-violet-300 group-hover:text-violet-200 transition-colors">AQ-50</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '50 otázek — autistické rysy' : '50 items — autistic traits'}</div>
+          <button onClick={() => setMode("aq")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/70 to-gray-950 border border-violet-500/40 hover:border-violet-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-violet-500/80 via-violet-400/40 to-transparent" />
+            <div className="text-sm font-bold text-violet-300 group-hover:text-violet-200 transition-colors">AQ-50</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '50 otázek — autistické rysy' : '50 items — autistic traits'}</div>
             {Object.keys(aqAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(aqAns).length/50)*100}%`}} /></div>
@@ -1231,9 +1247,10 @@ export default function App() {
             )}
           </button>
           {/* AQ-10 */}
-          <button onClick={() => setMode("aq10")} className="p-4 rounded-2xl bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group">
-            <div className="text-sm font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">AQ-10</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — krátký AQ screener' : '10 items — brief AQ screener'}</div>
+          <button onClick={() => setMode("aq10")} className="p-4 rounded-2xl bg-gradient-to-br from-purple-900/70 to-gray-950 border border-purple-500/40 hover:border-purple-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500/80 via-purple-400/40 to-transparent" />
+            <div className="text-sm font-bold text-purple-300 group-hover:text-purple-200 transition-colors">AQ-10</div>
+            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — krátký AQ screener' : '10 items — brief AQ screener'}</div>
             {Object.keys(aq10Ans).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-purple-500 rounded-full" style={{width: `${(Object.keys(aq10Ans).length/10)*100}%`}} /></div>
