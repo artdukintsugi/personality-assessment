@@ -598,7 +598,7 @@ export default function App() {
   const saveAsrsResult = useCallback(() => {
     const { partA, total } = scoreASRS(asrsAns);
     const sev = ASRS_SEVERITY.find(s => partA >= s.min && partA <= s.max);
-    saveToHistory('asrs', { score: partA, severity: sev?.key, fullData: { score: partA, total, severity: sev?.key, odpovedi: asrsAns } });
+    saveToHistory('asrs', { score: total, partA, severity: sev?.key, fullData: { score: total, partA, total, severity: sev?.key, odpovedi: asrsAns } });
   }, [asrsAns, saveToHistory]);
 
   const saveEat26Result = useCallback(() => {

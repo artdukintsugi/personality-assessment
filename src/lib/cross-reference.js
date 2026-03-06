@@ -49,7 +49,13 @@ export function generateCrossReferences(history, lang = 'cs') {
   const gad7 = getLatestScore(history, 'gad7');
   const pcl5 = getLatestScore(history, 'pcl5');
   const isi  = getLatestScore(history, 'isi');
-  const asrs = getLatestScore(history, 'asrs');
+  // ASRS: old data stored partA (0–6), new data stores total (0–18)
+  // Normalize: if stored score <= 6, treat as partA and convert to a comparable value
+  const asrsRaw = getLatestScore(history, 'asrs');
+  const asrsH = getLatest(history, 'asrs');
+  const asrs = asrsRaw === null ? null
+    : asrsRaw <= 6 ? (asrsRaw >= 4 ? 14 : 0)   // old data: positive screen → 14, negative → 0
+    : asrsRaw;                                    // new data: use total directly
   const cuditr = getLatestScore(history, 'cuditr');
   const audit = getLatestScore(history, 'audit');
   const dast10 = getLatestScore(history, 'dast10');
@@ -924,8 +930,12 @@ export function getTestStatus(history, lang = 'cs') {
       else { status = 'ok'; label = lang === 'cs' ? 'V normě' : 'Normal'; }
     } else if (h.type === 'asrs') {
       const s = h.score ?? 0;
-      if (s >= 18) { status = 'critical'; label = lang === 'cs' ? 'Vysoce pravděpodobné ADHD' : 'Highly Likely ADHD'; }
-      else if (s >= 14) { status = 'elevated'; label = lang === 'cs' ? 'Pravděpodobné ADHD' : 'Likely ADHD'; }
+      // s <= 6 = old data stored as partA (0–6 threshold count); s > 6 = new data stored as total (0–18)
+      const isPartA = s <= 6;
+      const isPositive = isPartA ? (h.partA ?? s) >= 4 : s >= 14;
+      const isStrong   = isPartA ? (h.partA ?? s) >= 6 : s >= 17;
+      if (isStrong)    { status = 'critical'; label = lang === 'cs' ? 'Vysoce pravděpodobné ADHD' : 'Highly Likely ADHD'; }
+      else if (isPositive) { status = 'elevated'; label = lang === 'cs' ? 'Pravděpodobné ADHD' : 'Likely ADHD'; }
       else { status = 'ok'; label = lang === 'cs' ? 'Nepravděpodobné' : 'Unlikely'; }
     } else if (h.type === 'eat26') {
       const s = h.score ?? 0;
