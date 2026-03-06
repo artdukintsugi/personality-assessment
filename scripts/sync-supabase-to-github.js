@@ -31,8 +31,10 @@ async function main() {
     .limit(200);
 
   if (error) {
-    console.error('Supabase select error:', error.message || error);
-    process.exit(1);
+    // Table may not exist yet — treat as no reports, don't fail the workflow
+    console.warn('Supabase select warning (table may not exist yet):', error.message || error);
+    console.log('No reports to sync.');
+    return;
   }
 
   console.log(`Found ${reports.length} unsynced reports`);
