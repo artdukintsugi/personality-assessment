@@ -12,13 +12,15 @@ import { DASS42_QUESTIONS, DASS42_SCALE, DASS42_SUBSCALES, DASS42_SEVERITY } fro
 import { PCL5_QUESTIONS, PCL5_SCALE, PCL5_CLUSTERS, PCL5_CUTOFF, PCL5_SEVERITY, PCL5_DSM5_CRITERIA } from './data/pcl5';
 import { CATI_QUESTIONS, CATI_SCALE, CATI_SUBSCALES, CATI_SUBSCALE_ITEMS, CATI_REVERSE_ITEMS, CATI_SEVERITY, scoreCATI } from './data/cati';
 import { ISI_QUESTIONS, ISI_SCALE_SIMPLE, ISI_SEVERITY } from './data/isi';
-import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES } from './data/asrs';
+import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES, scoreASRS } from './data/asrs';
 import { EAT26_QUESTIONS, EAT26_SCALE, EAT26_SEVERITY, EAT26_SUBSCALES, scoreEAT26, EAT26_REVERSE_ITEM } from './data/eat26';
 import { MDQ_PART1, MDQ_PART2, MDQ_PART3, MDQ_PART3_SCALE, MDQ_YESNO, scoreMDQ, MDQ_TOTAL_ITEMS } from './data/mdq';
 import { CUDITR_QUESTIONS, CUDITR_SCALES, CUDITR_SEVERITY, CUDITR_CUTOFF, CUDITR_SCALE_SIMPLE, scoreCUDITR } from './data/cuditr';
 import { AUDIT_QUESTIONS, AUDIT_SCALES, AUDIT_SEVERITY, AUDIT_CUTOFF, AUDIT_SUBSCALES, scoreAUDIT, Q910_SCORE_MAP } from './data/audit';
 import { DAST10_QUESTIONS, DAST10_SCALE, DAST10_SEVERITY, DAST10_REVERSE_ITEM, DAST10_CUTOFF, scoreDAST10 } from './data/dast10';
 import { ITQ_QUESTIONS, ITQ_SCALE, ITQ_CLUSTERS, ITQ_SEVERITY, scoreITQ, diagnoseITQ } from './data/itq';
+import { AQ_QUESTIONS, AQ_SCALE, AQ_SEVERITY, AQ_SUBSCALES, scoreAQ, AQ_CUTOFF } from './data/aq';
+import { AQ10_QUESTIONS, AQ10_SCALE, AQ10_SEVERITY, scoreAQ10, AQ10_CUTOFF } from './data/aq10';
 import { QuestionnaireScreen } from './components/GenericQuestionnaire';
 import PHQ9Results from './components/PHQ9Results';
 import GAD7Results from './components/GAD7Results';
@@ -33,6 +35,8 @@ import CUDITRResults from './components/CUDITRResults';
 import AUDITResults from './components/AUDITResults';
 import DAST10Results from './components/DAST10Results';
 import ITQResults from './components/ITQResults';
+import AQResults from './components/AQResults';
+import AQ10Results from './components/AQ10Results';
 import PatientProfile from './components/PatientProfile';
 import { createT, sevLabel, lpfsSubName, domainName, facetName, diagName, diagDesc, domainShort, metaDesc } from './lib/i18n';
 
@@ -311,7 +315,7 @@ function HoverTip({ children, text, wide, block }) {
 }
 
 // ═══ localStorage ═══
-const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx', auditAns: 'diag_audit_answers', auditIdx: 'diag_audit_idx', dast10Ans: 'diag_dast10_answers', dast10Idx: 'diag_dast10_idx', itqAns: 'diag_itq_answers', itqIdx: 'diag_itq_idx' };
+const LS_KEYS = { answers: 'diag_pid5_answers', idx: 'diag_pid5_idx', lpfsAns: 'diag_lpfs_answers', lpfsIdx: 'diag_lpfs_idx', history: 'diag_results_history', lang: 'diag_lang', onboarded: 'diag_onboarded', phq9Ans: 'diag_phq9_answers', phq9Idx: 'diag_phq9_idx', gad7Ans: 'diag_gad7_answers', gad7Idx: 'diag_gad7_idx', dass42Ans: 'diag_dass42_answers', dass42Idx: 'diag_dass42_idx', pcl5Ans: 'diag_pcl5_answers', pcl5Idx: 'diag_pcl5_idx', catiAns: 'diag_cati_answers', catiIdx: 'diag_cati_idx', isiAns: 'diag_isi_answers', isiIdx: 'diag_isi_idx', asrsAns: 'diag_asrs_answers', asrsIdx: 'diag_asrs_idx', eat26Ans: 'diag_eat26_answers', eat26Idx: 'diag_eat26_idx', mdqAns: 'diag_mdq_answers', mdqIdx: 'diag_mdq_idx', cuditrAns: 'diag_cuditr_answers', cuditrIdx: 'diag_cuditr_idx', auditAns: 'diag_audit_answers', auditIdx: 'diag_audit_idx', dast10Ans: 'diag_dast10_answers', dast10Idx: 'diag_dast10_idx', itqAns: 'diag_itq_answers', itqIdx: 'diag_itq_idx', aqAns: 'diag_aq_answers', aqIdx: 'diag_aq_idx', aq10Ans: 'diag_aq10_answers', aq10Idx: 'diag_aq10_idx' };
 function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -338,6 +342,8 @@ export default function App() {
     if (p === '/audit') return 'audit';
     if (p === '/dast10') return 'dast10';
     if (p === '/itq') return 'itq';
+    if (p === '/aq') return 'aq';
+    if (p === '/aq10') return 'aq10';
     if (p === '/pid5/results') return 'pid5_results';
     if (p === '/lpfs/results') return 'lpfs_results';
     if (p === '/phq9/results') return 'phq9_results';
@@ -353,6 +359,8 @@ export default function App() {
     if (p === '/audit/results') return 'audit_results';
     if (p === '/dast10/results') return 'dast10_results';
     if (p === '/itq/results') return 'itq_results';
+    if (p === '/aq/results') return 'aq_results';
+    if (p === '/aq10/results') return 'aq10_results';
     if (p === '/sources') return 'sources';
     if (p === '/history') return 'history';
     if (p === '/profile') return 'profile';
@@ -397,6 +405,10 @@ export default function App() {
   const [dast10Idx, setDast10Idx] = useState(() => lsGet(LS_KEYS.dast10Idx, 0));
   const [itqAns, setItqAns] = useState(() => lsGet(LS_KEYS.itqAns, {}));
   const [itqIdx, setItqIdx] = useState(() => lsGet(LS_KEYS.itqIdx, 0));
+  const [aqAns, setAqAns] = useState(() => lsGet(LS_KEYS.aqAns, {}));
+  const [aqIdx, setAqIdx] = useState(() => lsGet(LS_KEYS.aqIdx, 0));
+  const [aq10Ans, setAq10Ans] = useState(() => lsGet(LS_KEYS.aq10Ans, {}));
+  const [aq10Idx, setAq10Idx] = useState(() => lsGet(LS_KEYS.aq10Idx, 0));
   const [hoveredVal, setHoveredVal] = useState(null);
   const [showDiagLive, setShowDiagLive] = useState(true);
   const [showScoringInfo, setShowScoringInfo] = useState(false);
@@ -449,6 +461,10 @@ export default function App() {
   useEffect(() => { lsSet(LS_KEYS.dast10Idx, dast10Idx); }, [dast10Idx]);
   useEffect(() => { lsSet(LS_KEYS.itqAns, itqAns); }, [itqAns]);
   useEffect(() => { lsSet(LS_KEYS.itqIdx, itqIdx); }, [itqIdx]);
+  useEffect(() => { lsSet(LS_KEYS.aqAns, aqAns); }, [aqAns]);
+  useEffect(() => { lsSet(LS_KEYS.aqIdx, aqIdx); }, [aqIdx]);
+  useEffect(() => { lsSet(LS_KEYS.aq10Ans, aq10Ans); }, [aq10Ans]);
+  useEffect(() => { lsSet(LS_KEYS.aq10Idx, aq10Idx); }, [aq10Idx]);
 
   // Load shared result from URL
   useEffect(() => {
@@ -569,9 +585,9 @@ export default function App() {
   }, [isiAns, saveToHistory]);
 
   const saveAsrsResult = useCallback(() => {
-    const total = Object.values(asrsAns).reduce((a,b) => a+b, 0);
-    const sev = ASRS_SEVERITY.find(s => total >= s.min && total <= s.max);
-    saveToHistory('asrs', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: asrsAns } });
+    const { partA, total } = scoreASRS(asrsAns);
+    const sev = ASRS_SEVERITY.find(s => partA >= s.min && partA <= s.max);
+    saveToHistory('asrs', { score: partA, severity: sev?.key, fullData: { score: partA, total, severity: sev?.key, odpovedi: asrsAns } });
   }, [asrsAns, saveToHistory]);
 
   const saveEat26Result = useCallback(() => {
@@ -610,6 +626,18 @@ export default function App() {
     saveToHistory('itq', { score: total, severity: sev?.key, diagnosis: dx.diagnosis, fullData: { score: total, severity: sev?.key, diagnosis: dx.diagnosis, odpovedi: itqAns } });
   }, [itqAns, saveToHistory]);
 
+  const saveAqResult = useCallback(() => {
+    const { total } = scoreAQ(aqAns);
+    const sev = AQ_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('aq', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: aqAns } });
+  }, [aqAns, saveToHistory]);
+
+  const saveAq10Result = useCallback(() => {
+    const { total } = scoreAQ10(aq10Ans);
+    const sev = AQ10_SEVERITY.find(s => total >= s.min && total <= s.max);
+    saveToHistory('aq10', { score: total, severity: sev?.key, fullData: { score: total, severity: sev?.key, odpovedi: aq10Ans } });
+  }, [aq10Ans, saveToHistory]);
+
   // View saved result — loads answers into state and navigates to full results page
   const viewSavedResult = useCallback((result) => {
     const fd = result.fullData || result;
@@ -639,13 +667,15 @@ export default function App() {
         pcl5: { setAns: setPcl5Ans, setIdx: setPcl5Idx, count: 20, results: 'pcl5_results' },
         cati: { setAns: setCatiAns, setIdx: setCatiIdx, count: 42, results: 'cati_results' },
         isi: { setAns: setIsiAns, setIdx: setIsiIdx, count: 7, results: 'isi_results' },
-        asrs: { setAns: setAsrsAns, setIdx: setAsrsIdx, count: 6, results: 'asrs_results' },
+        asrs: { setAns: setAsrsAns, setIdx: setAsrsIdx, count: 18, results: 'asrs_results' },
         eat26: { setAns: setEat26Ans, setIdx: setEat26Idx, count: 26, results: 'eat26_results' },
         mdq: { setAns: setMdqAns, setIdx: setMdqIdx, count: 15, results: 'mdq_results' },
         cuditr: { setAns: setCuditrAns, setIdx: setCuditrIdx, count: 8, results: 'cuditr_results' },
         audit: { setAns: setAuditAns, setIdx: setAuditIdx, count: 10, results: 'audit_results' },
         dast10: { setAns: setDast10Ans, setIdx: setDast10Idx, count: 10, results: 'dast10_results' },
         itq: { setAns: setItqAns, setIdx: setItqIdx, count: 18, results: 'itq_results' },
+        aq: { setAns: setAqAns, setIdx: setAqIdx, count: 50, results: 'aq_results' },
+        aq10: { setAns: setAq10Ans, setIdx: setAq10Idx, count: 10, results: 'aq10_results' },
       };
       const cfg = typeMap[result.type];
       if (cfg) {
@@ -746,13 +776,15 @@ export default function App() {
   const fillSamplePcl5 = useCallback(() => { const s = {}; for (let i = 0; i < 20; i++) s[i] = Math.floor(Math.random() * 5); setPcl5Ans(s); setPcl5Idx(19); setMode("pcl5_results"); }, []);
   const fillSampleCati = useCallback(() => { const s = {}; for (let i = 0; i < 42; i++) s[i] = Math.floor(Math.random() * 5) + 1; setCatiAns(s); setCatiIdx(41); setMode("cati_results"); }, []);
   const fillSampleIsi = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); setIsiAns(s); setIsiIdx(6); setMode("isi_results"); }, []);
-  const fillSampleAsrs = useCallback(() => { const s = {}; for (let i = 0; i < 6; i++) s[i] = Math.floor(Math.random() * 5); setAsrsAns(s); setAsrsIdx(5); setMode("asrs_results"); }, []);
+  const fillSampleAsrs = useCallback(() => { const s = {}; for (let i = 0; i < 18; i++) s[i] = Math.floor(Math.random() * 5); setAsrsAns(s); setAsrsIdx(17); setMode("asrs_results"); }, []);
   const fillSampleEat26 = useCallback(() => { const s = {}; for (let i = 0; i < 26; i++) s[i] = Math.floor(Math.random() * 6); setEat26Ans(s); setEat26Idx(25); setMode("eat26_results"); }, []);
   const fillSampleMdq = useCallback(() => { const s = {}; for (let i = 0; i < 13; i++) s[i] = Math.random() > 0.5 ? 0 : 1; s[13] = Math.random() > 0.5 ? 0 : 1; s[14] = Math.floor(Math.random() * 4); setMdqAns(s); setMdqIdx(14); setMode("mdq_results"); }, []);
   const fillSampleCuditr = useCallback(() => { const s = {}; for (let i = 0; i < 7; i++) s[i] = Math.floor(Math.random() * 5); s[7] = Math.floor(Math.random() * 3); setCuditrAns(s); setCuditrIdx(7); setMode("cuditr_results"); }, []);
   const fillSampleAudit = useCallback(() => { const s = {}; for (let i = 0; i < 8; i++) s[i] = Math.floor(Math.random() * 5); s[8] = Math.floor(Math.random() * 3); s[9] = Math.floor(Math.random() * 3); setAuditAns(s); setAuditIdx(9); setMode("audit_results"); }, []);
   const fillSampleDast10 = useCallback(() => { const s = {}; for (let i = 0; i < 10; i++) s[i] = Math.random() > 0.5 ? 1 : 0; setDast10Ans(s); setDast10Idx(9); setMode("dast10_results"); }, []);
   const fillSampleItq = useCallback(() => { const s = {}; for (let i = 0; i < 18; i++) s[i] = Math.floor(Math.random() * 5); setItqAns(s); setItqIdx(17); setMode("itq_results"); }, []);
+  const fillSampleAq = useCallback(() => { const s = {}; for (let i = 0; i < 50; i++) s[i] = Math.floor(Math.random() * 4); setAqAns(s); setAqIdx(49); setMode("aq_results"); }, []);
+  const fillSampleAq10 = useCallback(() => { const s = {}; for (let i = 0; i < 10; i++) s[i] = Math.floor(Math.random() * 4); setAq10Ans(s); setAq10Idx(9); setMode("aq10_results"); }, []);
 
   const handleAuth = async (action) => {
     setAuthError('');
@@ -1111,11 +1143,11 @@ export default function App() {
           {/* ASRS */}
           <button onClick={() => setMode("asrs")} className="p-4 rounded-2xl bg-gradient-to-br from-sky-900/40 to-sky-800/20 border border-sky-500/20 hover:border-sky-400/40 transition-all text-left group">
             <div className="text-sm font-semibold text-sky-300 group-hover:text-sky-200 transition-colors">ASRS</div>
-            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '6 otázek — ADHD' : '6 items — ADHD'}</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '18 otázek — ADHD' : '18 items — ADHD'}</div>
             {Object.keys(asrsAns).length > 0 && (
               <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-sky-500 rounded-full" style={{width: `${(Object.keys(asrsAns).length/6)*100}%`}} /></div>
-                <span className="text-xs text-sky-400 shrink-0">{Object.keys(asrsAns).length}/6</span>
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-sky-500 rounded-full" style={{width: `${(Object.keys(asrsAns).length/18)*100}%`}} /></div>
+                <span className="text-xs text-sky-400 shrink-0">{Object.keys(asrsAns).length}/18</span>
               </div>
             )}
           </button>
@@ -1185,6 +1217,28 @@ export default function App() {
               </div>
             )}
           </button>
+          {/* AQ-50 */}
+          <button onClick={() => setMode("aq")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-violet-800/20 border border-violet-500/20 hover:border-violet-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-violet-300 group-hover:text-violet-200 transition-colors">AQ-50</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '50 otázek — autistické rysy' : '50 items — autistic traits'}</div>
+            {Object.keys(aqAns).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(aqAns).length/50)*100}%`}} /></div>
+                <span className="text-xs text-violet-400 shrink-0">{Object.keys(aqAns).length}/50</span>
+              </div>
+            )}
+          </button>
+          {/* AQ-10 */}
+          <button onClick={() => setMode("aq10")} className="p-4 rounded-2xl bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/20 hover:border-purple-400/40 transition-all text-left group">
+            <div className="text-sm font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">AQ-10</div>
+            <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? '10 otázek — krátký AQ screener' : '10 items — brief AQ screener'}</div>
+            {Object.keys(aq10Ans).length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-purple-500 rounded-full" style={{width: `${(Object.keys(aq10Ans).length/10)*100}%`}} /></div>
+                <span className="text-xs text-purple-400 shrink-0">{Object.keys(aq10Ans).length}/10</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Quick result buttons */}
@@ -1197,13 +1251,15 @@ export default function App() {
           {Object.keys(pcl5Ans).length === 20 && <button onClick={() => setMode("pcl5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PCL-5</button>}
           {Object.keys(catiAns).length === 42 && <button onClick={() => setMode("cati_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CATI</button>}
           {Object.keys(isiAns).length === 7 && <button onClick={() => setMode("isi_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ISI</button>}
-          {Object.keys(asrsAns).length === 6 && <button onClick={() => setMode("asrs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ASRS</button>}
+          {Object.keys(asrsAns).length === 18 && <button onClick={() => setMode("asrs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ASRS</button>}
           {Object.keys(eat26Ans).length === 26 && <button onClick={() => setMode("eat26_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 EAT-26</button>}
           {Object.keys(mdqAns).length === 15 && <button onClick={() => setMode("mdq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 MDQ</button>}
           {Object.keys(cuditrAns).length === 8 && <button onClick={() => setMode("cuditr_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CUDIT-R</button>}
           {Object.keys(auditAns).length === 10 && <button onClick={() => setMode("audit_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AUDIT</button>}
           {Object.keys(dast10Ans).length === 10 && <button onClick={() => setMode("dast10_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DAST-10</button>}
           {Object.keys(itqAns).length === 18 && <button onClick={() => setMode("itq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ITQ</button>}
+          {Object.keys(aqAns).length === 50 && <button onClick={() => setMode("aq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AQ-50</button>}
+          {Object.keys(aq10Ans).length === 10 && <button onClick={() => setMode("aq10_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AQ-10</button>}
         </div>
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
@@ -1236,9 +1292,11 @@ export default function App() {
                           h.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
                           h.type === 'dast10' ? 'bg-red-500/20 text-red-400' :
                           h.type === 'itq' ? 'bg-fuchsia-500/20 text-fuchsia-400' :
+                          h.type === 'aq' ? 'bg-violet-500/20 text-violet-400' :
+                          h.type === 'aq10' ? 'bg-purple-500/20 text-purple-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>{
-                          { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI' }[h.type] || h.type
+                          { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', aq: 'AQ-50', aq10: 'AQ-10' }[h.type] || h.type
                         }</span>
                         <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
                       </div>
@@ -1254,7 +1312,7 @@ export default function App() {
                       </div>
                     )}
                     {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
-                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit','dast10','itq'].includes(h.type) && h.score != null && (
+                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit','dast10','itq','aq','aq10'].includes(h.type) && h.score != null && (
                       <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
                     )}
                     {h.type === 'mdq' && (
@@ -1349,6 +1407,8 @@ export default function App() {
             <button onClick={fillSampleAudit} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AUDIT</button>
             <button onClick={fillSampleDast10} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 DAST</button>
             <button onClick={fillSampleItq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ITQ</button>
+            <button onClick={fillSampleAq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AQ-50</button>
+            <button onClick={fillSampleAq10} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AQ-10</button>
           </div>
           <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); setDast10Ans({}); setDast10Idx(0); setItqAns({}); setItqIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
         </details>
@@ -1364,7 +1424,7 @@ export default function App() {
             <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span><span>·</span><span>CATI</span>
           </div>
           <div className="flex items-center justify-center gap-3 mt-1 text-xs text-gray-800">
-            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span><span>·</span><span>DAST-10</span><span>·</span><span>ITQ</span>
+            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span><span>·</span><span>DAST-10</span><span>·</span><span>ITQ</span><span>·</span><span>AQ-50</span><span>·</span><span>AQ-10</span>
           </div>
           <button onClick={() => setMode('sources')} className="mt-4 text-xs text-purple-500/60 hover:text-purple-400 transition-all">
             📚 {lang === 'cs' ? 'Zdroje a reference' : 'Sources & References'}
@@ -2492,6 +2552,61 @@ export default function App() {
   // ═══ ITQ RESULTS ═══
   if (mode === 'itq_results') return (
     <ITQResults answers={itqAns} questions={ITQ_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveItqResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ AQ-50 QUESTIONNAIRE ═══
+  if (mode === 'aq') return (
+    <QuestionnaireScreen
+      testId="aq"
+      title="AQ-50"
+      questions={AQ_QUESTIONS[lang]}
+      scaleLabels={AQ_SCALE[lang]}
+      scaleMin={0} scaleMax={3}
+      answers={aqAns} setAnswers={setAqAns}
+      idx={aqIdx} setIdx={setAqIdx}
+      onComplete={() => setMode('aq_results')}
+      color="#7C3AED" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Označte, jak moc se vás každé tvrzení týká.' : 'Indicate how much each statement applies to you.'}
+      liveScoreConfig={{ severityLevels: AQ_SEVERITY, maxScore: 50, label: 'AQ-50', scoreFn: (ans) => scoreAQ(ans).total,
+        subscales: Object.entries(AQ_SUBSCALES).map(([key, sub]) => ({
+          items: sub.items,
+          max: 10,
+          color: sub.color,
+          cs: sub.cs,
+          en: sub.en,
+          scoreFn: (ans) => scoreAQ(ans).subscales[key] ?? 0,
+        }))
+      }}
+    />
+  );
+
+  // ═══ AQ-50 RESULTS ═══
+  if (mode === 'aq_results') return (
+    <AQResults answers={aqAns} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAqResult(); alert(t('resultSaved')); }} />
+  );
+
+  // ═══ AQ-10 QUESTIONNAIRE ═══
+  if (mode === 'aq10') return (
+    <QuestionnaireScreen
+      testId="aq10"
+      title="AQ-10"
+      questions={AQ10_QUESTIONS[lang]}
+      scaleLabels={AQ10_SCALE[lang]}
+      scaleMin={0} scaleMax={3}
+      answers={aq10Ans} setAnswers={setAq10Ans}
+      idx={aq10Idx} setIdx={setAq10Idx}
+      onComplete={() => setMode('aq10_results')}
+      color="#9333EA" lang={lang} t={t} toggleLang={toggleLang}
+      onBack={() => setMode('menu')}
+      instruction={lang === 'cs' ? 'Označte, jak moc se vás každé tvrzení týká.' : 'Indicate how much each statement applies to you.'}
+      liveScoreConfig={{ severityLevels: AQ10_SEVERITY, maxScore: 10, label: 'AQ-10', scoreFn: (ans) => scoreAQ10(ans).total }}
+    />
+  );
+
+  // ═══ AQ-10 RESULTS ═══
+  if (mode === 'aq10_results') return (
+    <AQ10Results answers={aq10Ans} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAq10Result(); alert(t('resultSaved')); }} />
   );
 
   // ═══ SOURCES / REFERENCES PAGE ═══

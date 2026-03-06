@@ -873,13 +873,15 @@ export const TEST_META = {
   pcl5:   { name: 'PCL-5',    items: 20,  color: '#F43F5E', category: { cs: 'PTSD', en: 'PTSD' } },
   cati:   { name: 'CATI',     items: 42,  color: '#8B5CF6', category: { cs: 'Autistické rysy', en: 'Autistic Traits' } },
   isi:    { name: 'ISI',      items: 7,   color: '#6366F1', category: { cs: 'Nespavost', en: 'Insomnia' } },
-  asrs:   { name: 'ASRS',     items: 6,   color: '#0EA5E9', category: { cs: 'ADHD', en: 'ADHD' } },
+  asrs:   { name: 'ASRS',     items: 18,  color: '#0EA5E9', category: { cs: 'ADHD', en: 'ADHD' } },
   eat26:  { name: 'EAT-26',   items: 26,  color: '#EC4899', category: { cs: 'Poruchy příjmu potravy', en: 'Eating Disorders' } },
   mdq:    { name: 'MDQ',      items: 15,  color: '#F59E0B', category: { cs: 'Bipolární porucha', en: 'Bipolar Disorder' } },
   cuditr: { name: 'CUDIT-R',  items: 8,   color: '#84CC16', category: { cs: 'Užívání konopí', en: 'Cannabis Use' } },
   audit:  { name: 'AUDIT',    items: 10,  color: '#EAB308', category: { cs: 'Užívání alkoholu', en: 'Alcohol Use' } },
   dast10: { name: 'DAST-10',  items: 10,  color: '#EF4444', category: { cs: 'Užívání drog', en: 'Drug Use' } },
   itq:    { name: 'ITQ',      items: 18,  color: '#D946EF', category: { cs: 'CPTSD (ICD-11)', en: 'CPTSD (ICD-11)' } },
+  aq:     { name: 'AQ-50',    items: 50,  color: '#7C3AED', category: { cs: 'Autistické rysy', en: 'Autistic Traits' } },
+  aq10:   { name: 'AQ-10',    items: 10,  color: '#9333EA', category: { cs: 'Autistické rysy', en: 'Autistic Traits' } },
 };
 
 /**
@@ -976,6 +978,14 @@ export function getTestStatus(history, lang = 'cs') {
       if (s >= 60) { status = 'critical'; label = lang === 'cs' ? 'Těžké zatížení' : 'Severe Burden'; }
       else if (s >= 30) { status = 'elevated'; label = lang === 'cs' ? 'Střední zatížení' : 'Moderate Burden'; }
       else { status = 'ok'; label = lang === 'cs' ? 'Nízké' : 'Low'; }
+    } else if (h.type === 'aq') {
+      const s = h.score ?? 0;
+      if (s >= 32) { status = 'elevated'; label = lang === 'cs' ? 'Zvýšené autistické rysy' : 'Elevated Autistic Traits'; }
+      else { status = 'ok'; label = lang === 'cs' ? 'V normě' : 'Normal'; }
+    } else if (h.type === 'aq10') {
+      const s = h.score ?? 0;
+      if (s >= 6) { status = 'elevated'; label = lang === 'cs' ? 'Zvýšené autistické rysy' : 'Elevated Autistic Traits'; }
+      else { status = 'ok'; label = lang === 'cs' ? 'V normě' : 'Normal'; }
     }
 
     statuses[h.type] = { ...meta, score: h.score, date: h.date, status, label };
