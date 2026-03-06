@@ -37,7 +37,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Total score */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-scale-in">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={AUDIT_SEVERITY} lang={lang} />
@@ -96,7 +96,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => {
@@ -138,14 +138,14 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'AUDIT je screeningový nástroj WHO a nenahrazuje klinickou diagnostiku závislosti na alkoholu. Výsledky konzultujte s odborníkem.'
           : 'The AUDIT is a WHO screening tool and does not replace clinical diagnosis of alcohol dependence. Discuss results with a professional.'}
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT). <em>Addiction</em> 88(6):791-804.
         </div>

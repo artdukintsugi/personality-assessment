@@ -46,7 +46,7 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Diagnosis badge */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-scale-in">
           <div className="text-center mb-3">
             <span className="text-gray-400 text-sm block mb-2">{lang === 'cs' ? 'ICD-11 diagnostický algoritmus' : 'ICD-11 Diagnostic Algorithm'}</span>
             <span className="inline-block px-4 py-2 rounded-full text-lg font-bold" style={{ background: dxLabel.color + '33', color: dxLabel.color, border: `2px solid ${dxLabel.color}` }}>
@@ -149,7 +149,7 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
           <div className="space-y-2">
             {q.map((text, i) => {
@@ -204,14 +204,14 @@ export default function ITQResults({ answers, questions, lang, t, onBack, toggle
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'ITQ je sebeposuzovací nástroj dle ICD-11 a nenahrazuje klinické vyšetření. Diagnostické závěry by měl stanovit kvalifikovaný odborník.'
           : 'The ITQ is a self-report measure based on ICD-11 and does not replace clinical assessment. Diagnostic conclusions should be drawn by a qualified professional.'}
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Cloitre M, Shevlin M, Brewin CR, et al. (2018). The International Trauma Questionnaire: development of a self-report measure of ICD-11 PTSD and complex PTSD. <em>Acta Psychiatrica Scandinavica</em> 138(6):536-546.
         </div>

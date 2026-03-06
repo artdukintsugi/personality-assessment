@@ -1,0 +1,677 @@
+<!DOCTYPE html><html lang="cs"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PID-5 Výsledky — 5. března 2026 v 22:00</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0f;color:#e2e8f0;line-height:1.6;padding:2rem;max-width:900px;margin:0 auto}
+@media print{body{background:#fff;color:#1a1a2e;padding:1rem}.no-print{display:none!important}.card{border:1px solid #e2e8f0!important;background:#f8fafc!important}.bar-bg{background:#e2e8f0!important}h1,h2,h3{color:#1a1a2e!important}.text-muted{color:#64748b!important}.badge{border:1px solid #94a3b8!important}}
+h1{font-size:2rem;font-weight:700;background:linear-gradient(to right,#a78bfa,#f472b6,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+h2{font-size:1.25rem;font-weight:600;color:#94a3b8;margin-bottom:1rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:.875rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+.card{background:rgba(15,23,42,.6);border:1px solid #1e293b;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem}
+.text-muted{color:#64748b;font-size:.875rem}
+.bar-container{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.bar-label{width:12rem;font-size:.875rem;font-weight:500;flex-shrink:0}
+.bar-bg{flex:1;height:.75rem;background:#1e293b;border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px}
+.bar-value{width:3rem;text-align:right;font-size:.75rem;font-family:monospace}
+.bar-sev{width:4.5rem;text-align:right;font-size:.75rem}
+.badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.75rem;padding:.25rem .75rem;border-radius:999px;font-weight:500}
+.diag-card{padding:1rem;border-radius:.75rem;margin-bottom:.75rem;border:1px solid}
+.summary-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.375rem}
+.dot{width:.625rem;height:.625rem;border-radius:999px;flex-shrink:0}
+.disclaimer{margin-top:2rem;padding:1rem;border-radius:.75rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3)}
+.disclaimer p{font-size:.8rem;color:#fbbf24}
+.header-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid #1e293b}
+.btn{border:none;padding:.5rem 1.5rem;border-radius:.5rem;cursor:pointer;font-size:.875rem;font-weight:500;margin-right:.5rem}
+.btn-purple{background:#7c3aed;color:#fff}.btn-purple:hover{background:#6d28d9}
+.btn-gray{background:#374151;color:#d1d5db}.btn-gray:hover{background:#4b5563}
+@page{margin:1.5cm}
+</style></head><body>
+<div class="header-meta">
+  <div><h1>PID-5 — Výsledky</h1><p class="text-muted">5. března 2026 v 22:00</p></div>
+  <div class="no-print">
+    <button class="btn btn-purple" onclick="window.print()">🖨 Tisk / PDF</button>
+  </div>
+</div>
+<div class="card" style="border-color:rgba(248,113,113,.3);background:rgba(127,29,29,.15)">
+  <h2 style="color:#f87171;border-color:rgba(248,113,113,.2)">⚠ Zvýšené diagnostické profily</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem"><span class="badge" style="background:#34D39920;color:#34D399;border:1px solid #34D39940">ADHD — indikátory (ne-PD) — 2.56</span><span class="badge" style="background:#F8717120;color:#F87171;border:1px solid #F8717140">Hraniční porucha osobnosti (BPD) — 2.47</span><span class="badge" style="background:#FBBF2420;color:#FBBF24;border:1px solid #FBBF2440">Narcistická porucha osobnosti (NPD) — 2.35</span><span class="badge" style="background:#94A3B820;color:#94A3B8;border:1px solid #94A3B840">Schizoidní rysy osobnosti — 2.22</span><span class="badge" style="background:#64748B20;color:#64748B;border:1px solid #64748B40">Depresivní rysy osobnosti — 2.22</span><span class="badge" style="background:#EF444420;color:#EF4444;border:1px solid #EF444440">Antisociální porucha osobnosti (ASPD) — 2.19</span><span class="badge" style="background:#E879F920;color:#E879F9;border:1px solid #E879F940">Disociace / DID — indikátory (ne-PD) — 2.15</span><span class="badge" style="background:#A78BFA20;color:#A78BFA;border:1px solid #A78BFA40">Obsedantně-kompulzivní porucha osobnosti (OCPD) — 2.14</span><span class="badge" style="background:#C084FC20;color:#C084FC;border:1px solid #C084FC40">Schizotypní porucha osobnosti (StPD) — 2.14</span><span class="badge" style="background:#F472B620;color:#F472B6;border:1px solid #F472B640">Histrionské rysy osobnosti — 2.13</span><span class="badge" style="background:#FB923C20;color:#FB923C;border:1px solid #FB923C40">Paranoidní rysy osobnosti — 1.85</span><span class="badge" style="background:#60A5FA20;color:#60A5FA;border:1px solid #60A5FA40">Vyhýbavá porucha osobnosti (AvPD) — 1.78</span><span class="badge" style="background:#38BDF820;color:#38BDF8;border:1px solid #38BDF840">Závislé rysy osobnosti (DPD) — 1.60</span></div>
+</div>
+<div class="card"><h2>Domény — Přehled</h2>
+<div class="bar-container">
+  <div class="bar-label" style="color:#F87171">Negativní afektivita</div>
+  <div class="bar-bg"><div class="bar-fill" style="width:75.66137566137566%;background:#F87171"></div></div>
+  <div class="bar-value">2.27</div>
+  <div class="bar-sev" style="color:#F87171">Vysoké</div>
+</div><div class="bar-container">
+  <div class="bar-label" style="color:#60A5FA">Odtažitost</div>
+  <div class="bar-bg"><div class="bar-fill" style="width:61.66666666666666%;background:#60A5FA"></div></div>
+  <div class="bar-value">1.85</div>
+  <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+</div><div class="bar-container">
+  <div class="bar-label" style="color:#FBBF24">Antagonismus</div>
+  <div class="bar-bg"><div class="bar-fill" style="width:71.48148148148148%;background:#FBBF24"></div></div>
+  <div class="bar-value">2.14</div>
+  <div class="bar-sev" style="color:#F87171">Vysoké</div>
+</div><div class="bar-container">
+  <div class="bar-label" style="color:#34D399">Disinhibice</div>
+  <div class="bar-bg"><div class="bar-fill" style="width:82.27513227513228%;background:#34D399"></div></div>
+  <div class="bar-value">2.47</div>
+  <div class="bar-sev" style="color:#F87171">Vysoké</div>
+</div><div class="bar-container">
+  <div class="bar-label" style="color:#C084FC">Psychoticismus</div>
+  <div class="bar-bg"><div class="bar-fill" style="width:73.14814814814814%;background:#C084FC"></div></div>
+  <div class="bar-value">2.19</div>
+  <div class="bar-sev" style="color:#F87171">Vysoké</div>
+</div></div>
+<div class="card"><h2>Facety — Detail</h2>
+<div style="margin-bottom:1.25rem">
+  <h3 style="color:#F87171">Negativní afektivita</h3>
+  <div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Emoční labilita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:80.95238095238095%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.43</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Úzkostnost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.67</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Separační nejistota</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:57.14285714285714%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.71</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Hostilita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:83.33333333333334%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.50</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Perseverace</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:74.07407407407408%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.22</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Submisivita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80;height:.5rem"></div></div>
+    <div class="bar-value">0.25</div>
+    <div class="bar-sev" style="color:#4ADE80">Nízké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Restriktivní afektivita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">3.00</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div>
+</div><div style="margin-bottom:1.25rem">
+  <h3 style="color:#60A5FA">Odtažitost</h3>
+  <div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Stažení</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:76.66666666666666%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.30</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Vyhýbání se intimitě</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.00</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Anhedonie</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:75%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.25</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Depresivita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.57</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Restriktivní afektivita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">3.00</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Podezřívavost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.00</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div>
+</div><div style="margin-bottom:1.25rem">
+  <h3 style="color:#FBBF24">Antagonismus</h3>
+  <div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Manipulativnost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:80%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.40</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Klamavost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:56.666666666666664%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.70</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Grandiozita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:77.77777777777779%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.33</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Vyhledávání pozornosti</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">3.00</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Bezcitnost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:61.904761904761905%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.86</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div>
+</div><div style="margin-bottom:1.25rem">
+  <h3 style="color:#34D399">Disinhibice</h3>
+  <div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Nezodpovědnost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:52.38095238095239%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.57</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Impulzivita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:94.44444444444446%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.83</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Roztěkanost</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">3.00</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Riskování</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:92.85714285714285%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.79</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Rigidní perfekcionismus</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:70%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">2.10</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div>
+</div><div style="margin-bottom:1.25rem">
+  <h3 style="color:#C084FC">Psychoticismus</h3>
+  <div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Neobvyklé přesvědčení</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:58.333333333333336%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.75</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Excentricita</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#F87171;height:.5rem"></div></div>
+    <div class="bar-value">3.00</div>
+    <div class="bar-sev" style="color:#F87171">Vysoké</div>
+  </div><div class="bar-container">
+    <div class="bar-label" style="color:#94a3b8;width:14rem">Percepční dysregulace</div>
+    <div class="bar-bg"><div class="bar-fill" style="width:61.11111111111111%;background:#FB923C;height:.5rem"></div></div>
+    <div class="bar-value">1.83</div>
+    <div class="bar-sev" style="color:#FB923C">Zvýšené</div>
+  </div>
+</div></div>
+<div class="card"><h2>Diagnostické profily</h2>
+<div style="margin-bottom:1.5rem"><div class="summary-row">
+  <div class="dot" style="background:#34D399"></div>
+  <div style="width:14rem;font-size:.8rem;color:#34D399;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ADHD — indikátory (ne-PD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:85.40013227513228%;background:#34D399;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#34D399">2.56</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#34D399">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#F87171"></div>
+  <div style="width:14rem;font-size:.8rem;color:#F87171;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Hraniční porucha osobnosti (BPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:82.31150793650794%;background:#F87171;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#F87171">2.47</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#F87171">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#FBBF24"></div>
+  <div style="width:14rem;font-size:.8rem;color:#FBBF24;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Narcistická porucha osobnosti (NPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:78.4636118598383%;background:#FBBF24;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#FBBF24">2.35</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#FBBF24">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#94A3B8"></div>
+  <div style="width:14rem;font-size:.8rem;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Schizoidní rysy osobnosti</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:73.94613583138174%;background:#94A3B8;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94A3B8">2.22</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#94A3B8">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#64748B"></div>
+  <div style="width:14rem;font-size:.8rem;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Depresivní rysy osobnosti</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:73.89188379754418%;background:#64748B;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#64748B">2.22</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#64748B">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#EF4444"></div>
+  <div style="width:14rem;font-size:.8rem;color:#EF4444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Antisociální porucha osobnosti (ASPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:73.02147525676938%;background:#EF4444;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#EF4444">2.19</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#EF4444">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#E879F9"></div>
+  <div style="width:14rem;font-size:.8rem;color:#E879F9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Disociace / DID — indikátory (ne-PD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:71.51162790697676%;background:#E879F9;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#E879F9">2.15</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#E879F9">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#A78BFA"></div>
+  <div style="width:14rem;font-size:.8rem;color:#A78BFA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Obsedantně-kompulzivní porucha osobnosti (OCPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:71.36617749825298%;background:#A78BFA;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#A78BFA">2.14</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#A78BFA">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#C084FC"></div>
+  <div style="width:14rem;font-size:.8rem;color:#C084FC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Schizotypní porucha osobnosti (StPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:71.36437908496731%;background:#C084FC;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#C084FC">2.14</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#C084FC">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#F472B6"></div>
+  <div style="width:14rem;font-size:.8rem;color:#F472B6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Histrionské rysy osobnosti</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:71.08225108225108%;background:#F472B6;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#F472B6">2.13</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#F472B6">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#FB923C"></div>
+  <div style="width:14rem;font-size:.8rem;color:#FB923C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Paranoidní rysy osobnosti</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:61.51515151515151%;background:#FB923C;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#FB923C">1.85</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#FB923C">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#60A5FA"></div>
+  <div style="width:14rem;font-size:.8rem;color:#60A5FA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Vyhýbavá porucha osobnosti (AvPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:59.49229691876751%;background:#60A5FA;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#60A5FA">1.78</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#60A5FA">⚠ Zvýšené</div>
+</div><div class="summary-row">
+  <div class="dot" style="background:#38BDF8"></div>
+  <div style="width:14rem;font-size:.8rem;color:#38BDF8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Závislé rysy osobnosti (DPD)</div>
+  <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:53.26554232804233%;background:#38BDF8;opacity:1"></div></div>
+  <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#38BDF8">1.60</div>
+  <div style="width:5rem;text-align:right;font-size:.75rem;color:#38BDF8">⚠ Zvýšené</div>
+</div></div>
+<div style="margin-top:1rem"><h3 style="color:#e2e8f0">Detail zvýšených profilů</h3>
+<div class="diag-card" style="border-color:#34D39930;background:#34D39908">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#34D399"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#34D399">ADHD — indikátory (ne-PD)</span>
+    <span class="badge" style="margin-left:auto;background:#34D39920;color:#34D399">2.56</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Roztěkanost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Impulzivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:94.44444444444446%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.83</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Nezodpovědnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:52.38095238095239%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.57</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Riskování</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:92.85714285714285%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.79</div>
+  </div>
+</div><div class="diag-card" style="border-color:#F8717130;background:#F8717108">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#F87171"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#F87171">Hraniční porucha osobnosti (BPD)</span>
+    <span class="badge" style="margin-left:auto;background:#F8717120;color:#F87171">2.47</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Emoční labilita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:80.95238095238095%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.43</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Impulzivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:94.44444444444446%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.83</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Separační nejistota</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:57.14285714285714%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.71</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Depresivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.57</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Hostilita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:83.33333333333334%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.50</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Riskování</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:92.85714285714285%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.79</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Úzkostnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.67</div>
+  </div>
+</div><div class="diag-card" style="border-color:#FBBF2430;background:#FBBF2408">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#FBBF24"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#FBBF24">Narcistická porucha osobnosti (NPD)</span>
+    <span class="badge" style="margin-left:auto;background:#FBBF2420;color:#FBBF24">2.35</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Grandiozita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:77.77777777777779%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.33</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Vyhledávání pozornosti</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Manipulativnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:80%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.40</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Bezcitnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:61.904761904761905%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.86</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Klamavost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:56.666666666666664%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.70</div>
+  </div>
+</div><div class="diag-card" style="border-color:#94A3B830;background:#94A3B808">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#94A3B8"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#94A3B8">Schizoidní rysy osobnosti</span>
+    <span class="badge" style="margin-left:auto;background:#94A3B820;color:#94A3B8">2.22</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Stažení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:76.66666666666666%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.30</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Anhedonie</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:75%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.25</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Restriktivní afektivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Vyhýbání se intimitě</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Depresivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.57</div>
+  </div>
+</div><div class="diag-card" style="border-color:#64748B30;background:#64748B08">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#64748B"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#64748B">Depresivní rysy osobnosti</span>
+    <span class="badge" style="margin-left:auto;background:#64748B20;color:#64748B">2.22</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Depresivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.57</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Anhedonie</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:75%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.25</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Úzkostnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.67</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Submisivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">0.25</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Restriktivní afektivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div>
+</div><div class="diag-card" style="border-color:#EF444430;background:#EF444408">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#EF4444"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#EF4444">Antisociální porucha osobnosti (ASPD)</span>
+    <span class="badge" style="margin-left:auto;background:#EF444420;color:#EF4444">2.19</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Manipulativnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:80%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.40</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Klamavost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:56.666666666666664%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.70</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Bezcitnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:61.904761904761905%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.86</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Hostilita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:83.33333333333334%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.50</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Impulzivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:94.44444444444446%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.83</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Riskování</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:92.85714285714285%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.79</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Nezodpovědnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:52.38095238095239%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.57</div>
+  </div>
+</div><div class="diag-card" style="border-color:#E879F930;background:#E879F908">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#E879F9"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#E879F9">Disociace / DID — indikátory (ne-PD)</span>
+    <span class="badge" style="margin-left:auto;background:#E879F920;color:#E879F9">2.15</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Percepční dysregulace</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:61.11111111111111%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.83</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Neobvyklé přesvědčení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:58.333333333333336%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.75</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Excentricita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Depresivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.57</div>
+  </div>
+</div><div class="diag-card" style="border-color:#A78BFA30;background:#A78BFA08">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#A78BFA"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#A78BFA">Obsedantně-kompulzivní porucha osobnosti (OCPD)</span>
+    <span class="badge" style="margin-left:auto;background:#A78BFA20;color:#A78BFA">2.14</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Rigidní perfekcionismus</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:70%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.10</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Perseverace</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:74.07407407407408%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.22</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Restriktivní afektivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Úzkostnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.67</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Submisivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">0.25</div>
+  </div>
+</div><div class="diag-card" style="border-color:#C084FC30;background:#C084FC08">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#C084FC"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#C084FC">Schizotypní porucha osobnosti (StPD)</span>
+    <span class="badge" style="margin-left:auto;background:#C084FC20;color:#C084FC">2.14</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Excentricita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Percepční dysregulace</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:61.11111111111111%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.83</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Neobvyklé přesvědčení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:58.333333333333336%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.75</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Stažení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:76.66666666666666%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.30</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Podezřívavost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Restriktivní afektivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div>
+</div><div class="diag-card" style="border-color:#F472B630;background:#F472B608">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#F472B6"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#F472B6">Histrionské rysy osobnosti</span>
+    <span class="badge" style="margin-left:auto;background:#F472B620;color:#F472B6">2.13</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Vyhledávání pozornosti</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Emoční labilita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:80.95238095238095%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.43</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Manipulativnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:80%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.40</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Separační nejistota</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:57.14285714285714%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.71</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Submisivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">0.25</div>
+  </div>
+</div><div class="diag-card" style="border-color:#FB923C30;background:#FB923C08">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#FB923C"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#FB923C">Paranoidní rysy osobnosti</span>
+    <span class="badge" style="margin-left:auto;background:#FB923C20;color:#FB923C">1.85</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Podezřívavost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Hostilita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:83.33333333333334%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.50</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Stažení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:76.66666666666666%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.30</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Vyhýbání se intimitě</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Restriktivní afektivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:100%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">3.00</div>
+  </div>
+</div><div class="diag-card" style="border-color:#60A5FA30;background:#60A5FA08">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#60A5FA"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#60A5FA">Vyhýbavá porucha osobnosti (AvPD)</span>
+    <span class="badge" style="margin-left:auto;background:#60A5FA20;color:#60A5FA">1.78</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Úzkostnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.67</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Stažení</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:76.66666666666666%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.30</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Anhedonie</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:75%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.25</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Vyhýbání se intimitě</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:33.33333333333333%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.00</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Separační nejistota</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:57.14285714285714%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.71</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Submisivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">0.25</div>
+  </div>
+</div><div class="diag-card" style="border-color:#38BDF830;background:#38BDF808">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+    <div class="dot" style="background:#38BDF8"></div>
+    <span style="font-weight:600;font-size:.875rem;color:#38BDF8">Závislé rysy osobnosti (DPD)</span>
+    <span class="badge" style="margin-left:auto;background:#38BDF820;color:#38BDF8">1.60</span>
+  </div>
+  <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">[object Object]</p>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Submisivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:8.333333333333332%;background:#4ADE80"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">0.25</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Separační nejistota</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:57.14285714285714%;background:#FB923C"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">1.71</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Úzkostnost</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:88.88888888888889%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.67</div>
+  </div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <div style="width:10rem;font-size:.75rem;color:#94a3b8">↳ Depresivita</div>
+    <div style="flex:1;height:.375rem;background:#1e293b;border-radius:999px;overflow:hidden"><div class="bar-fill" style="width:85.71428571428572%;background:#F87171"></div></div>
+    <div style="width:2.5rem;text-align:right;font-size:.75rem;font-family:monospace;color:#94a3b8">2.57</div>
+  </div>
+</div></div></div>
+<div class="disclaimer"><p><strong>⚠ Disclaimer:</strong> Tento report je orientační a nenahrazuje klinické psychologické vyšetření. PID-5 je dimenzionální nástroj měřící maladaptivní osobnostní rysy na kontinuu. Pro diagnostiku je vždy nutný klinický rozhovor s odborníkem.</p></div>
+<div class="card text-muted" style="margin-top:1.5rem;font-size:.75rem">
+  <p><strong>Zdroje:</strong> Krueger et al. (2012) • APA DSM-5 Section III (2013) • Bach, Sellbom & Simonsen (2018) • Widiger et al. (2019)</p>
+  <p style="margin-top:.5rem">Generováno: Diagnostický protokol — PID-5 & LPFS-SR</p>
+</div></body></html>

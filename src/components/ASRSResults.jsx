@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { useLocalStorage } from '../lib/hooks';
 import CompareModal from './CompareModal';
-import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, ASRS_SUBSCALES } from '../data/asrs';
-import { checkSimpleValidity, ValiditySection, SeverityBadge, ScoreBar } from './GenericQuestionnaire';
+import { ASRS_QUESTIONS, ASRS_SCALE, ASRS_SEVERITY, scoreASRS } from '../data/asrs';
+import { ValiditySection, checkSimpleValidity } from './GenericQuestionnaire';
 
 export default function ASRSResults({ answers, questions, lang, t, onBack, toggleLang, onSave }) {
   const q = ASRS_QUESTIONS[lang] || ASRS_QUESTIONS.cs;
   const scaleLabels = ASRS_SCALE[lang] || ASRS_SCALE.cs;
-  const total = Object.values(answers || {}).reduce((s, v) => s + (v ?? 0), 0);
-  const maxScore = 24;
-  const validity = checkSimpleValidity(answers, 6, 0, 4, lang);
+  const { partA, total, binaryScores } = scoreASRS(answers);
+  const validity = checkSimpleValidity(answers, 18, 0, 4, lang);
   const [showLive, setShowLive] = useLocalStorage('asrs_showLiveResults', true);
   const [showCompare, setShowCompare] = useState(false);
 
-  // Subscale scores
-  const inattScore = ASRS_SUBSCALES.inattention.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
-  const hyperScore = ASRS_SUBSCALES.hyperactivity.reduce((s, i) => s + (answers?.[i] ?? 0), 0);
+  const partASeverity = ASRS_SEVERITY.find(s => partA >= s.min && partA <= s.max) || ASRS_SEVERITY[0];
+  const adhd = partA >= 4;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white font-sans">
@@ -30,63 +28,75 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
       </div>
 
       {showCompare && (
-        <CompareModal onClose={() => setShowCompare(false)} current={(typeof total !== 'undefined') ? total : answers} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
+        <CompareModal onClose={() => setShowCompare(false)} current={partA} currentLabel={lang === 'cs' ? 'Vy' : 'You'} lang={lang} />
       )}
 
-      {/* Total score */}
+      {/* Part A result */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
-          <SeverityBadge score={total} severityLevels={ASRS_SEVERITY} lang={lang} />
-        </div>
-        <div className="text-4xl font-bold text-white mb-1">{total}<span className="text-lg text-gray-500">/{maxScore}</span></div>
-        <ScoreBar value={total} max={maxScore} color="#818CF8" label="" />
-        </div>
-      )}
-
-      {/* Subscales */}
-      {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
-        <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
-        <ScoreBar value={inattScore} max={12} color="#60A5FA" label={lang === 'cs' ? 'Nepozornost' : 'Inattention'} />
-        <ScoreBar value={hyperScore} max={12} color="#F472B6" label={lang === 'cs' ? 'Hyperaktivita / Impulzivita' : 'Hyperactivity / Impulsivity'} />
-        </div>
-      )}
-
-      {/* Item breakdown */}
-      {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
-        <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
-        <div className="space-y-2">
-          {q.map((text, i) => (
-            <div key={i} className="flex items-start gap-2 text-sm">
-              <span className="text-gray-500 w-6 shrink-0">{i + 1}.</span>
-              <span className="text-gray-300 flex-1">{text}</span>
-              <span className="text-indigo-300 font-mono w-8 text-right">{answers?.[i] ?? '–'}</span>
-              <span className="text-gray-500 text-xs w-20 text-right">{scaleLabels[answers?.[i]] ?? ''}</span>
-            </div>
-          ))}
-        </div>
+        <div className={`rounded-xl p-6 mb-4 border animate-scale-in ${adhd ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
+          <div className="text-center mb-3">
+            <span className="text-gray-400 text-sm block mb-2">
+              {lang === 'cs' ? 'Part A — Screeningové skóre' : 'Part A — Screening Score'}
+            </span>
+            <div className="text-4xl font-bold mb-1" style={{ color: partASeverity.color }}>{partA}<span className="text-lg text-gray-500">/6</span></div>
+            <span className="inline-block px-4 py-2 rounded-full text-lg font-bold mt-2" style={{ background: partASeverity.color + '33', color: partASeverity.color, border: `2px solid ${partASeverity.color}` }}>
+              {partASeverity[lang] || partASeverity.cs}
+            </span>
+          </div>
+          <div className="text-xs text-gray-400 text-center mt-3">
+            {lang === 'cs'
+              ? 'Hranice pro klinicky signifikantní screening: ≥ 4 položky splněny v Part A'
+              : 'Clinical screening threshold: ≥ 4 items met in Part A'}
+          </div>
         </div>
       )}
 
-      {/* Severity scale */}
+      {/* Part A item breakdown */}
+      {showLive && (
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
+          <h3 className="text-lg font-semibold text-white mb-1">{lang === 'cs' ? 'Part A — Screener (položky 1–6)' : 'Part A — Screener (items 1–6)'}</h3>
+          <p className="text-xs text-gray-500 mb-3">
+            {lang === 'cs'
+              ? 'Položky 1–3: práh „Někdy" (≥2) | Položky 4–6: práh „Často" (≥3)'
+              : 'Items 1–3: threshold "Sometimes" (≥2) | Items 4–6: threshold "Often" (≥3)'}
+          </p>
+          <div className="space-y-2">
+            {[0,1,2,3,4,5].map(i => {
+              const raw = answers?.[i] ?? 0;
+              const hit = binaryScores[i] === 1;
+              return (
+                <div key={i} className={`flex items-start gap-2 text-sm px-2 py-1 rounded ${hit ? 'bg-indigo-900/20 border border-indigo-700/30' : ''}`}>
+                  <span className="text-gray-500 w-6 shrink-0">{i + 1}.</span>
+                  <span className="text-gray-300 flex-1">{q[i]}</span>
+                  <span className="text-gray-500 text-xs w-20 text-right">{scaleLabels[raw]}</span>
+                  <span className={`font-mono w-6 text-right text-xs ${hit ? 'text-indigo-300' : 'text-gray-600'}`}>{hit ? '✓' : '–'}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Part B item breakdown */}
       {showLive && (
         <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
-        <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
-        <div className="space-y-1">
-          {ASRS_SEVERITY.map((s, i) => {
-            const active = total >= s.min && total <= s.max;
-            return (
-              <div key={i} className={`flex items-center gap-2 text-sm px-2 py-1 rounded ${active ? 'bg-gray-700' : ''}`}>
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ background: s.color }} />
-                <span className="text-gray-400 w-14">{s.min}–{s.max}</span>
-                <span className={active ? 'text-white font-semibold' : 'text-gray-400'}>{s[lang] || s.cs}</span>
-              </div>
-            );
-          })}
-        </div>
+          <h3 className="text-lg font-semibold text-white mb-1">{lang === 'cs' ? 'Part B — Rozšířená škála (položky 7–18)' : 'Part B — Extended Scale (items 7–18)'}</h3>
+          <p className="text-xs text-gray-500 mb-1">{lang === 'cs' ? 'Celkové skóre Part B:' : 'Part B total:'} <span className="text-white font-bold">{total - partA}/12</span></p>
+          <p className="text-xs text-gray-500 mb-3">{lang === 'cs' ? 'Celkové skóre (Part A + B):' : 'Total score (Part A + B):'} <span className="text-white font-bold">{total}/18</span></p>
+          <div className="space-y-2">
+            {[6,7,8,9,10,11,12,13,14,15,16,17].map(i => {
+              const raw = answers?.[i] ?? 0;
+              const hit = binaryScores[i] === 1;
+              return (
+                <div key={i} className={`flex items-start gap-2 text-sm px-2 py-1 rounded ${hit ? 'bg-indigo-900/20 border border-indigo-700/30' : ''}`}>
+                  <span className="text-gray-500 w-6 shrink-0">{i + 1}.</span>
+                  <span className="text-gray-300 flex-1">{q[i]}</span>
+                  <span className="text-gray-500 text-xs w-20 text-right">{scaleLabels[raw]}</span>
+                  <span className={`font-mono w-6 text-right text-xs ${hit ? 'text-indigo-300' : 'text-gray-600'}`}>{hit ? '✓' : '–'}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -94,10 +104,17 @@ export default function ASRSResults({ answers, questions, lang, t, onBack, toggl
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'ASRS v1.1 je screeningový nástroj a nenahrazuje klinickou diagnostiku ADHD. Výsledky konzultujte s odborníkem.'
           : 'The ASRS v1.1 is a screening tool and does not replace clinical ADHD diagnosis. Discuss results with a professional.'}
+      </div>
+
+      {/* Reference */}
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
+        <div className="text-xs text-gray-500 leading-relaxed">
+          Kessler, R.C., Adler, L., Ames, M., et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS). <em>Psychological Medicine</em>, 35(2), 245–256.
+        </div>
       </div>
 
       {/* Action buttons */}

@@ -33,7 +33,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
 
       {/* Total score */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-scale-in">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={CUDITR_SEVERITY} lang={lang} />
@@ -52,7 +52,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-3">
           {q.map((text, i) => {
@@ -100,7 +100,7 @@ export default function CUDITRResults({ answers, questions, lang, t, onBack, tog
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'CUDIT-R je screeningový nástroj a nenahrazuje klinickou diagnostiku poruchy z užívání konopí. Výsledky konzultujte s odborníkem.'
           : 'The CUDIT-R is a screening tool and does not replace clinical diagnosis of cannabis use disorder. Discuss results with a professional.'}

@@ -35,7 +35,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Screening result */}
       {showLive && (
-        <div className={`rounded-xl p-6 mb-4 border ${positive ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
+        <div className={`rounded-xl p-6 mb-4 border animate-scale-in ${positive ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
         <div className="text-lg font-bold mb-2" style={{ color: positive ? '#F87171' : '#4ADE80' }}>
           {positive
             ? (lang === 'cs' ? '⚠️ Pozitivní screening' : '⚠️ Positive Screen')
@@ -55,7 +55,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Scoring breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Kritéria screeningu' : 'Screening Criteria'}</h3>
         <div className="space-y-3">
           {/* Part 1 */}
@@ -139,7 +139,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
       )}
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'MDQ je screeningový nástroj a nenahrazuje klinickou diagnostiku bipolární poruchy. Pozitivní výsledek vyžaduje další vyšetření psychiatrem.'
           : 'The MDQ is a screening tool and does not replace clinical diagnosis of bipolar disorder. A positive result requires further psychiatric evaluation.'}

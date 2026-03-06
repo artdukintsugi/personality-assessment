@@ -123,7 +123,7 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
 
         {/* Total score (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -157,7 +157,7 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
 
         {/* Item breakdown (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           <div className="space-y-3">
             {questions.map((q, i) => {
@@ -200,7 +200,7 @@ export default function PHQ9Results({ answers, questions, lang, t, onBack, toggl
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />
 
         {/* Disclaimer */}
-        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6">
+        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6 animate-slide-up delay-150">
           <p className="text-amber-400/80 text-xs leading-relaxed">
             {lang === 'cs'
               ? '⚠ PHQ-9 je screeningový nástroj, nikoli diagnostický test. Výsledky slouží pouze k orientaci a nenahrazují odborné klinické vyšetření. Pro diagnózu deprese je nutné vyšetření kvalifikovaným odborníkem.'

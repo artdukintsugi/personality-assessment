@@ -67,7 +67,7 @@ export default function ISIResults({ answers, questions, lang, t, onBack, toggle
 
         {/* Total score */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -83,7 +83,7 @@ export default function ISIResults({ answers, questions, lang, t, onBack, toggle
 
         {/* Item breakdown by group */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           {ITEM_GROUPS[lang].map((group, gi) => (
             <div key={gi} className="mb-4 last:mb-0">
@@ -132,7 +132,7 @@ export default function ISIResults({ answers, questions, lang, t, onBack, toggle
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={4} />
 
         {/* Disclaimer */}
-        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6">
+        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6 animate-slide-up delay-150">
           <p className="text-amber-400/80 text-xs leading-relaxed">
             {lang === 'cs'
               ? '⚠ ISI je screeningový nástroj nespavosti. Výsledky slouží pouze k orientaci a nenahrazují spánkové vyšetření. Pro diagnózu nespavosti je nutné vyšetření odborníkem na spánek.'

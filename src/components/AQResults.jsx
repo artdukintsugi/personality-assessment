@@ -33,7 +33,7 @@ export default function AQResults({ answers, lang, t, onBack, toggleLang, onSave
 
       {/* Total score */}
       {showLive && (
-        <div className={`rounded-xl p-6 mb-4 border ${elevated ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
+        <div className={`rounded-xl p-6 mb-4 border animate-scale-in ${elevated ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
           <div className="text-center mb-3">
             <span className="text-gray-400 text-sm block mb-2">
               {lang === 'cs' ? 'Celkové skóre' : 'Total Score'}
@@ -77,7 +77,7 @@ export default function AQResults({ answers, lang, t, onBack, toggleLang, onSave
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi (50 položek)' : 'Answers (50 items)'}</h3>
           <div className="space-y-1">
             {Array.from({ length: 50 }, (_, i) => {
@@ -100,14 +100,14 @@ export default function AQResults({ answers, lang, t, onBack, toggleLang, onSave
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'AQ-50 je screeningový nástroj a nenahrazuje klinickou diagnostiku poruchy autistického spektra. Výsledky konzultujte s odborníkem.'
           : 'The AQ-50 is a screening tool and does not replace clinical diagnosis of autism spectrum disorder. Discuss results with a professional.'}
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Baron-Cohen, S., Wheelwright, S., Skinner, R., Martin, J., & Clubley, E. (2001). The Autism-Spectrum Quotient (AQ): Evidence from Asperger syndrome/high-functioning autism, males and females, scientists and mathematicians. <em>Journal of Autism and Developmental Disorders</em>, 31(1), 5–17.
         </div>

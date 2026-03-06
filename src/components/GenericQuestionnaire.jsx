@@ -60,7 +60,7 @@ export function QuestionnaireScreen({
             <span className="text-xs text-gray-600">{Math.round(progress * 100)}%</span>
           </div>
           <div className="bg-gray-800 rounded-full h-1.5 overflow-hidden">
-            <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress * 100}%`, background: color }} />
+            <div className="h-full rounded-full transition-[width] duration-500 ease-out" style={{ width: `${progress * 100}%`, background: color }} />
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export function QuestionnaireScreen({
         )}
 
         {/* Question */}
-        <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+        <div key={idx} className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up">
           <div className="text-xs text-gray-600 mb-2">{lang === 'cs' ? 'Otázka' : 'Question'} {idx + 1}/{total}</div>
           <p className="text-lg text-gray-100 leading-relaxed mb-6">
             {q}
@@ -88,12 +88,12 @@ export function QuestionnaireScreen({
                 <button
                   key={val}
                   onClick={() => answer(val)}
-                  className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 ${
+                  className={`w-full text-left p-3 rounded-xl border transition-all duration-150 flex items-center gap-3 hover:scale-[1.01] active:scale-[0.99] ${
                     isSelected
                       ? 'border-opacity-60 bg-opacity-20'
                       : 'border-gray-700/30 bg-gray-800/20 hover:border-gray-600/40 hover:bg-gray-800/40'
                   }`}
-                  style={isSelected ? { borderColor: color + '80', background: color + '15' } : {}}
+                  style={isSelected ? { borderColor: color + '80', background: color + '15', boxShadow: `0 0 0 1px ${color}40, 0 4px 16px ${color}15` } : {}}
                 >
                   <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
                     isSelected ? 'text-white' : 'text-gray-500 bg-gray-800'
@@ -115,7 +115,7 @@ export function QuestionnaireScreen({
             <button
               key={i}
               onClick={() => setIdx(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
+              className={`w-2.5 h-2.5 rounded-full transition-all hover:scale-125 ${
                 i === idx ? 'scale-125' : answers[i] !== undefined ? 'opacity-60' : 'bg-gray-800'
               }`}
               style={i === idx ? { background: color } : answers[i] !== undefined ? { background: color } : {}}

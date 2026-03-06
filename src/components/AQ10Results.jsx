@@ -33,7 +33,7 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
 
       {/* Total score */}
       {showLive && (
-        <div className={`rounded-xl p-6 mb-4 border ${elevated ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
+        <div className={`rounded-xl p-6 mb-4 border animate-scale-in ${elevated ? 'bg-red-900/30 border-red-700' : 'bg-green-900/30 border-green-700'}`}>
           <div className="text-center mb-3">
             <span className="text-gray-400 text-sm block mb-2">
               {lang === 'cs' ? 'Celkové skóre' : 'Total Score'}
@@ -53,7 +53,7 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi (10 položek)' : 'Answers (10 items)'}</h3>
           <div className="space-y-2">
             {Array.from({ length: 10 }, (_, i) => {
@@ -76,14 +76,14 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'AQ-10 je screeningový nástroj a nenahrazuje klinickou diagnostiku poruchy autistického spektra. Výsledky konzultujte s odborníkem.'
           : 'The AQ-10 is a screening tool and does not replace clinical diagnosis of autism spectrum disorder. Discuss results with a professional.'}
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Allison, C., Auyeung, B., & Baron-Cohen, S. (2012). Toward brief "Red Flags" for autism spectrum disorders: The Short Autism Spectrum Quotient and the Short Quantitative Checklist in 1,000 cases and 3,000 controls. <em>Journal of the American Academy of Child & Adolescent Psychiatry</em>, 51(2), 202–212.
         </div>

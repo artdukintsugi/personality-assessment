@@ -182,7 +182,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* Overview (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-2">{lang === 'cs' ? 'Přehled subškál' : 'Subscale Overview'}</h2>
           <p className="text-gray-500 text-xs mb-6">{lang === 'cs' ? `Celkové skóre: ${totalScore} (DASS-${showDass21 ? '21' : '42'})` : `Total score: ${totalScore} (DASS-${showDass21 ? '21' : '42'})`}</p>
           
@@ -250,7 +250,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* Item breakdown by subscale (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí podle subškál' : 'Answers by Subscale'}</h3>
           {['depression', 'anxiety', 'stress'].map(sub => {
             const indices = showDass21 ? DASS21_SUBSET[sub] : DASS42_SUBSCALES[sub];
@@ -288,7 +288,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
         <ValiditySection validity={validity} lang={lang} t={t} scaleMax={3} />
 
         {/* Disclaimer */}
-        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6">
+        <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 mb-6 animate-slide-up delay-150">
           <p className="text-amber-400/80 text-xs leading-relaxed">
             {lang === 'cs'
               ? '⚠ DASS je screeningový nástroj měřící aktuální příznaky deprese, úzkosti a stresu za poslední týden. Nejedná se o diagnostický test. Konzultujte výsledky s kvalifikovaným odborníkem.'

@@ -33,7 +33,7 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
 
       {/* Total score */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-scale-in">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={DAST10_SEVERITY} lang={lang} />
@@ -60,7 +60,7 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => {
@@ -107,14 +107,14 @@ export default function DAST10Results({ answers, questions, lang, t, onBack, tog
       <ValiditySection validity={validity} lang={lang} t={t} scaleMax={1} />
 
       {/* Disclaimer */}
-      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs">
+      <div className="bg-yellow-900/30 border border-yellow-700 rounded-xl p-4 mb-4 text-yellow-200 text-xs animate-slide-up delay-150">
         {lang === 'cs'
           ? 'DAST-10 je screeningový nástroj pro identifikaci problémového užívání drog a nenahrazuje klinickou diagnostiku. Výsledky konzultujte s odborníkem.'
           : 'The DAST-10 is a screening tool for identifying problematic drug use and does not replace clinical diagnosis. Discuss results with a professional.'}
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Skinner HA. (1982). The Drug Abuse Screening Test. <em>Addictive Behaviors</em> 7(4):363-371. · Yudko E, Lozhkina O, Fouts A. (2007). A comprehensive review of the psychometric properties of the DAST. <em>J Subst Abuse Treat</em> 32(2):189-198.
         </div>

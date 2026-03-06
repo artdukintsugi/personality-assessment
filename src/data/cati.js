@@ -11,8 +11,8 @@ export const CATI_SUBSCALES = {
   SOC: { cs: 'Sociální interakce', en: 'Social Interactions', color: '#818CF8' },
   COM: { cs: 'Komunikace', en: 'Communication', color: '#F87171' },
   CAM: { cs: 'Sociální kamufláž', en: 'Social Camouflage', color: '#FBBF24' },
-  FLX: { cs: 'Kognitivní (ne)flexibilita', en: 'Cognitive (In)Flexibility', color: '#34D399' },
-  REG: { cs: 'Autoregulační chování', en: 'Self-regulatory Behaviours', color: '#60A5FA' },
+  FLX: { cs: 'Kognitivní rigidita', en: 'Cognitive Rigidity', color: '#34D399' },
+  REG: { cs: 'Repetitivní chování', en: 'Repetitive Behaviours', color: '#60A5FA' },
   SEN: { cs: 'Senzorická citlivost', en: 'Sensory Sensitivity', color: '#A78BFA' },
 };
 

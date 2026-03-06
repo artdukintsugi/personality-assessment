@@ -116,7 +116,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* ════════════════════════════════════════════ */}
         {/* SUMMARY CARDS */}
         {/* ════════════════════════════════════════════ */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8 animate-scale-in">
           <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800/60 text-center">
             <div className="text-3xl font-bold text-gray-200">{completedTests.length}</div>
             <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Dokončeno' : 'Completed'}</div>
@@ -183,7 +183,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                     contentStyle={{ background: '#1F2937', border: '1px solid #374151', borderRadius: 12, color: '#fff' }}
                     formatter={(v, name, p) => [`${v}%`, `${lang === 'cs' ? 'Skóre' : 'Score'}: ${p.payload.score}`]}
                   />
-                  <Bar dataKey="pct" radius={[0, 6, 6, 0]}>
+                  <Bar dataKey="pct" radius={[0, 6, 6, 0]} animationDuration={600} animationEasing="ease-out">
                     {barData.map((d, i) => (
                       <Cell key={i} fill={d.color} fillOpacity={0.7} />
                     ))}
