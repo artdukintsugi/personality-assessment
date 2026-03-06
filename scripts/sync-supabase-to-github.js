@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { createClient } from '@supabase/supabase-js';
-import fetch from 'node-fetch';
 
 async function main() {
   const SUPABASE_URL = process.env.SUPABASE_URL;
