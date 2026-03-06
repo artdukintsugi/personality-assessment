@@ -931,48 +931,44 @@ export default function App() {
       <AuthModal />
       <OnboardingModal />
 
-      {/* ═══ HERO SECTION ═══ */}
-      <div className="relative overflow-hidden hero-dots">
+      {/* ═══ HERO ═══ */}
+      <div className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-purple-600/12 via-indigo-600/6 to-transparent rounded-full blur-[80px]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[480px] bg-gradient-to-b from-purple-500/[0.07] via-indigo-500/[0.03] to-transparent rounded-full blur-[100px]" />
         </div>
 
-        <div className="max-w-3xl mx-auto px-6 pt-10 pb-6 md:pt-16 relative">
-          {/* Top bar */}
-          <div className="flex items-center justify-between mb-12">
-            <button onClick={() => { setShowOnboarding(true); setOnboardStep(0); }} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all flex items-center gap-1.5">
-              ❓ {lang === 'cs' ? 'Jak to funguje' : 'How it works'}
+        <div className="max-w-3xl mx-auto px-6 pt-8 pb-4 md:pt-14 md:pb-6 relative">
+          {/* Nav */}
+          <div className="flex items-center justify-between mb-16 md:mb-20">
+            <button onClick={() => { setShowOnboarding(true); setOnboardStep(0); }} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors">
+              {lang === 'cs' ? 'Jak to funguje' : 'How it works'}
             </button>
-            <button onClick={toggleLang} className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/30 text-amber-400 bg-amber-500/8' : 'border-white/10 text-gray-500 hover:text-gray-300 hover:border-white/20'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
+            <button onClick={toggleLang} className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
           </div>
 
-          {/* Hero */}
-          <div className="mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-              {lang === 'cs' ? '15 validovaných nástrojů' : '15 validated instruments'}
-            </div>
-            <h1 className="heading-display bg-gradient-to-br from-white via-gray-100 to-gray-400 bg-clip-text text-transparent mb-5">
+          {/* Title */}
+          <div className="mb-6">
+            <h1 className="heading-display bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-4">
               {t('appTitle')}
             </h1>
-            <p className="text-gray-500 text-base md:text-lg max-w-xl leading-relaxed">
+            <p className="text-gray-500 text-base md:text-lg max-w-lg leading-relaxed">
               {lang === 'cs'
-                ? 'Screeningová psychodiagnostika s cross-referencí mezi výsledky. Lokálně, soukromě.'
-                : 'Screening psychodiagnostics with cross-reference analysis. Local and private.'}
+                ? 'Screeningová psychodiagnostika s cross-referencí mezi výsledky.'
+                : 'Screening psychodiagnostics with cross-reference analysis.'}
             </p>
           </div>
 
-          {/* Category tags — minimal */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 pb-8 md:pb-10">
             {[
-              { label: lang === 'cs' ? 'Osobnost' : 'Personality', color: 'bg-purple-500' },
-              { label: lang === 'cs' ? 'Nálada' : 'Mood', color: 'bg-emerald-500' },
-              { label: lang === 'cs' ? 'Trauma' : 'Trauma', color: 'bg-rose-500' },
-              { label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment', color: 'bg-violet-500' },
-              { label: lang === 'cs' ? 'Substance' : 'Substances', color: 'bg-amber-500' },
+              { label: lang === 'cs' ? 'Osobnost' : 'Personality', color: 'bg-purple-400' },
+              { label: lang === 'cs' ? 'Nálada' : 'Mood', color: 'bg-emerald-400' },
+              { label: lang === 'cs' ? 'Trauma' : 'Trauma', color: 'bg-rose-400' },
+              { label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment', color: 'bg-violet-400' },
+              { label: lang === 'cs' ? 'Substance' : 'Substances', color: 'bg-amber-400' },
             ].map(f => (
-              <span key={f.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-white/[0.03] text-xs text-gray-400">
-                <span className={`w-1.5 h-1.5 rounded-full ${f.color} opacity-80`} />
+              <span key={f.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-xs text-gray-500">
+                <span className={`w-1.5 h-1.5 rounded-full ${f.color} opacity-70`} />
                 {f.label}
               </span>
             ))}
@@ -982,25 +978,25 @@ export default function App() {
 
       <div className="max-w-3xl mx-auto px-6 pb-8 md:pb-12">
 
-        {/* Auth bar */}
-        <div className="mb-8 p-4 rounded-2xl frosted">
+        {/* Auth */}
+        <div className="mb-8 px-4 py-3.5 frosted">
           {auth?.user ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold shrink-0">{auth.user.email?.[0]?.toUpperCase()}</div>
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/80 to-indigo-500/80 flex items-center justify-center text-[11px] font-semibold shrink-0">{auth.user.email?.[0]?.toUpperCase()}</div>
                 <div className="min-w-0">
-                  <div className="text-sm text-gray-200 truncate">{auth.user.email}</div>
-                  <div className="text-xs text-green-500/70">{t('synced')}</div>
+                  <div className="text-sm text-gray-300 truncate">{auth.user.email}</div>
+                  <div className="text-[11px] text-emerald-500/60">{t('synced')}</div>
                 </div>
               </div>
-              <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">{t('signOut')}</button>
+              <button onClick={() => auth.signOut()} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors">{t('signOut')}</button>
             </div>
           ) : auth?.isConfigured ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <span className="text-xs text-gray-500">{t('localOnly')}</span>
               <div className="flex gap-2 shrink-0">
-                <button onClick={() => setAuthForm('login')} className="text-xs px-4 py-2 rounded-lg bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition-all font-medium">{t('login')}</button>
-                <button onClick={() => setAuthForm('signup')} className="text-xs px-4 py-2 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-300 transition-all">{t('signup')}</button>
+                <button onClick={() => setAuthForm('login')} className="text-xs px-4 py-2 rounded-lg bg-white/[0.06] text-gray-300 hover:bg-white/[0.1] transition-colors font-medium">{t('login')}</button>
+                <button onClick={() => setAuthForm('signup')} className="text-xs px-4 py-2 rounded-lg text-gray-500 hover:text-gray-300 transition-colors">{t('signup')}</button>
               </div>
             </div>
           ) : (
@@ -1008,73 +1004,54 @@ export default function App() {
           )}
         </div>
 
-        {/* Patient Profile Button — auth only */}
+        {/* Clinical Profile */}
         {auth?.user && (history.length > 0 || cloudResults.length > 0) && (
-          <button onClick={() => setMode('profile')} className="w-full mb-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-purple-900/20 border border-cyan-500/20 hover:border-cyan-400/40 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
+          <button onClick={() => setMode('profile')} className="w-full mb-8 px-5 py-4 frosted group text-left transition-colors hover:bg-white/[0.04]">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🏥</span>
-                <div>
-                  <div className="text-lg font-semibold text-cyan-300 group-hover:text-cyan-200 transition-colors">{lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{lang === 'cs' ? 'Přehled výsledků, cross-reference a historie' : 'Results overview, cross-references & history'}</div>
-                </div>
+              <div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">{lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}</div>
+                <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Přehled výsledků, cross-reference a historie' : 'Results overview, cross-references & history'}</div>
               </div>
-              <span className="text-gray-600 group-hover:text-gray-400 text-lg inline-block group-hover:translate-x-1 transition-transform duration-200">→</span>
+              <span className="text-gray-600 group-hover:text-gray-400 text-sm transition-colors">→</span>
             </div>
           </button>
         )}
 
         {/* ═══ Personality Assessment ═══ */}
         <div className="mb-3">
-          <div className="flex items-center gap-3 mb-3 px-1">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-purple-500/30" />
-            <span className="text-xs text-purple-400/80 font-semibold uppercase tracking-widest">{lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-purple-500/30" />
-          </div>
+          <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1">{lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</p>
         </div>
-        {/* Test cards */}
-        <div className="grid gap-3 mb-6">
-          <button onClick={() => setMode("pid5")} className="p-5 rounded-2xl bg-gradient-to-br from-purple-900/70 to-gray-950 border border-purple-500/40 hover:border-purple-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500/90 via-purple-400/50 to-transparent" />
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-lg font-bold text-purple-300 group-hover:text-purple-200 transition-colors">PID-5</div>
-                <div className="text-xs text-gray-400 mt-1">{t('pid5Desc')}</div>
-              </div>
-              <span className="text-gray-600 group-hover:text-gray-400 text-lg inline-block group-hover:translate-x-1 transition-transform duration-200">→</span>
-            </div>
-            {Object.keys(answers).length > 0 && (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden"><div className="h-full bg-purple-500 rounded-full" style={{width: `${(Object.keys(answers).length/220)*100}%`}} /></div>
-                <span className="text-xs text-purple-400 shrink-0">{Object.keys(answers).length}/220</span>
-              </div>
-            )}
-          </button>
-          <button onClick={() => setMode("lpfs")} className="p-5 rounded-2xl bg-gradient-to-br from-blue-900/70 to-gray-950 border border-blue-500/40 hover:border-blue-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500/90 via-blue-400/50 to-transparent" />
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-lg font-bold text-blue-300 group-hover:text-blue-200 transition-colors">LPFS-SR</div>
-                <div className="text-xs text-gray-400 mt-1">{t('lpfsDesc')}</div>
-              </div>
-              <span className="text-gray-600 group-hover:text-gray-400 text-lg inline-block group-hover:translate-x-1 transition-transform duration-200">→</span>
-            </div>
-            {Object.keys(lpfsAns).length > 0 && (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1.5 overflow-hidden"><div className="h-full bg-blue-500 rounded-full" style={{width: `${(Object.keys(lpfsAns).length/80)*100}%`}} /></div>
-                <span className="text-xs text-blue-400 shrink-0">{Object.keys(lpfsAns).length}/80</span>
-              </div>
-            )}
-          </button>
+        <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05] mb-8">
+          {[
+            { key: 'pid5', label: 'PID-5', desc: t('pid5Desc'), dot: 'bg-purple-400', ans: answers, total: 220 },
+            { key: 'lpfs', label: 'LPFS-SR', desc: t('lpfsDesc'), dot: 'bg-blue-400', ans: lpfsAns, total: 80 },
+          ].map(item => {
+            const prog = Object.keys(item.ans).length;
+            const pct = prog > 0 ? (prog / item.total) * 100 : 0;
+            return (
+              <button key={item.key} onClick={() => setMode(item.key)} className="test-row w-full px-5 py-4 flex items-center gap-4 group">
+                <span className={`w-2 h-2 rounded-full ${item.dot} shrink-0 opacity-80`} />
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">{item.label}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{item.desc}</div>
+                </div>
+                {prog > 0 && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="w-16 bg-white/[0.06] rounded-full h-1 overflow-hidden">
+                      <div className={`h-full ${item.dot} rounded-full transition-[width] duration-500`} style={{width: `${pct}%`}} />
+                    </div>
+                    <span className="text-[11px] text-gray-600 tabular-nums">{prog}/{item.total}</span>
+                  </div>
+                )}
+                <span className="text-gray-600 group-hover:text-gray-400 text-sm shrink-0 transition-colors">→</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* ═══ Clinical Screening Tools ═══ */}
-        <div className="mb-3 mt-6">
-          <div className="flex items-center gap-3 mb-3 px-1">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-500/30" />
-            <span className="text-xs text-cyan-400/80 font-semibold uppercase tracking-widest">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-500/30" />
-          </div>
+        {/* ═══ Clinical Screening ═══ */}
+        <div className="mb-3">
+          <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</p>
         </div>
         <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05] mb-6">
           {[
@@ -1100,207 +1077,169 @@ export default function App() {
               <button key={item.key} onClick={() => setMode(item.key)} className="test-row w-full px-5 py-3.5 flex items-center gap-4 group">
                 <span className={`w-2 h-2 rounded-full ${item.dot} shrink-0 opacity-80`} />
                 <div className="flex-1 min-w-0 text-left">
-                  <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">{item.label}</span>
-                  <span className="text-xs text-gray-500 ml-2">{item.desc}</span>
+                  <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">{item.label}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{item.desc}</div>
                 </div>
                 {prog > 0 && (
-                  <div className="w-14 bg-gray-800/80 rounded-full h-1 overflow-hidden shrink-0">
-                    <div className={`h-full ${item.dot} rounded-full transition-[width] duration-500`} style={{width: `${pct}%`}} />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="w-16 bg-white/[0.06] rounded-full h-1 overflow-hidden">
+                      <div className={`h-full ${item.dot} rounded-full transition-[width] duration-500`} style={{width: `${pct}%`}} />
+                    </div>
+                    <span className="text-[11px] text-gray-600 tabular-nums">{prog}/{item.total}</span>
                   </div>
                 )}
-                <span className="text-gray-600 text-sm shrink-0 group-hover:translate-x-0.5 transition-transform duration-200">→</span>
+                <span className="text-gray-600 group-hover:text-gray-400 text-sm shrink-0 transition-colors">→</span>
               </button>
             );
           })}
         </div>
 
-        {/* Quick result buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {Object.keys(answers).length === 220 && <button onClick={() => setMode("pid5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('pid5Results')}</button>}
-          {Object.keys(lpfsAns).length === 80 && <button onClick={() => setMode("lpfs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">{t('lpfsResults')}</button>}
-          {Object.keys(phq9Ans).length === 9 && <button onClick={() => setMode("phq9_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PHQ-9</button>}
-          {Object.keys(gad7Ans).length === 7 && <button onClick={() => setMode("gad7_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 GAD-7</button>}
-          {Object.keys(dass42Ans).length === 42 && <button onClick={() => setMode("dass42_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DASS-42</button>}
-          {Object.keys(pcl5Ans).length === 20 && <button onClick={() => setMode("pcl5_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 PCL-5</button>}
-          {Object.keys(catiAns).length === 42 && <button onClick={() => setMode("cati_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CATI</button>}
-          {Object.keys(isiAns).length === 7 && <button onClick={() => setMode("isi_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ISI</button>}
-          {Object.keys(asrsAns).length === 18 && <button onClick={() => setMode("asrs_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ASRS</button>}
-          {Object.keys(eat26Ans).length === 26 && <button onClick={() => setMode("eat26_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 EAT-26</button>}
-          {Object.keys(mdqAns).length === 15 && <button onClick={() => setMode("mdq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 MDQ</button>}
-          {Object.keys(cuditrAns).length === 8 && <button onClick={() => setMode("cuditr_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 CUDIT-R</button>}
-          {Object.keys(auditAns).length === 10 && <button onClick={() => setMode("audit_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AUDIT</button>}
-          {Object.keys(dast10Ans).length === 10 && <button onClick={() => setMode("dast10_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 DAST-10</button>}
-          {Object.keys(itqAns).length === 18 && <button onClick={() => setMode("itq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 ITQ</button>}
-          {Object.keys(aqAns).length === 50 && <button onClick={() => setMode("aq_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AQ-50</button>}
-          {Object.keys(aq10Ans).length === 10 && <button onClick={() => setMode("aq10_results")} className="p-3 rounded-xl bg-green-900/30 border border-green-500/20 text-green-400 text-sm font-medium hover:border-green-400/40 transition-all">📊 AQ-10</button>}
-        </div>
+        {/* Completed — view results */}
+        {(() => {
+          const completed = [
+            { key: 'pid5_results', label: t('pid5Results'), show: Object.keys(answers).length === 220 },
+            { key: 'lpfs_results', label: t('lpfsResults'), show: Object.keys(lpfsAns).length === 80 },
+            { key: 'phq9_results', label: 'PHQ-9', show: Object.keys(phq9Ans).length === 9 },
+            { key: 'gad7_results', label: 'GAD-7', show: Object.keys(gad7Ans).length === 7 },
+            { key: 'dass42_results', label: 'DASS-42', show: Object.keys(dass42Ans).length === 42 },
+            { key: 'pcl5_results', label: 'PCL-5', show: Object.keys(pcl5Ans).length === 20 },
+            { key: 'cati_results', label: 'CATI', show: Object.keys(catiAns).length === 42 },
+            { key: 'isi_results', label: 'ISI', show: Object.keys(isiAns).length === 7 },
+            { key: 'asrs_results', label: 'ASRS', show: Object.keys(asrsAns).length === 18 },
+            { key: 'eat26_results', label: 'EAT-26', show: Object.keys(eat26Ans).length === 26 },
+            { key: 'mdq_results', label: 'MDQ', show: Object.keys(mdqAns).length === 15 },
+            { key: 'cuditr_results', label: 'CUDIT-R', show: Object.keys(cuditrAns).length === 8 },
+            { key: 'audit_results', label: 'AUDIT', show: Object.keys(auditAns).length === 10 },
+            { key: 'dast10_results', label: 'DAST-10', show: Object.keys(dast10Ans).length === 10 },
+            { key: 'itq_results', label: 'ITQ', show: Object.keys(itqAns).length === 18 },
+            { key: 'aq_results', label: 'AQ-50', show: Object.keys(aqAns).length === 50 },
+            { key: 'aq10_results', label: 'AQ-10', show: Object.keys(aq10Ans).length === 10 },
+          ].filter(c => c.show);
+          if (completed.length === 0) return null;
+          return (
+            <div className="mb-8">
+              <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1 mb-3">{lang === 'cs' ? 'Dokončené' : 'Completed'}</p>
+              <div className="flex flex-wrap gap-2">
+                {completed.map(c => (
+                  <button key={c.key} onClick={() => setMode(c.key)} className="px-3.5 py-2 rounded-xl text-xs font-medium text-emerald-400/90 bg-emerald-500/[0.08] border border-emerald-500/[0.12] hover:bg-emerald-500/[0.14] hover:border-emerald-500/[0.2] transition-colors">
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ═══ SAVED RESULTS / HISTORY ═══ */}
-        {(history.length > 0 || cloudResults.length > 0) && (
-          <div className="mb-6">
-            <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-900/40 border border-gray-800/60 hover:border-gray-700 transition-all">
-              <span className="text-sm text-gray-400 flex items-center gap-2">{t('savedResults')} <span className="text-xs text-gray-600">({history.length} {t('local')}{cloudResults.length > 0 ? ` + ${cloudResults.length} ${t('cloud')}` : ''})</span></span>
-              <span className="text-xs text-gray-600">{showHistory ? '▾' : '▸'}</span>
-            </button>
-            {showHistory && (
-              <div className="mt-2 space-y-2 max-h-96 overflow-y-auto pr-1">
-                {/* Local results */}
-                {history.map((h) => (
-                  <div key={h.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
-                          h.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' :
-                          h.type === 'lpfs' ? 'bg-blue-500/20 text-blue-400' :
-                          h.type === 'phq9' ? 'bg-emerald-500/20 text-emerald-400' :
-                          h.type === 'gad7' ? 'bg-teal-500/20 text-teal-400' :
-                          h.type === 'dass42' ? 'bg-orange-500/20 text-orange-400' :
-                          h.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
-                          h.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
-                          h.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
-                          h.type === 'asrs' ? 'bg-sky-500/20 text-sky-400' :
-                          h.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
-                          h.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
-                          h.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
-                          h.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
-                          h.type === 'dast10' ? 'bg-red-500/20 text-red-400' :
-                          h.type === 'itq' ? 'bg-fuchsia-500/20 text-fuchsia-400' :
-                          h.type === 'aq' ? 'bg-violet-500/20 text-violet-400' :
-                          h.type === 'aq10' ? 'bg-purple-500/20 text-purple-400' :
-                          'bg-gray-500/20 text-gray-400'
-                        }`}>{
-                          { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', aq: 'AQ-50', aq10: 'AQ-10' }[h.type] || h.type
-                        }</span>
-                        <span className="text-xs text-gray-600">{new Date(h.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
+        {(history.length > 0 || cloudResults.length > 0) && (() => {
+          const TYPE_LABELS = { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', asrs: 'ASRS', eat26: 'EAT-26', mdq: 'MDQ', cuditr: 'CUDIT-R', audit: 'AUDIT', dast10: 'DAST-10', itq: 'ITQ', aq: 'AQ-50', aq10: 'AQ-10' };
+          const btnCls = "text-xs px-3 py-1.5 rounded-lg bg-white/[0.04] text-gray-500 hover:text-gray-300 hover:bg-white/[0.07] transition-colors";
+          const delCls = "text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/[0.08] transition-colors ml-auto";
+          return (
+            <div className="mb-8">
+              <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-5 py-3.5 frosted transition-colors hover:bg-white/[0.04]">
+                <span className="text-sm text-gray-400">{t('savedResults')} <span className="text-xs text-gray-600 ml-1">({history.length}{cloudResults.length > 0 ? ` + ${cloudResults.length}` : ''})</span></span>
+                <span className={`text-xs text-gray-600 transition-transform duration-200 ${showHistory ? 'rotate-90' : ''}`}>›</span>
+              </button>
+              {showHistory && (
+                <div className="mt-3 space-y-2 max-h-[28rem] overflow-y-auto">
+                  {history.map((h) => (
+                    <div key={h.id} className="px-5 py-4 frosted">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-semibold text-white/80">{TYPE_LABELS[h.type] || h.type}</span>
+                        <span className="text-[11px] text-gray-600">{new Date(h.date).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
+                      </div>
+                      {h.type === 'pid5' && h.topDiags?.length > 0 && (
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
+                          {h.topDiags.slice(0, 4).map((d, j) => (
+                            <span key={j} className="text-xs text-gray-500 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: d.color }} />
+                              {(d.id ? diagName(d.id, d.name, lang) : d.name).split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {h.type === 'lpfs' && <div className="text-xs text-gray-500 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
+                      {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit','dast10','itq','aq','aq10'].includes(h.type) && h.score != null && (
+                        <div className="text-xs text-gray-500 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
+                      )}
+                      {h.type === 'mdq' && (
+                        <div className="text-xs mb-3" style={{ color: h.positive ? '#F87171' : '#4ADE80' }}>
+                          {h.positive ? (lang === 'cs' ? 'Pozitivní screening' : 'Positive Screen') : (lang === 'cs' ? 'Negativní screening' : 'Negative Screen')}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <button onClick={() => viewSavedResult(h)} className={btnCls}>{t('view')}</button>
+                        <button onClick={() => {
+                          const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'});
+                          const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                          a.download = `${h.type}_${h.date.slice(0,10)}.json`; a.click();
+                        }} className={btnCls}>{t('export')}</button>
+                        <button onClick={() => { if (confirm(t('deleteResult'))) setHistory(prev => prev.filter(x => x.id !== h.id)); }}
+                          className={delCls}>{lang === 'cs' ? 'Smazat' : 'Delete'}</button>
                       </div>
                     </div>
-                    {h.type === 'pid5' && h.topDiags?.length > 0 && (
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
-                        {h.topDiags.slice(0, 4).map((d, j) => (
-                          <span key={j} className="text-xs text-gray-400 flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
-                            {(d.id ? diagName(d.id, d.name, lang) : d.name).split('(')[0].split('—')[0].trim()}: {d.score.toFixed(2)}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {h.type === 'lpfs' && <div className="text-xs text-gray-400 mb-3">{t('average')}: {h.score?.toFixed(2)}</div>}
-                    {['phq9','gad7','dass42','pcl5','cati','isi','asrs','eat26','cuditr','audit','dast10','itq','aq','aq10'].includes(h.type) && h.score != null && (
-                      <div className="text-xs text-gray-400 mb-3">{lang === 'cs' ? 'Skóre' : 'Score'}: {h.score}{h.severity ? ` — ${h.severity}` : ''}</div>
-                    )}
-                    {h.type === 'mdq' && (
-                      <div className="text-xs mb-3" style={{ color: h.positive ? '#F87171' : '#4ADE80' }}>
-                        {h.positive ? (lang === 'cs' ? '⚠️ Pozitivní screening' : '⚠️ Positive Screen') : (lang === 'cs' ? '✓ Negativní screening' : '✓ Negative Screen')}
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <button onClick={() => viewSavedResult(h)} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
-                      <button onClick={() => {
-                        const blob = new Blob([JSON.stringify(h.fullData, null, 2)], {type:'application/json'});
-                        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-                        a.download = `${h.type}_${h.date.slice(0,10)}.json`; a.click();
-                      }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('export')}</button>
-                      <button onClick={() => { if (confirm(t('deleteResult'))) setHistory(prev => prev.filter(x => x.id !== h.id)); }}
-                        className="text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-950/30 transition-all ml-auto">🗑</button>
-                    </div>
-                  </div>
-                ))}
-                {/* Cloud results */}
-                {cloudResults.length > 0 && (
-                  <>
-                    <div className="text-xs text-gray-600 px-2 pt-2 flex items-center gap-2"><span className="h-px flex-1 bg-gray-800" /><span>☁ Cloud</span><span className="h-px flex-1 bg-gray-800" /></div>
-                    {cloudResults.map((cr) => (
-                      <div key={cr.id} className="p-4 rounded-xl bg-gray-900/50 border border-gray-800/50 hover:border-gray-700/60 transition-all">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
-                              cr.type === 'pid5' ? 'bg-purple-500/20 text-purple-400' :
-                              cr.type === 'lpfs' ? 'bg-blue-500/20 text-blue-400' :
-                              cr.type === 'phq9' ? 'bg-emerald-500/20 text-emerald-400' :
-                              cr.type === 'gad7' ? 'bg-teal-500/20 text-teal-400' :
-                              cr.type === 'dass42' ? 'bg-orange-500/20 text-orange-400' :
-                              cr.type === 'pcl5' ? 'bg-rose-500/20 text-rose-400' :
-                              cr.type === 'cati' ? 'bg-violet-500/20 text-violet-400' :
-                              cr.type === 'isi' ? 'bg-indigo-500/20 text-indigo-400' :
-                              cr.type === 'asrs' ? 'bg-sky-500/20 text-sky-400' :
-                              cr.type === 'eat26' ? 'bg-pink-500/20 text-pink-400' :
-                              cr.type === 'mdq' ? 'bg-amber-500/20 text-amber-400' :
-                              cr.type === 'cuditr' ? 'bg-lime-500/20 text-lime-400' :
-                              cr.type === 'audit' ? 'bg-yellow-500/20 text-yellow-400' :
-                              cr.type === 'dast10' ? 'bg-red-500/20 text-red-400' :
-                              cr.type === 'itq' ? 'bg-fuchsia-500/20 text-fuchsia-400' :
-                              'bg-gray-500/20 text-gray-400'
-                            }`}>{
-                              { pid5: 'PID-5', lpfs: 'LPFS', phq9: 'PHQ-9', gad7: 'GAD-7', dass42: 'DASS-42', pcl5: 'PCL-5', cati: 'CATI', isi: 'ISI', asrs: 'ASRS', eat26: 'EAT-26', mdq: 'MDQ', cuditr: 'CUDIT-R' }[cr.type] || cr.type
-                            }</span>
-                            <span className="text-xs text-gray-600">{new Date(cr.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
-                            <span className="text-xs text-gray-700">☁</span>
+                  ))}
+                  {cloudResults.length > 0 && (
+                    <>
+                      <div className="text-[11px] text-gray-600 px-2 pt-2 flex items-center gap-2"><span className="h-px flex-1 bg-white/[0.05]" /><span>Cloud</span><span className="h-px flex-1 bg-white/[0.05]" /></div>
+                      {cloudResults.map((cr) => (
+                        <div key={cr.id} className="px-5 py-4 frosted">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-semibold text-white/80">{TYPE_LABELS[cr.type] || cr.type}</span>
+                            <span className="text-[11px] text-gray-600">{new Date(cr.created_at).toLocaleString(lang === 'en' ? 'en-US' : 'cs-CZ')}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => viewSavedResult({ type: cr.type, fullData: cr.data?.fullData || cr.data, date: cr.created_at })}
+                              className={btnCls}>{t('view')}</button>
+                            <button onClick={() => {
+                              const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
+                              const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                              a.download = `${cr.type}_cloud_${cr.created_at?.slice(0,10)}.json`; a.click();
+                            }} className={btnCls}>{t('export')}</button>
+                            <button onClick={async () => {
+                              if (confirm(t('deleteFromCloud'))) {
+                                await deleteResultFromCloud(auth.user, cr.id);
+                                setCloudResults(prev => prev.filter(x => x.id !== cr.id));
+                              }
+                            }} className={delCls}>{lang === 'cs' ? 'Smazat' : 'Delete'}</button>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => viewSavedResult({ type: cr.type, fullData: cr.data?.fullData || cr.data, date: cr.created_at })}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('view')}</button>
-                          <button onClick={() => {
-                            const blob = new Blob([JSON.stringify(cr.data, null, 2)], {type:'application/json'});
-                            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-                            a.download = `${cr.type}_cloud_${cr.created_at?.slice(0,10)}.json`; a.click();
-                          }} className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all">{t('export')}</button>
-                          <button onClick={async () => {
-                            if (confirm(t('deleteFromCloud'))) {
-                              await deleteResultFromCloud(auth.user, cr.id);
-                              setCloudResults(prev => prev.filter(x => x.id !== cr.id));
-                            }
-                          }} className="text-xs px-3 py-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-950/30 transition-all ml-auto">🗑</button>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
-        {/* Debug tools */}
-        <details className="mt-6 pt-4 border-t border-gray-800/40">
-          <summary className="text-xs text-gray-700 mb-2 cursor-pointer hover:text-gray-500 transition-all">{t('debug')}</summary>
-          <div className="grid grid-cols-4 gap-2 mb-2 mt-2">
-            <button onClick={fillSample} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PID-5</button>
-            <button onClick={fillSampleLpfs} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 LPFS</button>
-            <button onClick={fillSamplePhq9} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PHQ-9</button>
-            <button onClick={fillSampleGad7} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 GAD-7</button>
-            <button onClick={fillSampleDass42} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 DASS</button>
-            <button onClick={fillSamplePcl5} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 PCL-5</button>
-            <button onClick={fillSampleCati} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CATI</button>
-            <button onClick={fillSampleIsi} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ISI</button>
-            <button onClick={fillSampleAsrs} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ASRS</button>
-            <button onClick={fillSampleEat26} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 EAT</button>
-            <button onClick={fillSampleMdq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 MDQ</button>
-            <button onClick={fillSampleCuditr} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 CUDIT</button>
-            <button onClick={fillSampleAudit} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AUDIT</button>
-            <button onClick={fillSampleDast10} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 DAST</button>
-            <button onClick={fillSampleItq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 ITQ</button>
-            <button onClick={fillSampleAq} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AQ-50</button>
-            <button onClick={fillSampleAq10} className="p-2 rounded-lg bg-gray-900/40 border border-gray-800/40 text-gray-600 text-xs hover:text-gray-400 hover:border-gray-700 transition-all">🎲 AQ-10</button>
+        {/* Debug */}
+        <details className="mt-4 pt-4 border-t border-white/[0.04]">
+          <summary className="text-[11px] text-gray-700 cursor-pointer hover:text-gray-500 transition-colors select-none">{t('debug')}</summary>
+          <div className="grid grid-cols-4 gap-1.5 mt-3 mb-2">
+            {[
+              ['PID-5', fillSample], ['LPFS', fillSampleLpfs], ['PHQ-9', fillSamplePhq9], ['GAD-7', fillSampleGad7],
+              ['DASS', fillSampleDass42], ['PCL-5', fillSamplePcl5], ['CATI', fillSampleCati], ['ISI', fillSampleIsi],
+              ['ASRS', fillSampleAsrs], ['EAT', fillSampleEat26], ['MDQ', fillSampleMdq], ['CUDIT', fillSampleCuditr],
+              ['AUDIT', fillSampleAudit], ['DAST', fillSampleDast10], ['ITQ', fillSampleItq], ['AQ-50', fillSampleAq],
+              ['AQ-10', fillSampleAq10],
+            ].map(([label, fn]) => (
+              <button key={label} onClick={fn} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-gray-600 text-[11px] hover:text-gray-400 hover:bg-white/[0.04] transition-colors">{label}</button>
+            ))}
           </div>
-          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); setDast10Ans({}); setDast10Idx(0); setItqAns({}); setItqIdx(0); }} className="w-full p-2 rounded-lg bg-gray-900/40 border border-red-900/20 text-gray-600 text-xs hover:text-red-400 hover:border-red-800 transition-all">{t('reset')} 🗑️</button>
+          <button onClick={() => { setAnswers({}); setIdx(0); setLpfsAns({}); setLpfsIdx(0); setPhq9Ans({}); setPhq9Idx(0); setGad7Ans({}); setGad7Idx(0); setDass42Ans({}); setDass42Idx(0); setPcl5Ans({}); setPcl5Idx(0); setCatiAns({}); setCatiIdx(0); setIsiAns({}); setIsiIdx(0); setAsrsAns({}); setAsrsIdx(0); setEat26Ans({}); setEat26Idx(0); setMdqAns({}); setMdqIdx(0); setCuditrAns({}); setCuditrIdx(0); setAuditAns({}); setAuditIdx(0); setDast10Ans({}); setDast10Idx(0); setItqAns({}); setItqIdx(0); }} className="w-full p-2 rounded-lg bg-white/[0.02] border border-red-500/[0.1] text-gray-600 text-[11px] hover:text-red-400 hover:border-red-500/[0.2] transition-colors">{t('reset')}</button>
         </details>
 
         {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-gray-800/30 text-center">
-          <p className="text-xs text-gray-700 leading-relaxed max-w-md mx-auto">
-            {lang === 'cs' 
+        <div className="mt-12 pb-4 text-center">
+          <p className="text-[11px] text-gray-700 leading-relaxed max-w-md mx-auto">
+            {lang === 'cs'
               ? 'Sebeposuzovací screeningový nástroj. Nepředstavuje klinickou diagnózu. Pro odborné posouzení konzultujte klinického psychologa nebo psychiatra.'
               : 'Self-report screening tool. Does not constitute a clinical diagnosis. Consult a clinical psychologist or psychiatrist for professional assessment.'}
           </p>
-          <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-800">
-            <span>PID-5</span><span>·</span><span>LPFS-SR</span><span>·</span><span>PHQ-9</span><span>·</span><span>GAD-7</span><span>·</span><span>DASS-42</span><span>·</span><span>PCL-5</span><span>·</span><span>CATI</span>
-          </div>
-          <div className="flex items-center justify-center gap-3 mt-1 text-xs text-gray-800">
-            <span>ISI</span><span>·</span><span>ASRS</span><span>·</span><span>EAT-26</span><span>·</span><span>MDQ</span><span>·</span><span>CUDIT-R</span><span>·</span><span>AUDIT</span><span>·</span><span>DAST-10</span><span>·</span><span>ITQ</span><span>·</span><span>AQ-50</span><span>·</span><span>AQ-10</span>
-          </div>
-          <button onClick={() => setMode('sources')} className="mt-4 text-xs text-purple-500/60 hover:text-purple-400 transition-all">
-            📚 {lang === 'cs' ? 'Zdroje a reference' : 'Sources & References'}
+          <button onClick={() => setMode('sources')} className="mt-4 text-[11px] text-gray-600 hover:text-gray-400 transition-colors">
+            {lang === 'cs' ? 'Zdroje a reference' : 'Sources & References'}
           </button>
         </div>
       </div>
@@ -1312,7 +1251,7 @@ export default function App() {
     if (!auth?.user) {
       // Not logged in — show login prompt
       return (
-        <div className="min-h-screen bg-gray-950 text-white font-sans flex items-center justify-center p-4">
+        <div className="min-h-screen bg-[#060608] text-white font-sans flex items-center justify-center p-4">
           <AuthModal />
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">🔒</div>
@@ -1373,7 +1312,7 @@ export default function App() {
     const diagScore = diagnostics.find(x => x.id === diagId);
 
     if (!d) return (
-      <div className="min-h-screen bg-gray-950 text-white p-8 font-sans flex items-center justify-center">
+      <div className="min-h-screen bg-[#060608] text-white p-8 font-sans flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-400 mb-4">{lang === 'cs' ? 'Detail pro tuto diagnózu není k dispozici.' : 'Detail not available for this diagnosis.'}</p>
           <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm transition-all">{t('back')}</button>
@@ -1382,11 +1321,11 @@ export default function App() {
     );
 
     return (
-      <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
+      <div className="min-h-screen bg-[#060608] text-white p-4 md:p-8 font-sans">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-300 text-sm transition-colors">{t('diagBackToResults')}</button>
-            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
           </div>
 
           {/* Header */}
@@ -1488,11 +1427,11 @@ export default function App() {
 
   // ── PID-5 RESULTS ──
   if (mode === "pid5_results" || mode === "shared_pid5") return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#060608] text-white p-4 md:p-8 font-sans">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
         </div>
         <h2 className="text-3xl font-bold text-purple-300 mb-2">{t('pid5ResultsHeading')}</h2>
         <p className="text-gray-400 mb-4">{t('filledItems')} {Object.keys(answers).length}/220 {t('items')}</p>
@@ -1860,11 +1799,11 @@ export default function App() {
 
   // ── LPFS RESULTS ──
   if (mode === "lpfs_results" || mode === "shared_lpfs") return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#060608] text-white p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => setMode("menu")} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
         </div>
         <h2 className="text-3xl font-bold text-blue-300 mb-2">{t('lpfsResultsHeading')}</h2>
         {viewingSource === 'shared' && (
@@ -2484,10 +2423,10 @@ export default function App() {
 
   // ═══ SOURCES / REFERENCES PAGE ═══
   if (mode === 'sources') return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="min-h-screen bg-[#060608] text-white font-sans">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">{lang === 'cs' ? '📚 Zdroje & Reference' : '📚 Sources & References'}</h1>
+          <h1 className="text-2xl font-bold">{lang === 'cs' ? 'Zdroje & Reference' : 'Sources & References'}</h1>
           <div className="flex gap-2">
             <button onClick={toggleLang} className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">{lang === 'cs' ? 'EN' : 'CZ'}</button>
             <button onClick={() => setMode('menu')} className="px-4 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">{t('menu')}</button>
@@ -2625,16 +2564,16 @@ export default function App() {
   const lpfsSub = !isPid ? getLpfsSubscale(curI) : null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#060608] text-white flex flex-col font-sans">
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .scroll-thin::-webkit-scrollbar{width:4px} .scroll-thin::-webkit-scrollbar-track{background:transparent} .scroll-thin::-webkit-scrollbar-thumb{background:#374151;border-radius:2px}`}</style>
       <AuthModal />
       {/* Progress bar */}
-      <div className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800/60 px-4 py-2.5">
+      <div className="sticky top-0 z-50 bg-[#060608]/95 backdrop-blur-xl border-b border-gray-800/60 px-4 py-2.5">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
             <button onClick={() => setMode("menu")} className="hover:text-gray-300 transition-colors">{t('menu')}</button>
             <div className="flex items-center gap-3">
-              <button onClick={toggleLang} className={`px-2 py-0.5 rounded text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`} title={t('keyE')}>{lang === 'en' ? 'EN' : 'CZ'}</button>
+              <button onClick={toggleLang} className={`px-2 py-0.5 rounded text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`} title={t('keyE')}>{lang === 'en' ? 'EN' : 'CZ'}</button>
               <span className="font-mono">{answered}/{isPid ? Q.length : LPFS_Q.length}</span>
             </div>
           </div>

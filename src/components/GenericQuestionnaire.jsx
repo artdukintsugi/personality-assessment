@@ -44,42 +44,42 @@ export function QuestionnaireScreen({
   }, [answer, idx, total, scaleMin, scaleMax, setIdx]);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Top bar */}
-        <div className="flex items-center justify-between mb-6">
-          <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm transition-all">{t('back')}</button>
-          <span className="text-sm font-semibold" style={{ color }}>{title}</span>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+    <div className="min-h-screen bg-[#060608] text-white">
+      <div className="max-w-3xl mx-auto px-6 py-6">
+        {/* Nav */}
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={onBack} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">{t('back')}</button>
+          <span className="text-sm font-semibold tracking-tight" style={{ color }}>{title}</span>
+          <button onClick={toggleLang} className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
         </div>
 
         {/* Progress */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-gray-500">{answered}/{total}</span>
-            <span className="text-xs text-gray-600">{Math.round(progress * 100)}%</span>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500 tabular-nums">{answered} / {total}</span>
+            <span className="text-xs text-gray-600 tabular-nums">{Math.round(progress * 100)}%</span>
           </div>
-          <div className="bg-gray-800 rounded-full h-1.5 overflow-hidden">
+          <div className="bg-white/[0.06] rounded-full h-1 overflow-hidden">
             <div className="h-full rounded-full transition-[width] duration-500 ease-out" style={{ width: `${progress * 100}%`, background: color }} />
           </div>
         </div>
 
-        {/* Instruction (shown on first question) */}
+        {/* Instruction */}
         {instruction && idx === 0 && (
-          <div className="mb-4 p-3 rounded-xl bg-gray-900/60 border border-gray-800 text-xs text-gray-400">
+          <div className="mb-5 px-4 py-3 rounded-2xl frosted text-xs text-gray-400 leading-relaxed" style={{ borderRadius: '16px' }}>
             {instruction}
           </div>
         )}
 
         {/* Question */}
-        <div key={idx} className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up">
-          <div className="text-xs text-gray-600 mb-2">{lang === 'cs' ? 'Otázka' : 'Question'} {idx + 1}/{total}</div>
-          <p className="text-lg text-gray-100 leading-relaxed mb-6">
+        <div key={idx} className="frosted p-6 mb-8 animate-slide-up" style={{ borderRadius: '20px' }}>
+          <div className="text-[11px] text-gray-600 mb-3 tabular-nums">{lang === 'cs' ? 'Otázka' : 'Question'} {idx + 1} / {total}</div>
+          <p className="text-lg text-gray-100 leading-relaxed mb-8">
             {q}
             <QuestionReportButton questionIndex={idx} questionText={q} testId={testId} lang={lang} />
           </p>
 
-          {/* Answer buttons */}
+          {/* Answers */}
           <div className="space-y-2">
             {scaleLabels.map((label, i) => {
               const val = scaleMin + i;
@@ -88,15 +88,15 @@ export function QuestionnaireScreen({
                 <button
                   key={val}
                   onClick={() => answer(val)}
-                  className={`w-full text-left p-3 rounded-xl border transition-all duration-150 flex items-center gap-3 hover:scale-[1.01] active:scale-[0.99] ${
+                  className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-150 flex items-center gap-3 ${
                     isSelected
-                      ? 'border-opacity-60 bg-opacity-20'
-                      : 'border-gray-700/30 bg-gray-800/20 hover:border-gray-600/40 hover:bg-gray-800/40'
+                      ? ''
+                      : 'border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.08]'
                   }`}
-                  style={isSelected ? { borderColor: color + '80', background: color + '15', boxShadow: `0 0 0 1px ${color}40, 0 4px 16px ${color}15` } : {}}
+                  style={isSelected ? { borderColor: color + '50', background: color + '12', boxShadow: `0 0 0 1px ${color}25` } : {}}
                 >
-                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                    isSelected ? 'text-white' : 'text-gray-500 bg-gray-800'
+                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold shrink-0 ${
+                    isSelected ? 'text-white' : 'text-gray-500 bg-white/[0.06]'
                   }`} style={isSelected ? { background: color } : {}}>
                     {val}
                   </span>
@@ -110,67 +110,67 @@ export function QuestionnaireScreen({
         </div>
 
         {/* Navigation dots */}
-        <div className="flex justify-center gap-1 flex-wrap">
+        <div className="flex justify-center gap-1 flex-wrap mb-4">
           {Array.from({ length: total }, (_, i) => (
             <button
               key={i}
               onClick={() => setIdx(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all hover:scale-125 ${
-                i === idx ? 'scale-125' : answers[i] !== undefined ? 'opacity-60' : 'bg-gray-800'
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === idx ? 'scale-[1.4]' : answers[i] !== undefined ? 'opacity-50' : 'bg-white/[0.08]'
               }`}
               style={i === idx ? { background: color } : answers[i] !== undefined ? { background: color } : {}}
             />
           ))}
         </div>
 
-        {/* Live Score Panel */}
+        {/* Live Score */}
         {liveScoreConfig && answered > 0 && (() => {
           const { severityLevels, maxScore, label, scoreFn, subscales } = liveScoreConfig;
           const liveTotal = scoreFn ? scoreFn(answers) : Object.values(answers).reduce((s, v) => s + (v ?? 0), 0);
           const pct = maxScore > 0 ? Math.min(liveTotal / maxScore * 100, 100) : 0;
           const currentSev = severityLevels?.find(s => liveTotal >= s.min && liveTotal <= s.max);
           return (
-            <div className="mt-6 p-4 rounded-2xl bg-gray-900/60 border border-gray-800 backdrop-blur-xl">
-              <div className="flex items-center justify-between mb-2">
+            <div className="mt-4 p-5 frosted" style={{ borderRadius: '20px' }}>
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-500">{lang === 'cs' ? 'Průběžné skóre' : 'Live Score'}</span>
-                <span className="text-xs font-mono text-gray-400">{label}</span>
+                <span className="text-[11px] text-gray-600 tabular-nums">{label}</span>
               </div>
-              <div className="flex items-end gap-3 mb-2">
-                <span className="text-2xl font-bold text-white">{liveTotal}</span>
-                <span className="text-sm text-gray-600 mb-0.5">/ {maxScore}</span>
+              <div className="flex items-end gap-3 mb-3">
+                <span className="text-2xl font-bold text-white tabular-nums">{liveTotal}</span>
+                <span className="text-sm text-gray-600 mb-0.5 tabular-nums">/ {maxScore}</span>
                 {currentSev && (
-                  <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ background: currentSev.color + '20', color: currentSev.color }}>
+                  <span className="text-xs px-2.5 py-1 rounded-full ml-auto font-medium" style={{ background: currentSev.color + '15', color: currentSev.color }}>
                     {currentSev[lang] || currentSev.cs || currentSev.key}
                   </span>
                 )}
               </div>
-              <div className="bg-gray-800 rounded-full h-2 overflow-hidden">
+              <div className="bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
                 <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: currentSev?.color || color }} />
               </div>
 
-              {/* Subscale breakdown */}
+              {/* Subscales */}
               {subscales && subscales.length > 0 && answered >= 2 && (
-                <div className="mt-3 pt-3 border-t border-gray-800/60">
-                  <div className="text-xs text-gray-600 mb-2">{lang === 'cs' ? 'Subškály' : 'Subscales'}</div>
-                  <div className="space-y-1.5">
+                <div className="mt-4 pt-4 border-t border-white/[0.05]">
+                  <div className="text-[11px] text-gray-600 mb-2.5">{lang === 'cs' ? 'Subškály' : 'Subscales'}</div>
+                  <div className="space-y-2">
                     {subscales.map((sub, si) => {
                       const subScore = sub.scoreFn ? sub.scoreFn(answers) : sub.items.reduce((s, idx) => s + (answers[idx] ?? 0), 0);
                       const subPct = sub.max > 0 ? Math.min(subScore / sub.max * 100, 100) : 0;
                       const subSev = sub.severityLevels?.find(sv => subScore >= sv.min && subScore <= sv.max);
                       return (
                         <div key={si}>
-                          <div className="flex items-center justify-between mb-0.5">
+                          <div className="flex items-center justify-between mb-1">
                             <span className="text-xs text-gray-500 truncate flex-1 mr-2">{sub[lang] || sub.cs || sub.label}</span>
                             <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-xs font-mono text-gray-400">{subScore}/{sub.max}</span>
+                              <span className="text-[11px] text-gray-500 tabular-nums">{subScore}/{sub.max}</span>
                               {subSev && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: subSev.color + '20', color: subSev.color }}>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: subSev.color + '15', color: subSev.color }}>
                                   {subSev[lang] || subSev.cs || subSev.key}
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
+                          <div className="bg-white/[0.06] rounded-full h-1 overflow-hidden">
                             <div className="h-full rounded-full transition-all duration-300" style={{ width: `${subPct}%`, background: sub.color || subSev?.color || color }} />
                           </div>
                         </div>

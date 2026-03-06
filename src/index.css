@@ -2,61 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Base ──────────────────────────────────────────────── */
 body {
   margin: 0;
+  background: #060608;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Premium typography ─────────────────────────────────── */
+.heading-display {
+  font-size: clamp(2.4rem, 7vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+.heading-xl {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.heading-lg {
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 /* ── Animations ─────────────────────────────────────────── */
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
 }
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-.animate-slide-up { animation: slideUpFade 0.2s ease-out both; }
-.animate-scale-in { animation: scaleIn 0.18s ease-out both; }
+.animate-slide-up { animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in  { animation: fadeIn 0.3s ease both; }
 
 .delay-50  { animation-delay: 50ms; }
 .delay-100 { animation-delay: 100ms; }
 .delay-150 { animation-delay: 150ms; }
 .delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #374151 transparent;
-}
-*::-webkit-scrollbar { width: 4px; height: 4px; }
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
+*::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: #374151; border-radius: 2px; }
-*::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+*::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
-/* ── Hero dot grid background ───────────────────────────── */
-.hero-dots {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
-  background-size: 28px 28px;
+/* ── Frosted glass card ─────────────────────────────────── */
+.frosted {
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
 }
 
-/* ── Card shimmer overlay (glass sheen) ─────────────────── */
-.card-sheen {
+/* ── Interactive row (used inside frosted lists) ────────── */
+.test-row {
   position: relative;
+  transition: background 0.15s ease;
 }
-.card-sheen::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 55%);
-  pointer-events: none;
+.test-row:hover {
+  background: rgba(255,255,255,0.035);
+}
+
+/* ── Focus ring for accessibility ───────────────────────── */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(168, 139, 250, 0.6);
+  outline-offset: 2px;
+}
+
+/* ── Selection color ────────────────────────────────────── */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fff;
 }
