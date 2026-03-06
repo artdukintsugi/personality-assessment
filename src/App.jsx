@@ -927,64 +927,63 @@ export default function App() {
 
   // ── MENU ──
   if (mode === "menu") return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="min-h-screen bg-[#060608] text-white font-sans">
       <AuthModal />
       <OnboardingModal />
 
       {/* ═══ HERO SECTION ═══ */}
       <div className="relative overflow-hidden hero-dots">
-        {/* Gradient background glow */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[420px] bg-gradient-to-b from-purple-500/15 via-pink-500/8 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-[-60px] left-1/4 w-[350px] h-[350px] bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-[-40px] right-1/4 w-[280px] h-[280px] bg-gradient-to-bl from-pink-500/8 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-purple-600/12 via-indigo-600/6 to-transparent rounded-full blur-[80px]" />
         </div>
 
-        <div className="max-w-2xl mx-auto px-4 pt-8 pb-4 md:pt-12 relative">
-          {/* Top bar: help + lang */}
-          <div className="flex items-center justify-between mb-8">
-            <button onClick={() => { setShowOnboarding(true); setOnboardStep(0); }} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-800/60 transition-all flex items-center gap-1.5">
-              <span className="text-sm">❓</span> {lang === 'cs' ? 'Jak to funguje' : 'How it works'}
+        <div className="max-w-3xl mx-auto px-6 pt-10 pb-6 md:pt-16 relative">
+          {/* Top bar */}
+          <div className="flex items-center justify-between mb-12">
+            <button onClick={() => { setShowOnboarding(true); setOnboardStep(0); }} className="text-xs text-gray-600 hover:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all flex items-center gap-1.5">
+              ❓ {lang === 'cs' ? 'Jak to funguje' : 'How it works'}
             </button>
-            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+            <button onClick={toggleLang} className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/30 text-amber-400 bg-amber-500/8' : 'border-white/10 text-gray-500 hover:text-gray-300 hover:border-white/20'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
           </div>
 
           {/* Hero */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 mb-5">
+          <div className="mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
               {lang === 'cs' ? '15 validovaných nástrojů' : '15 validated instruments'}
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">{t('appTitle')}</h1>
-            <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto leading-relaxed">
-              {lang === 'cs' 
-                ? 'Komplexní screeningová psychodiagnostika s automatickou analýzou cross-referencí mezi výsledky.'
-                : 'Comprehensive screening psychodiagnostics with automatic cross-reference analysis between results.'}
+            <h1 className="heading-display bg-gradient-to-br from-white via-gray-100 to-gray-400 bg-clip-text text-transparent mb-5">
+              {t('appTitle')}
+            </h1>
+            <p className="text-gray-500 text-base md:text-lg max-w-xl leading-relaxed">
+              {lang === 'cs'
+                ? 'Screeningová psychodiagnostika s cross-referencí mezi výsledky. Lokálně, soukromě.'
+                : 'Screening psychodiagnostics with cross-reference analysis. Local and private.'}
             </p>
           </div>
 
-          {/* Feature pills */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {/* Category tags — minimal */}
+          <div className="flex flex-wrap gap-2 mb-8">
             {[
-              { icon: '🧠', label: lang === 'cs' ? 'Osobnost' : 'Personality' },
-              { icon: '💭', label: lang === 'cs' ? 'Nálada' : 'Mood' },
-              { icon: '⚡', label: lang === 'cs' ? 'Trauma' : 'Trauma' },
-              { icon: '🧩', label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment' },
-              { icon: '🍷', label: lang === 'cs' ? 'Substance' : 'Substances' },
-              { icon: '🔗', label: lang === 'cs' ? 'Cross-reference' : 'Cross-reference' },
+              { label: lang === 'cs' ? 'Osobnost' : 'Personality', color: 'bg-purple-500' },
+              { label: lang === 'cs' ? 'Nálada' : 'Mood', color: 'bg-emerald-500' },
+              { label: lang === 'cs' ? 'Trauma' : 'Trauma', color: 'bg-rose-500' },
+              { label: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment', color: 'bg-violet-500' },
+              { label: lang === 'cs' ? 'Substance' : 'Substances', color: 'bg-amber-500' },
             ].map(f => (
-              <span key={f.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/60 border border-gray-700/40 text-xs text-gray-400 transition-all duration-200 hover:bg-gray-700/60 hover:border-gray-600/60 hover:text-gray-300">
-                {f.icon} {f.label}
+              <span key={f.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/8 bg-white/[0.03] text-xs text-gray-400">
+                <span className={`w-1.5 h-1.5 rounded-full ${f.color} opacity-80`} />
+                {f.label}
               </span>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pb-8 md:pb-12">
+      <div className="max-w-3xl mx-auto px-6 pb-8 md:pb-12">
 
         {/* Auth bar */}
-        <div className="mb-8 p-4 rounded-2xl bg-gray-900/50 border border-gray-800/60">
+        <div className="mb-8 p-4 rounded-2xl frosted">
           {auth?.user ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
@@ -1029,7 +1028,7 @@ export default function App() {
         <div className="mb-3">
           <div className="flex items-center gap-3 mb-3 px-1">
             <span className="h-px flex-1 bg-gradient-to-r from-transparent to-purple-500/30" />
-            <span className="text-xs text-purple-400/80 font-semibold uppercase tracking-widest flex items-center gap-1.5">🧠 {lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
+            <span className="text-xs text-purple-400/80 font-semibold uppercase tracking-widest">{lang === 'cs' ? 'Osobnostní diagnostika' : 'Personality Assessment'}</span>
             <span className="h-px flex-1 bg-gradient-to-l from-transparent to-purple-500/30" />
           </div>
         </div>
@@ -1073,191 +1072,46 @@ export default function App() {
         <div className="mb-3 mt-6">
           <div className="flex items-center gap-3 mb-3 px-1">
             <span className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-500/30" />
-            <span className="text-xs text-cyan-400/80 font-semibold uppercase tracking-widest flex items-center gap-1.5">🔬 {lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
+            <span className="text-xs text-cyan-400/80 font-semibold uppercase tracking-widest">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</span>
             <span className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-500/30" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {/* PHQ-9 */}
-          <button onClick={() => setMode("phq9")} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-900/70 to-gray-950 border border-emerald-500/40 hover:border-emerald-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-emerald-500/80 via-emerald-400/40 to-transparent" />
-            <div className="text-sm font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors">PHQ-9</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '9 otázek — deprese' : '9 items — depression'}</div>
-            {Object.keys(phq9Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{width: `${(Object.keys(phq9Ans).length/9)*100}%`}} /></div>
-                <span className="text-xs text-emerald-400 shrink-0">{Object.keys(phq9Ans).length}/9</span>
-              </div>
-            )}
-          </button>
-          {/* GAD-7 */}
-          <button onClick={() => setMode("gad7")} className="p-4 rounded-2xl bg-gradient-to-br from-teal-900/70 to-gray-950 border border-teal-500/40 hover:border-teal-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500/80 via-teal-400/40 to-transparent" />
-            <div className="text-sm font-bold text-teal-300 group-hover:text-teal-200 transition-colors">GAD-7</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '7 otázek — úzkost' : '7 items — anxiety'}</div>
-            {Object.keys(gad7Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-teal-500 rounded-full" style={{width: `${(Object.keys(gad7Ans).length/7)*100}%`}} /></div>
-                <span className="text-xs text-teal-400 shrink-0">{Object.keys(gad7Ans).length}/7</span>
-              </div>
-            )}
-          </button>
-          {/* DASS-42 */}
-          <button onClick={() => setMode("dass42")} className="p-4 rounded-2xl bg-gradient-to-br from-orange-900/70 to-gray-950 border border-orange-500/40 hover:border-orange-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-orange-500/80 via-orange-400/40 to-transparent" />
-            <div className="text-sm font-bold text-orange-300 group-hover:text-orange-200 transition-colors">DASS-42</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '42 otázek — deprese, úzkost, stres' : '42 items — depression, anxiety, stress'}</div>
-            {Object.keys(dass42Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-orange-500 rounded-full" style={{width: `${(Object.keys(dass42Ans).length/42)*100}%`}} /></div>
-                <span className="text-xs text-orange-400 shrink-0">{Object.keys(dass42Ans).length}/42</span>
-              </div>
-            )}
-          </button>
-          {/* PCL-5 */}
-          <button onClick={() => setMode("pcl5")} className="p-4 rounded-2xl bg-gradient-to-br from-rose-900/70 to-gray-950 border border-rose-500/40 hover:border-rose-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-rose-500/80 via-rose-400/40 to-transparent" />
-            <div className="text-sm font-bold text-rose-300 group-hover:text-rose-200 transition-colors">PCL-5</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '20 otázek — PTSD' : '20 items — PTSD'}</div>
-            {Object.keys(pcl5Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-rose-500 rounded-full" style={{width: `${(Object.keys(pcl5Ans).length/20)*100}%`}} /></div>
-                <span className="text-xs text-rose-400 shrink-0">{Object.keys(pcl5Ans).length}/20</span>
-              </div>
-            )}
-          </button>
-          {/* CATI */}
-          <button onClick={() => setMode("cati")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/70 to-gray-950 border border-violet-500/40 hover:border-violet-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-violet-500/80 via-violet-400/40 to-transparent" />
-            <div className="text-sm font-bold text-violet-300 group-hover:text-violet-200 transition-colors">CATI</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '42 otázek — autistické rysy' : '42 items — autistic traits'}</div>
-            {Object.keys(catiAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(catiAns).length/42)*100}%`}} /></div>
-                <span className="text-xs text-violet-400 shrink-0">{Object.keys(catiAns).length}/42</span>
-              </div>
-            )}
-          </button>
-          {/* ISI */}
-          <button onClick={() => setMode("isi")} className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900/70 to-gray-950 border border-indigo-500/40 hover:border-indigo-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-indigo-500/80 via-indigo-400/40 to-transparent" />
-            <div className="text-sm font-bold text-indigo-300 group-hover:text-indigo-200 transition-colors">ISI</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '7 otázek — nespavost' : '7 items — insomnia'}</div>
-            {Object.keys(isiAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-indigo-500 rounded-full" style={{width: `${(Object.keys(isiAns).length/7)*100}%`}} /></div>
-                <span className="text-xs text-indigo-400 shrink-0">{Object.keys(isiAns).length}/7</span>
-              </div>
-            )}
-          </button>
-          {/* ASRS */}
-          <button onClick={() => setMode("asrs")} className="p-4 rounded-2xl bg-gradient-to-br from-sky-900/70 to-gray-950 border border-sky-500/40 hover:border-sky-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-sky-500/80 via-sky-400/40 to-transparent" />
-            <div className="text-sm font-bold text-sky-300 group-hover:text-sky-200 transition-colors">ASRS</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '18 otázek — ADHD' : '18 items — ADHD'}</div>
-            {Object.keys(asrsAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-sky-500 rounded-full" style={{width: `${(Object.keys(asrsAns).length/18)*100}%`}} /></div>
-                <span className="text-xs text-sky-400 shrink-0">{Object.keys(asrsAns).length}/18</span>
-              </div>
-            )}
-          </button>
-          {/* EAT-26 */}
-          <button onClick={() => setMode("eat26")} className="p-4 rounded-2xl bg-gradient-to-br from-pink-900/70 to-gray-950 border border-pink-500/40 hover:border-pink-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-pink-500/80 via-pink-400/40 to-transparent" />
-            <div className="text-sm font-bold text-pink-300 group-hover:text-pink-200 transition-colors">EAT-26</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '26 otázek — poruchy příjmu potravy' : '26 items — eating disorders'}</div>
-            {Object.keys(eat26Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-pink-500 rounded-full" style={{width: `${(Object.keys(eat26Ans).length/26)*100}%`}} /></div>
-                <span className="text-xs text-pink-400 shrink-0">{Object.keys(eat26Ans).length}/26</span>
-              </div>
-            )}
-          </button>
-          {/* MDQ */}
-          <button onClick={() => setMode("mdq")} className="p-4 rounded-2xl bg-gradient-to-br from-amber-900/70 to-gray-950 border border-amber-500/40 hover:border-amber-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-500/80 via-amber-400/40 to-transparent" />
-            <div className="text-sm font-bold text-amber-300 group-hover:text-amber-200 transition-colors">MDQ</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '15 otázek — bipolární porucha' : '15 items — bipolar disorder'}</div>
-            {Object.keys(mdqAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-amber-500 rounded-full" style={{width: `${(Object.keys(mdqAns).length/15)*100}%`}} /></div>
-                <span className="text-xs text-amber-400 shrink-0">{Object.keys(mdqAns).length}/15</span>
-              </div>
-            )}
-          </button>
-          {/* CUDIT-R */}
-          <button onClick={() => setMode("cuditr")} className="p-4 rounded-2xl bg-gradient-to-br from-lime-900/70 to-gray-950 border border-lime-500/40 hover:border-lime-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-lime-500/80 via-lime-400/40 to-transparent" />
-            <div className="text-sm font-bold text-lime-300 group-hover:text-lime-200 transition-colors">CUDIT-R</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '8 otázek — konopí' : '8 items — cannabis'}</div>
-            {Object.keys(cuditrAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-lime-500 rounded-full" style={{width: `${(Object.keys(cuditrAns).length/8)*100}%`}} /></div>
-                <span className="text-xs text-lime-400 shrink-0">{Object.keys(cuditrAns).length}/8</span>
-              </div>
-            )}
-          </button>
-          {/* AUDIT */}
-          <button onClick={() => setMode("audit")} className="p-4 rounded-2xl bg-gradient-to-br from-yellow-900/70 to-gray-950 border border-yellow-500/40 hover:border-yellow-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-yellow-500/80 via-yellow-400/40 to-transparent" />
-            <div className="text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">AUDIT</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — alkohol' : '10 items — alcohol'}</div>
-            {Object.keys(auditAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-yellow-500 rounded-full" style={{width: `${(Object.keys(auditAns).length/10)*100}%`}} /></div>
-                <span className="text-xs text-yellow-400 shrink-0">{Object.keys(auditAns).length}/10</span>
-              </div>
-            )}
-          </button>
-          {/* DAST-10 */}
-          <button onClick={() => setMode("dast10")} className="p-4 rounded-2xl bg-gradient-to-br from-red-900/70 to-gray-950 border border-red-500/40 hover:border-red-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500/80 via-red-400/40 to-transparent" />
-            <div className="text-sm font-bold text-red-300 group-hover:text-red-200 transition-colors">DAST-10</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — drogy' : '10 items — drug use'}</div>
-            {Object.keys(dast10Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{width: `${(Object.keys(dast10Ans).length/10)*100}%`}} /></div>
-                <span className="text-xs text-red-400 shrink-0">{Object.keys(dast10Ans).length}/10</span>
-              </div>
-            )}
-          </button>
-          {/* ITQ */}
-          <button onClick={() => setMode("itq")} className="p-4 rounded-2xl bg-gradient-to-br from-fuchsia-900/70 to-gray-950 border border-fuchsia-500/40 hover:border-fuchsia-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-fuchsia-500/80 via-fuchsia-400/40 to-transparent" />
-            <div className="text-sm font-bold text-fuchsia-300 group-hover:text-fuchsia-200 transition-colors">ITQ</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '18 otázek — CPTSD (ICD-11)' : '18 items — CPTSD (ICD-11)'}</div>
-            {Object.keys(itqAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-fuchsia-500 rounded-full" style={{width: `${(Object.keys(itqAns).length/18)*100}%`}} /></div>
-                <span className="text-xs text-fuchsia-400 shrink-0">{Object.keys(itqAns).length}/18</span>
-              </div>
-            )}
-          </button>
-          {/* AQ-50 */}
-          <button onClick={() => setMode("aq")} className="p-4 rounded-2xl bg-gradient-to-br from-violet-900/70 to-gray-950 border border-violet-500/40 hover:border-violet-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-violet-500/80 via-violet-400/40 to-transparent" />
-            <div className="text-sm font-bold text-violet-300 group-hover:text-violet-200 transition-colors">AQ-50</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '50 otázek — autistické rysy' : '50 items — autistic traits'}</div>
-            {Object.keys(aqAns).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-violet-500 rounded-full" style={{width: `${(Object.keys(aqAns).length/50)*100}%`}} /></div>
-                <span className="text-xs text-violet-400 shrink-0">{Object.keys(aqAns).length}/50</span>
-              </div>
-            )}
-          </button>
-          {/* AQ-10 */}
-          <button onClick={() => setMode("aq10")} className="p-4 rounded-2xl bg-gradient-to-br from-purple-900/70 to-gray-950 border border-purple-500/40 hover:border-purple-400/65 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] text-left group relative overflow-hidden card-sheen">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500/80 via-purple-400/40 to-transparent" />
-            <div className="text-sm font-bold text-purple-300 group-hover:text-purple-200 transition-colors">AQ-10</div>
-            <div className="text-xs text-gray-400 mt-1">{lang === 'cs' ? '10 otázek — krátký AQ screener' : '10 items — brief AQ screener'}</div>
-            {Object.keys(aq10Ans).length > 0 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 bg-gray-800 rounded-full h-1 overflow-hidden"><div className="h-full bg-purple-500 rounded-full" style={{width: `${(Object.keys(aq10Ans).length/10)*100}%`}} /></div>
-                <span className="text-xs text-purple-400 shrink-0">{Object.keys(aq10Ans).length}/10</span>
-              </div>
-            )}
-          </button>
+        <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05] mb-6">
+          {[
+            { key: 'phq9',   label: 'PHQ-9',   dot: 'bg-emerald-400', desc: lang === 'cs' ? '9 otázek — deprese'                    : '9 items — depression',               ans: phq9Ans,   total: 9  },
+            { key: 'gad7',   label: 'GAD-7',   dot: 'bg-teal-400',    desc: lang === 'cs' ? '7 otázek — úzkost'                     : '7 items — anxiety',                  ans: gad7Ans,   total: 7  },
+            { key: 'dass42', label: 'DASS-42',  dot: 'bg-orange-400',  desc: lang === 'cs' ? '42 otázek — deprese, úzkost, stres'    : '42 items — depression, anxiety, stress', ans: dass42Ans, total: 42 },
+            { key: 'pcl5',   label: 'PCL-5',   dot: 'bg-rose-400',    desc: lang === 'cs' ? '20 otázek — PTSD'                      : '20 items — PTSD',                    ans: pcl5Ans,   total: 20 },
+            { key: 'itq',    label: 'ITQ',     dot: 'bg-fuchsia-400', desc: lang === 'cs' ? '18 otázek — CPTSD (ICD-11)'            : '18 items — CPTSD (ICD-11)',           ans: itqAns,    total: 18 },
+            { key: 'mdq',    label: 'MDQ',     dot: 'bg-amber-400',   desc: lang === 'cs' ? '15 otázek — bipolární porucha'         : '15 items — bipolar disorder',         ans: mdqAns,    total: 15 },
+            { key: 'asrs',   label: 'ASRS',    dot: 'bg-sky-400',     desc: lang === 'cs' ? '18 otázek — ADHD'                      : '18 items — ADHD',                    ans: asrsAns,   total: 18 },
+            { key: 'cati',   label: 'CATI',    dot: 'bg-violet-400',  desc: lang === 'cs' ? '42 otázek — autistické rysy'           : '42 items — autistic traits',          ans: catiAns,   total: 42 },
+            { key: 'aq',     label: 'AQ-50',   dot: 'bg-purple-400',  desc: lang === 'cs' ? '50 otázek — autistické rysy'           : '50 items — autistic traits',          ans: aqAns,     total: 50 },
+            { key: 'aq10',   label: 'AQ-10',   dot: 'bg-indigo-400',  desc: lang === 'cs' ? '10 otázek — krátký AQ screener'        : '10 items — brief AQ screener',        ans: aq10Ans,   total: 10 },
+            { key: 'isi',    label: 'ISI',     dot: 'bg-indigo-400',  desc: lang === 'cs' ? '7 otázek — nespavost'                  : '7 items — insomnia',                  ans: isiAns,    total: 7  },
+            { key: 'eat26',  label: 'EAT-26',  dot: 'bg-pink-400',    desc: lang === 'cs' ? '26 otázek — poruchy příjmu potravy'    : '26 items — eating disorders',         ans: eat26Ans,  total: 26 },
+            { key: 'cuditr', label: 'CUDIT-R', dot: 'bg-lime-400',    desc: lang === 'cs' ? '8 otázek — konopí'                     : '8 items — cannabis',                  ans: cuditrAns, total: 8  },
+            { key: 'audit',  label: 'AUDIT',   dot: 'bg-yellow-400',  desc: lang === 'cs' ? '10 otázek — alkohol'                   : '10 items — alcohol',                  ans: auditAns,  total: 10 },
+            { key: 'dast10', label: 'DAST-10', dot: 'bg-red-400',     desc: lang === 'cs' ? '10 otázek — drogy'                     : '10 items — drug use',                 ans: dast10Ans, total: 10 },
+          ].map(item => {
+            const prog = Object.keys(item.ans).length;
+            const pct = prog > 0 ? (prog / item.total) * 100 : 0;
+            return (
+              <button key={item.key} onClick={() => setMode(item.key)} className="test-row w-full px-5 py-3.5 flex items-center gap-4 group">
+                <span className={`w-2 h-2 rounded-full ${item.dot} shrink-0 opacity-80`} />
+                <div className="flex-1 min-w-0 text-left">
+                  <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">{item.label}</span>
+                  <span className="text-xs text-gray-500 ml-2">{item.desc}</span>
+                </div>
+                {prog > 0 && (
+                  <div className="w-14 bg-gray-800/80 rounded-full h-1 overflow-hidden shrink-0">
+                    <div className={`h-full ${item.dot} rounded-full transition-[width] duration-500`} style={{width: `${pct}%`}} />
+                  </div>
+                )}
+                <span className="text-gray-600 text-sm shrink-0 group-hover:translate-x-0.5 transition-transform duration-200">→</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Quick result buttons */}
