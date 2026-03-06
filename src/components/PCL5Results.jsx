@@ -61,16 +61,16 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
   const [showCompare, setShowCompare] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-      <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+      <div className="max-w-3xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-rose-400">PCL-5 — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
-            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
-            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-white/[0.06] text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
 
         {/* Total score + threshold */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
+          <div className="frosted p-6 mb-6 animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -114,7 +114,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
 
         {/* DSM-5 Cluster Analysis */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="frosted p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-300 mb-2">{lang === 'cs' ? 'Analýza symptomových clusterů (DSM-5)' : 'DSM-5 Symptom Cluster Analysis'}</h3>
           <p className="text-xs text-gray-500 mb-5">
             {lang === 'cs'
@@ -137,7 +137,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
                   </span>
                 </div>
               </div>
-              <div className="bg-gray-800 rounded-full h-2 overflow-hidden mb-1">
+              <div className="bg-white/[0.06] rounded-full h-1.5 overflow-hidden mb-1">
                 <div className="h-full rounded-full transition-all" style={{ width: `${(c.sum / c.max) * 100}%`, background: CLUSTER_COLORS[key] }} />
               </div>
               <p className="text-xs text-gray-500">{CLUSTER_DESC[lang][c.name]}</p>
@@ -145,7 +145,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
           ))}
 
           {/* DSM-5 summary badge */}
-          <div className={`mt-4 p-3 rounded-xl border ${dsm5Met ? 'border-red-500/30 bg-red-950/20' : 'border-gray-700/30 bg-gray-800/20'}`}>
+          <div className={`mt-4 p-3 rounded-xl border ${dsm5Met ? 'border-red-500/30 bg-red-950/20' : 'border-white/[0.06]/30 bg-white/[0.02]'}`}>
             <div className="flex items-center gap-2">
               <span>{dsm5Met ? '🔴' : '⚪'}</span>
               <span className={`text-sm font-semibold ${dsm5Met ? 'text-red-400' : 'text-gray-400'}`}>
@@ -161,7 +161,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
 
         {/* Item breakdown */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
+          <div className="frosted p-6 mb-6 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           {Object.entries(PCL5_CLUSTERS).map(([key, { name, items }]) => (
             <div key={key} className="mb-5 last:mb-0">
@@ -171,13 +171,13 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
                   const val = answers[i] ?? 0;
                   const colr = val === 0 ? '#4ADE80' : val === 1 ? '#A3E635' : val === 2 ? '#FBBF24' : val === 3 ? '#FB923C' : '#F87171';
                   return (
-                    <div key={i} className="p-2 rounded-lg border border-gray-800/30 bg-gray-800/10">
+                    <div key={i} className="p-2 rounded-lg border border-white/[0.06]/30 bg-white/[0.06]/10">
                       <div className="flex items-start gap-2 mb-1">
                         <span className="text-xs text-gray-600 shrink-0">{i + 1}.</span>
                         <span className="text-xs text-gray-400 flex-1 line-clamp-2">{questions[i]}</span>
                         <span className="text-xs font-mono font-bold shrink-0" style={{ color: colr }}>{val}</span>
                       </div>
-                      <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
+                      <div className="bg-white/[0.06] rounded-full h-1 overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${(val / 4) * 100}%`, background: colr }} />
                       </div>
                     </div>
@@ -204,7 +204,7 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
 
         {/* Actions */}
         <div className="flex gap-3 mb-6">
-          {onSave && <button onClick={onSave} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
+          {onSave && <button onClick={onSave} className="px-6 py-3 bg-white/90 hover:bg-white text-[#060608] rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
           <button onClick={() => {
             const data = {
               test: 'PCL-5', score: total, cutoffMet: meetsThreshold, dsm5CriteriaMet: dsm5Met,
@@ -213,8 +213,8 @@ export default function PCL5Results({ answers, questions, lang, t, onBack, toggl
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pcl5_results.json'; a.click();
-          }} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">📦 JSON</button>
-          <button onClick={onBack} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
+          }} className="px-6 py-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-gray-300 font-semibold transition-all">JSON</button>
+          <button onClick={onBack} className="px-6 py-3 bg-white/[0.04] hover:bg-white/[0.07] rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>

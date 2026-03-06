@@ -83,7 +83,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
   }, [completedTests, testStatuses, history]);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <div className="min-h-screen bg-[#060608] text-white">
       <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
         
         {/* ── Header ── */}
@@ -91,8 +91,8 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
             <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm transition-colors flex items-center gap-1">
               {lang === 'cs' ? 'Menu' : 'Menu'}
             </button>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>
-            {lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>
+            {lang === 'en' ? 'EN' : 'CZ'}
           </button>
         </div>
 
@@ -117,15 +117,15 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* SUMMARY CARDS */}
         {/* ════════════════════════════════════════════ */}
         <div className="grid grid-cols-3 gap-3 mb-8 animate-scale-in">
-          <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800/60 text-center">
+          <div className="p-4 rounded-2xl bg-white/[0.04]/60 border border-white/[0.06]/60 text-center">
             <div className="text-3xl font-bold text-gray-200">{completedTests.length}</div>
             <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Dokončeno' : 'Completed'}</div>
           </div>
-          <div className={`p-4 rounded-2xl text-center ${elevatedCount > 0 ? 'bg-orange-950/30 border border-orange-500/20' : 'bg-gray-900/60 border border-gray-800/60'}`}>
+          <div className={`p-4 rounded-2xl text-center ${elevatedCount > 0 ? 'bg-orange-950/30 border border-orange-500/20' : 'bg-white/[0.04]/60 border border-white/[0.06]/60'}`}>
             <div className={`text-3xl font-bold ${elevatedCount > 0 ? 'text-orange-400' : 'text-gray-200'}`}>{elevatedCount}</div>
             <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Zvýšených' : 'Elevated'}</div>
           </div>
-          <div className={`p-4 rounded-2xl text-center ${crossRefs.length > 0 ? 'bg-purple-950/30 border border-purple-500/20' : 'bg-gray-900/60 border border-gray-800/60'}`}>
+          <div className={`p-4 rounded-2xl text-center ${crossRefs.length > 0 ? 'bg-purple-950/30 border border-purple-500/20' : 'bg-white/[0.04]/60 border border-white/[0.06]/60'}`}>
             <div className={`text-3xl font-bold ${crossRefs.length > 0 ? 'text-purple-400' : 'text-gray-200'}`}>{crossRefs.length}</div>
             <div className="text-xs text-gray-500 mt-1">{lang === 'cs' ? 'Vzájemné vazby' : 'Cross-links'}</div>
           </div>
@@ -135,7 +135,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* RISK RADAR */}
         {/* ════════════════════════════════════════════ */}
         {completedTests.length >= 2 && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
+          <div className="frosted p-6 mb-8 backdrop-blur-xl">
             <h2 className="text-lg font-semibold text-gray-200 mb-1">
               {lang === 'cs' ? '🎯 Přehled oblastí' : '🎯 Domain Overview'}
             </h2>
@@ -166,7 +166,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* SCORE BAR CHART */}
         {/* ════════════════════════════════════════════ */}
         {barData.length >= 2 && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-8 backdrop-blur-xl">
+          <div className="frosted p-6 mb-8 backdrop-blur-xl">
             <h2 className="text-lg font-semibold text-gray-200 mb-1">
               {lang === 'cs' ? '📊 Relativní závažnost' : '📊 Relative Severity'}
             </h2>
@@ -199,11 +199,11 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {/* ════════════════════════════════════════════ */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4 px-1">
-            <span className="h-px flex-1 bg-gray-800" />
+            <span className="h-px flex-1 bg-white/[0.06]" />
             <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">
               {lang === 'cs' ? 'Výsledky nástrojů' : 'Instrument Results'}
             </span>
-            <span className="h-px flex-1 bg-gray-800" />
+            <span className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
           <div className="space-y-3">
@@ -213,9 +213,9 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
               if (testsInDomain.length === 0 && !showAllTests) return null;
 
               return (
-                <div key={domain.id} className="bg-gray-900/60 rounded-2xl border border-gray-800/60 overflow-hidden">
+                <div key={domain.id} className="frosted/60 overflow-hidden">
                   {/* Domain header */}
-                  <div className="px-5 py-3 border-b border-gray-800/40 flex items-center gap-3">
+                  <div className="px-5 py-3 border-b border-white/[0.06]/40 flex items-center gap-3">
                     <span className="text-lg">{domain.icon}</span>
                     <div>
                       <div className="text-sm font-semibold" style={{ color: domain.color }}>{domain.title[lang]}</div>
@@ -232,7 +232,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                       const histCount = historyByType[testKey]?.length || 0;
                       
                       return (
-                        <div key={testKey} className="px-5 py-4 flex items-center gap-4 hover:bg-gray-800/20 transition-all">
+                        <div key={testKey} className="px-5 py-4 flex items-center gap-4 hover:bg-white/[0.02] transition-all">
                           {/* Status dot */}
                           <div className="w-3 h-3 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-gray-950" 
                             style={{ background: sty.dot, ringColor: sty.dot + '40' }} />
@@ -282,7 +282,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                             {histEntry && (
                               <button 
                                 onClick={() => onViewResult(histEntry)}
-                                className="text-xs px-2.5 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all"
+                                className="text-xs px-2.5 py-1.5 rounded-lg bg-white/[0.04] text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all"
                                 title={lang === 'cs' ? 'Zobrazit výsledky' : 'View results'}
                               >
                                 📊
@@ -290,7 +290,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                             )}
                             <button 
                               onClick={() => onGoToTest(testKey)}
-                              className="text-xs px-2.5 py-1.5 rounded-lg bg-gray-800/60 text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all"
+                              className="text-xs px-2.5 py-1.5 rounded-lg bg-white/[0.04] text-gray-400 hover:text-gray-200 hover:bg-gray-700/60 transition-all"
                               title={lang === 'cs' ? 'Opakovat test' : 'Retake test'}
                             >
                               🔄
@@ -305,11 +305,11 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                       const meta = TEST_META[testKey];
                       return (
                         <div key={testKey} className="px-5 py-4 flex items-center gap-4 opacity-50 hover:opacity-80 transition-all">
-                          <div className="w-3 h-3 rounded-full shrink-0 border border-gray-700 border-dashed" />
+                          <div className="w-3 h-3 rounded-full shrink-0 border border-white/[0.06] border-dashed" />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-semibold text-gray-500">{meta.name}</span>
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-800/40 border border-gray-700/40 text-gray-600">
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06]/40 text-gray-600">
                                 {lang === 'cs' ? 'Nevyplněno' : 'Not completed'}
                               </span>
                             </div>
@@ -317,7 +317,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                           </div>
                           <button 
                             onClick={() => onGoToTest(testKey)}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-gray-800/40 text-gray-500 hover:text-gray-300 hover:bg-gray-700/60 transition-all"
+                            className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.03] text-gray-500 hover:text-gray-300 hover:bg-gray-700/60 transition-all"
                           >
                             {lang === 'cs' ? 'Vyplnit' : 'Start'} →
                           </button>
@@ -333,7 +333,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
           {missingTests.length > 0 && (
             <button 
               onClick={() => setShowAllTests(!showAllTests)}
-              className="mt-3 w-full py-2.5 rounded-xl bg-gray-900/40 border border-gray-800/40 text-xs text-gray-500 hover:text-gray-300 hover:border-gray-700 transition-all"
+              className="mt-3 w-full py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]/40 text-xs text-gray-500 hover:text-gray-300 hover:border-white/[0.06] transition-all"
             >
               {showAllTests 
                 ? (lang === 'cs' ? 'Skrýt nevyplněné' : 'Hide incomplete') 
@@ -348,11 +348,11 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {crossRefs.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4 px-1">
-              <span className="h-px flex-1 bg-gray-800" />
+              <span className="h-px flex-1 bg-white/[0.06]" />
               <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">
                 {lang === 'cs' ? 'Diagnostické cross-reference' : 'Diagnostic Cross-References'}
               </span>
-              <span className="h-px flex-1 bg-gray-800" />
+              <span className="h-px flex-1 bg-white/[0.06]" />
             </div>
 
             <div className="space-y-3">
@@ -371,7 +371,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                       <div className="text-sm font-semibold text-gray-200 mb-1">{ref.title[lang]}</div>
                       <div className="flex items-center gap-2 flex-wrap">
                         {ref.tests.map(t => (
-                          <span key={t} className="text-xs px-1.5 py-0.5 rounded bg-gray-800/60 text-gray-500 font-mono">
+                          <span key={t} className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-gray-500 font-mono">
                             {TEST_META[t]?.name || t}
                           </span>
                         ))}
@@ -390,7 +390,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                   {/* Expanded description */}
                   {expandedRef === ref.id && (
                     <div className="px-5 pb-5 pt-0">
-                      <div className="p-4 rounded-xl bg-gray-950/40 border border-gray-800/40">
+                      <div className="p-4 rounded-xl bg-[#060608]/40 border border-white/[0.06]/40">
                         <p className="text-sm text-gray-300 leading-relaxed">{ref.description[lang]}</p>
                       </div>
                     </div>
@@ -407,14 +407,14 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
         {history.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4 px-1">
-              <span className="h-px flex-1 bg-gray-800" />
+              <span className="h-px flex-1 bg-white/[0.06]" />
               <span className="text-xs text-gray-600 font-medium uppercase tracking-wider">
                 {lang === 'cs' ? 'Časová osa' : 'Timeline'}
               </span>
-              <span className="h-px flex-1 bg-gray-800" />
+              <span className="h-px flex-1 bg-white/[0.06]" />
             </div>
 
-            <div className="bg-gray-900/60 rounded-2xl border border-gray-800/60 overflow-hidden">
+            <div className="frosted/60 overflow-hidden">
               <div className="divide-y divide-gray-800/30">
                 {history.slice(0, 20).map((h, i) => {
                   const meta = TEST_META[h.type];
@@ -423,11 +423,11 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                   const sty = STATUS_STYLES[status?.status || 'ok'];
 
                   return (
-                    <div key={h.id || i} className="px-5 py-3 flex items-center gap-4 hover:bg-gray-800/20 transition-all">
+                    <div key={h.id || i} className="px-5 py-3 flex items-center gap-4 hover:bg-white/[0.02] transition-all">
                       {/* Timeline dot */}
                       <div className="flex flex-col items-center gap-1 shrink-0 w-8">
                         <div className="w-2.5 h-2.5 rounded-full" style={{ background: meta.color }} />
-                        {i < history.slice(0, 20).length - 1 && <div className="w-px h-4 bg-gray-800" />}
+                        {i < history.slice(0, 20).length - 1 && <div className="w-px h-4 bg-white/[0.06]" />}
                       </div>
 
                       {/* Info */}
@@ -454,7 +454,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                       {/* View button */}
                       <button 
                         onClick={() => onViewResult(h)}
-                        className="text-xs px-2 py-1 rounded-lg bg-gray-800/40 text-gray-500 hover:text-gray-300 transition-all shrink-0"
+                        className="text-xs px-2 py-1 rounded-lg bg-white/[0.03] text-gray-500 hover:text-gray-300 transition-all shrink-0"
                       >
                         →
                       </button>
@@ -463,7 +463,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                 })}
               </div>
               {history.length > 20 && (
-                <div className="px-5 py-2 text-center text-xs text-gray-600 border-t border-gray-800/40">
+                <div className="px-5 py-2 text-center text-xs text-gray-600 border-t border-white/[0.06]/40">
                   {lang === 'cs' ? `+ ${history.length - 20} dalších záznamů` : `+ ${history.length - 20} more entries`}
                 </div>
               )}
@@ -514,7 +514,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
 
         {/* Back button */}
         <div className="flex justify-center pb-8">
-          <button onClick={onBack} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">
+          <button onClick={onBack} className="px-6 py-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-gray-300 font-semibold transition-all">
           {lang === 'cs' ? 'Zpět na menu' : 'Back to menu'}
           </button>
         </div>

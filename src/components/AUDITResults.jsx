@@ -19,13 +19,13 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
   const harmScore = scoreAUDITSubscale(answers, 'harmful');
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="max-w-3xl mx-auto px-6 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">AUDIT — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
-          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-white/[0.06] text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
           <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Total score */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-scale-in">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06] animate-scale-in">
         <div className="flex items-center justify-between mb-2">
           <span className="text-gray-400 text-sm">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</span>
           <SeverityBadge score={total} severityLevels={AUDIT_SEVERITY} lang={lang} />
@@ -49,7 +49,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Subscales */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06]">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
         <ScoreBar value={hazScore} max={12} color={AUDIT_SUBSCALES.hazardous.color} label={AUDIT_SUBSCALES.hazardous[lang] || AUDIT_SUBSCALES.hazardous.cs} />
         <ScoreBar value={depScore} max={12} color={AUDIT_SUBSCALES.dependence.color} label={AUDIT_SUBSCALES.dependence[lang] || AUDIT_SUBSCALES.dependence.cs} />
@@ -59,7 +59,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* WHO intervention zones */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06]">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Intervenční zóny WHO' : 'WHO Intervention Zones'}</h3>
         <div className="space-y-2 text-sm">
           <div className={`flex items-start gap-2 px-3 py-2 rounded-lg ${total <= 7 ? 'bg-green-900/30 border border-green-700/30' : 'opacity-50'}`}>
@@ -96,7 +96,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06] animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi po položkách' : 'Item Breakdown'}</h3>
         <div className="space-y-2">
           {q.map((text, i) => {
@@ -117,7 +117,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
 
       {/* Severity scale */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06]">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Stupnice závažnosti' : 'Severity Scale'}</h3>
         <div className="space-y-1">
           {AUDIT_SEVERITY.map((s, i) => {
@@ -145,7 +145,7 @@ export default function AUDITResults({ answers, questions, lang, t, onBack, togg
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
+      <div className="bg-white/[0.06]/50 rounded-xl p-4 mb-4 border border-white/[0.06]/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT). <em>Addiction</em> 88(6):791-804.
         </div>

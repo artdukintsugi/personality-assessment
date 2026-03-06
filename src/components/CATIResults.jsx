@@ -16,16 +16,16 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
   const [showCompare, setShowCompare] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-      <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+      <div className="max-w-3xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">{t('back')}</button>
           <span className="text-sm font-semibold text-violet-400">CATI — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
-            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
-            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+            <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-white/[0.06] text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+            <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
           </div>
         </div>
 
@@ -35,7 +35,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
 
         {/* Total score */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
+          <div className="frosted p-6 mb-6 animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-4">{lang === 'cs' ? 'Celkové skóre' : 'Total Score'}</h2>
           <div className="flex items-center gap-4 mb-4">
             <div className="text-4xl font-bold font-mono" style={{ color: severity.color }}>{total}</div>
@@ -50,7 +50,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
 
         {/* Subscale overview */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="frosted p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Subškály' : 'Subscales'}</h3>
           <div className="space-y-4">
             {Object.entries(CATI_SUBSCALES).map(([key, meta]) => {
@@ -64,7 +64,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
                     </div>
                     <span className="text-sm font-mono font-bold" style={{ color: meta.color }}>{score}<span className="text-gray-600 font-normal">/35</span></span>
                   </div>
-                  <div className="bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div className="bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${((score - 7) / 28) * 100}%`, background: meta.color }} />
                   </div>
                 </div>
@@ -76,7 +76,7 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
 
         {/* Item breakdown by subscale */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
+          <div className="frosted p-6 mb-6 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí' : 'Answer Breakdown'}</h3>
           {Object.entries(CATI_SUBSCALES).map(([key, meta]) => (
             <div key={key} className="mb-5 last:mb-0">
@@ -90,13 +90,13 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
                   const isReverse = CATI_REVERSE_ITEMS.includes(idx);
                   const val = scored[idx] || 0;
                   return (
-                    <div key={idx} className={`p-3 rounded-xl border ${isReverse ? 'border-amber-500/20 bg-amber-950/5' : 'border-gray-800/50 bg-gray-800/20'}`}>
+                    <div key={idx} className={`p-3 rounded-xl border ${isReverse ? 'border-amber-500/20 bg-amber-950/5' : 'border-white/[0.05] bg-white/[0.02]'}`}>
                       <div className="flex items-start gap-2 mb-1">
                         <span className="text-xs text-gray-600 shrink-0 mt-0.5">{idx + 1}.{isReverse ? ' ↕' : ''}</span>
                         <span className="text-xs text-gray-400 flex-1">{questions[idx]}</span>
                         <span className="text-sm font-mono font-bold shrink-0" style={{ color: meta.color }}>{val}</span>
                       </div>
-                      <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
+                      <div className="bg-white/[0.06] rounded-full h-1 overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${(val / 5) * 100}%`, background: meta.color }} />
                       </div>
                     </div>
@@ -110,11 +110,11 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
 
         {/* Severity scale reference */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="frosted p-6 mb-6">
           <h3 className="text-sm font-semibold text-gray-400 mb-3">{lang === 'cs' ? 'Interpretační škála CATI' : 'CATI Interpretation Scale'}</h3>
           <div className="space-y-2">
             {CATI_SEVERITY.map(s => (
-              <div key={s.key} className={`flex items-center gap-3 p-2 rounded-lg ${total >= s.min && total <= s.max ? 'bg-gray-800/60 border border-gray-700/50' : ''}`}>
+              <div key={s.key} className={`flex items-center gap-3 p-2 rounded-lg ${total >= s.min && total <= s.max ? 'bg-white/[0.04] border border-white/[0.06]/50' : ''}`}>
                 <span className="w-3 h-3 rounded-full shrink-0" style={{ background: s.color }} />
                 <span className="text-xs text-gray-400 flex-1">{s[lang]}</span>
                 <span className="text-xs font-mono text-gray-600">{s.min}–{s.max}</span>
@@ -139,13 +139,13 @@ export default function CATIResults({ answers, questions, lang, t, onBack, toggl
 
         {/* Actions */}
         <div className="flex gap-3 mb-6">
-          {onSave && <button onClick={onSave} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
+          {onSave && <button onClick={onSave} className="px-6 py-3 bg-white/90 hover:bg-white text-[#060608] rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
           <button onClick={() => {
             const data = { test: 'CATI', total, subscales, severity: severity.key, answers, date: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cati_results.json'; a.click();
-          }} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">📦 JSON</button>
-          <button onClick={onBack} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
+          }} className="px-6 py-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-gray-300 font-semibold transition-all">JSON</button>
+          <button onClick={onBack} className="px-6 py-3 bg-white/[0.04] hover:bg-white/[0.07] rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>

@@ -18,13 +18,13 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
   const [showCompare, setShowCompare] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="max-w-3xl mx-auto px-6 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">MDQ — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
-          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-white/[0.06] text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
           <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Scoring breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06] animate-slide-up delay-100">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Kritéria screeningu' : 'Screening Criteria'}</h3>
         <div className="space-y-3">
           {/* Part 1 */}
@@ -86,7 +86,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Part 1 items */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06]">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Část 1 — Manické příznaky' : 'Part 1 — Manic Symptoms'}</h3>
         <div className="space-y-2">
           {part1Q.map((text, i) => {
@@ -108,7 +108,7 @@ export default function MDQResults({ answers, questions, lang, t, onBack, toggle
 
       {/* Part 2 & 3 */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06]">
         <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Části 2–3' : 'Parts 2–3'}</h3>
         <div className="space-y-2 text-sm">
           <div className="flex items-start gap-2">

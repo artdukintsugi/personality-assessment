@@ -16,13 +16,13 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
   const elevated = total >= 6;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="max-w-3xl mx-auto px-6 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">AQ-10 — {lang === 'cs' ? 'Výsledky' : 'Results'}</h2>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowCompare(true)} className="text-xs px-2 py-1 rounded bg-emerald-900/30 text-emerald-200">{lang === 'cs' ? 'Porovnat' : 'Compare'}</button>
-          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-gray-800 text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
+          <button onClick={() => setShowLive(s => !s)} className={`text-xs px-2 py-1 rounded ${showLive ? 'bg-white/[0.06] text-gray-200' : 'bg-gray-700 text-gray-300'}`}>{showLive ? (lang==='cs'?'Skrýt živé výsledky':'Hide live') : (lang==='cs'?'Zobrazit živé výsledky':'Show live')}</button>
           <button onClick={toggleLang} className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300 hover:bg-gray-600">{lang === 'cs' ? 'EN' : 'CZ'}</button>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
 
       {/* Item breakdown */}
       {showLive && (
-        <div className="bg-gray-800 rounded-xl p-6 mb-4 border border-gray-700 animate-slide-up delay-100">
+        <div className="bg-white/[0.06] rounded-xl p-6 mb-4 border border-white/[0.06] animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-white mb-3">{lang === 'cs' ? 'Odpovědi (10 položek)' : 'Answers (10 items)'}</h3>
           <div className="space-y-2">
             {Array.from({ length: 10 }, (_, i) => {
@@ -83,7 +83,7 @@ export default function AQ10Results({ answers, lang, t, onBack, toggleLang, onSa
       </div>
 
       {/* Reference */}
-      <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50 animate-slide-up delay-200">
+      <div className="bg-white/[0.06]/50 rounded-xl p-4 mb-4 border border-white/[0.06]/50 animate-slide-up delay-200">
         <div className="text-xs text-gray-500 leading-relaxed">
           Allison, C., Auyeung, B., & Baron-Cohen, S. (2012). Toward brief "Red Flags" for autism spectrum disorders: The Short Autism Spectrum Quotient and the Short Quantitative Checklist in 1,000 cases and 3,000 controls. <em>Journal of the American Academy of Child & Adolescent Psychiatry</em>, 51(2), 202–212.
         </div>

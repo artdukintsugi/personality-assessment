@@ -424,6 +424,7 @@ export default function App() {
   const [showScoringInfo, setShowScoringInfo] = useState(false);
   const [history, setHistory] = useState(() => lsGet(LS_KEYS.history, []));
   const [showHistory, setShowHistory] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [authForm, setAuthForm] = useState(null); // null | 'login' | 'signup'
   const [authEmail, setAuthEmail] = useState('');
@@ -1074,24 +1075,35 @@ export default function App() {
         <div className="mb-3">
           <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1">{lang === 'cs' ? 'Klinický screening' : 'Clinical Screening'}</p>
         </div>
-        <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05] mb-6">
-          {[
-            { key: 'phq9',   label: 'PHQ-9',   dot: 'bg-emerald-400', desc: lang === 'cs' ? '9 otázek — deprese'                    : '9 items — depression',               ans: phq9Ans,   total: 9  },
-            { key: 'gad7',   label: 'GAD-7',   dot: 'bg-teal-400',    desc: lang === 'cs' ? '7 otázek — úzkost'                     : '7 items — anxiety',                  ans: gad7Ans,   total: 7  },
-            { key: 'dass42', label: 'DASS-42',  dot: 'bg-orange-400',  desc: lang === 'cs' ? '42 otázek — deprese, úzkost, stres'    : '42 items — depression, anxiety, stress', ans: dass42Ans, total: 42 },
-            { key: 'pcl5',   label: 'PCL-5',   dot: 'bg-rose-400',    desc: lang === 'cs' ? '20 otázek — PTSD'                      : '20 items — PTSD',                    ans: pcl5Ans,   total: 20 },
-            { key: 'itq',    label: 'ITQ',     dot: 'bg-fuchsia-400', desc: lang === 'cs' ? '18 otázek — CPTSD (ICD-11)'            : '18 items — CPTSD (ICD-11)',           ans: itqAns,    total: 18 },
-            { key: 'mdq',    label: 'MDQ',     dot: 'bg-amber-400',   desc: lang === 'cs' ? '15 otázek — bipolární porucha'         : '15 items — bipolar disorder',         ans: mdqAns,    total: 15 },
-            { key: 'asrs',   label: 'ASRS',    dot: 'bg-sky-400',     desc: lang === 'cs' ? '18 otázek — ADHD'                      : '18 items — ADHD',                    ans: asrsAns,   total: 18 },
-            { key: 'cati',   label: 'CATI',    dot: 'bg-violet-400',  desc: lang === 'cs' ? '42 otázek — autistické rysy'           : '42 items — autistic traits',          ans: catiAns,   total: 42 },
-            { key: 'aq',     label: 'AQ-50',   dot: 'bg-purple-400',  desc: lang === 'cs' ? '50 otázek — autistické rysy'           : '50 items — autistic traits',          ans: aqAns,     total: 50 },
-            { key: 'aq10',   label: 'AQ-10',   dot: 'bg-indigo-400',  desc: lang === 'cs' ? '10 otázek — krátký AQ screener'        : '10 items — brief AQ screener',        ans: aq10Ans,   total: 10 },
-            { key: 'isi',    label: 'ISI',     dot: 'bg-indigo-400',  desc: lang === 'cs' ? '7 otázek — nespavost'                  : '7 items — insomnia',                  ans: isiAns,    total: 7  },
-            { key: 'eat26',  label: 'EAT-26',  dot: 'bg-pink-400',    desc: lang === 'cs' ? '26 otázek — poruchy příjmu potravy'    : '26 items — eating disorders',         ans: eat26Ans,  total: 26 },
-            { key: 'cuditr', label: 'CUDIT-R', dot: 'bg-lime-400',    desc: lang === 'cs' ? '8 otázek — konopí'                     : '8 items — cannabis',                  ans: cuditrAns, total: 8  },
-            { key: 'audit',  label: 'AUDIT',   dot: 'bg-yellow-400',  desc: lang === 'cs' ? '10 otázek — alkohol'                   : '10 items — alcohol',                  ans: auditAns,  total: 10 },
-            { key: 'dast10', label: 'DAST-10', dot: 'bg-red-400',     desc: lang === 'cs' ? '10 otázek — drogy'                     : '10 items — drug use',                 ans: dast10Ans, total: 10 },
-          ].map(item => {
+        {(() => {
+          const categories = [
+            { title: lang === 'cs' ? 'Nálada a úzkost' : 'Mood & Anxiety', items: [
+              { key: 'phq9',   label: 'PHQ-9',   dot: 'bg-emerald-400', desc: lang === 'cs' ? '9 otázek — deprese'                    : '9 items — depression',               ans: phq9Ans,   total: 9  },
+              { key: 'gad7',   label: 'GAD-7',   dot: 'bg-teal-400',    desc: lang === 'cs' ? '7 otázek — úzkost'                     : '7 items — anxiety',                  ans: gad7Ans,   total: 7  },
+              { key: 'dass42', label: 'DASS-42',  dot: 'bg-orange-400',  desc: lang === 'cs' ? '42 otázek — deprese, úzkost, stres'    : '42 items — depression, anxiety, stress', ans: dass42Ans, total: 42 },
+              { key: 'mdq',    label: 'MDQ',     dot: 'bg-amber-400',   desc: lang === 'cs' ? '15 otázek — bipolární porucha'         : '15 items — bipolar disorder',         ans: mdqAns,    total: 15 },
+            ]},
+            { title: lang === 'cs' ? 'Trauma' : 'Trauma', items: [
+              { key: 'pcl5',   label: 'PCL-5',   dot: 'bg-rose-400',    desc: lang === 'cs' ? '20 otázek — PTSD'                      : '20 items — PTSD',                    ans: pcl5Ans,   total: 20 },
+              { key: 'itq',    label: 'ITQ',     dot: 'bg-fuchsia-400', desc: lang === 'cs' ? '18 otázek — CPTSD (ICD-11)'            : '18 items — CPTSD (ICD-11)',           ans: itqAns,    total: 18 },
+            ]},
+            { title: lang === 'cs' ? 'Neurovývoj' : 'Neurodevelopment', items: [
+              { key: 'asrs',   label: 'ASRS',    dot: 'bg-sky-400',     desc: lang === 'cs' ? '18 otázek — ADHD'                      : '18 items — ADHD',                    ans: asrsAns,   total: 18 },
+              { key: 'cati',   label: 'CATI',    dot: 'bg-violet-400',  desc: lang === 'cs' ? '42 otázek — autistické rysy'           : '42 items — autistic traits',          ans: catiAns,   total: 42 },
+              { key: 'aq',     label: 'AQ-50',   dot: 'bg-purple-400',  desc: lang === 'cs' ? '50 otázek — autistické rysy'           : '50 items — autistic traits',          ans: aqAns,     total: 50 },
+              { key: 'aq10',   label: 'AQ-10',   dot: 'bg-indigo-400',  desc: lang === 'cs' ? '10 otázek — krátký AQ screener'        : '10 items — brief AQ screener',        ans: aq10Ans,   total: 10 },
+            ]},
+            { title: lang === 'cs' ? 'Spánek a výživa' : 'Sleep & Eating', items: [
+              { key: 'isi',    label: 'ISI',     dot: 'bg-indigo-400',  desc: lang === 'cs' ? '7 otázek — nespavost'                  : '7 items — insomnia',                  ans: isiAns,    total: 7  },
+              { key: 'eat26',  label: 'EAT-26',  dot: 'bg-pink-400',    desc: lang === 'cs' ? '26 otázek — poruchy příjmu potravy'    : '26 items — eating disorders',         ans: eat26Ans,  total: 26 },
+            ]},
+            { title: lang === 'cs' ? 'Návykové látky' : 'Substances', items: [
+              { key: 'cuditr', label: 'CUDIT-R', dot: 'bg-lime-400',    desc: lang === 'cs' ? '8 otázek — konopí'                     : '8 items — cannabis',                  ans: cuditrAns, total: 8  },
+              { key: 'audit',  label: 'AUDIT',   dot: 'bg-yellow-400',  desc: lang === 'cs' ? '10 otázek — alkohol'                   : '10 items — alcohol',                  ans: auditAns,  total: 10 },
+              { key: 'dast10', label: 'DAST-10', dot: 'bg-red-400',     desc: lang === 'cs' ? '10 otázek — drogy'                     : '10 items — drug use',                 ans: dast10Ans, total: 10 },
+            ]},
+          ];
+          const renderItem = (item) => {
             const prog = Object.keys(item.ans).length;
             const pct = prog > 0 ? (prog / item.total) * 100 : 0;
             return (
@@ -1112,7 +1124,90 @@ export default function App() {
                 <span className="text-gray-600 group-hover:text-gray-400 text-sm shrink-0 transition-colors">→</span>
               </button>
             );
-          })}
+          };
+          return categories.map((cat, ci) => (
+            <div key={ci} className="mb-6">
+              <p className="text-[11px] text-gray-600 uppercase tracking-wider font-medium px-5 mb-1.5">{cat.title}</p>
+              <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05]">
+                {cat.items.map(renderItem)}
+              </div>
+            </div>
+          ));
+        })()}
+
+        {/* ═══ Wiki / About ═══ */}
+        <div className="mb-8">
+          <button onClick={() => setShowWiki(!showWiki)} className="w-full flex items-center justify-between px-5 py-3.5 frosted transition-colors hover:bg-white/[0.04]">
+            <span className="text-sm text-gray-400">{lang === 'cs' ? 'O dotaznících' : 'About the tests'}</span>
+            <span className={`text-xs text-gray-600 transition-transform duration-200 ${showWiki ? 'rotate-90' : ''}`}>›</span>
+          </button>
+          {showWiki && (
+            <div className="mt-3 space-y-3 animate-fade-in">
+              {[
+                { label: 'PID-5', full: 'Personality Inventory for DSM-5',
+                  cs: 'Standardizovaný dotazník DSM-5 pro hodnocení maladaptivních osobnostních rysů. 220 položek měří 25 facet seskupených do 5 domén: negativní afektivita, odpoutání, antagonismus, disinhibice a psychoticismus.',
+                  en: 'DSM-5 standardized inventory for maladaptive personality traits. 220 items measure 25 facets across 5 domains: negative affectivity, detachment, antagonism, disinhibition, and psychoticism.' },
+                { label: 'LPFS-SR', full: 'Level of Personality Functioning Scale — Self-Report',
+                  cs: 'Sebehodnotící škála úrovně fungování osobnosti podle DSM-5 alternativního modelu. 80 položek hodnotí narušení identity, sebeurčení, empatie a intimity.',
+                  en: 'Self-report measure of DSM-5 Alternative Model personality functioning. 80 items assess impairments in identity, self-direction, empathy, and intimacy.' },
+                { label: 'PHQ-9', full: 'Patient Health Questionnaire-9',
+                  cs: '9 otázek měřících závažnost depresivních symptomů za poslední 2 týdny. Vyvinuto Kroenkem et al. (2001). Skóre 0–27, cut-off ≥10 pro středně těžkou depresi.',
+                  en: '9-item measure of depressive symptom severity over the past 2 weeks. Developed by Kroenke et al. (2001). Score 0–27, cut-off ≥10 for moderate depression.' },
+                { label: 'GAD-7', full: 'Generalized Anxiety Disorder-7',
+                  cs: '7 otázek pro screening generalizované úzkosti. Vyvinuto Spitzerem et al. (2006). Skóre 0–21, cut-off ≥10 pro středně těžkou úzkost.',
+                  en: '7-item screening tool for generalized anxiety. Developed by Spitzer et al. (2006). Score 0–21, cut-off ≥10 for moderate anxiety.' },
+                { label: 'DASS-42', full: 'Depression Anxiety Stress Scales',
+                  cs: '42 položek měřících tři dimenze: depresi, úzkost a stres. Vyvinuto Lovibondem & Lovibondem (1995). Každá subškála 0–42.',
+                  en: '42-item measure of three dimensions: depression, anxiety, and stress. Developed by Lovibond & Lovibond (1995). Each subscale 0–42.' },
+                { label: 'PCL-5', full: 'PTSD Checklist for DSM-5',
+                  cs: '20 otázek hodnotících symptomy PTSD podle DSM-5. Vyvinuto National Center for PTSD. Skóre 0–80, cut-off ≥31–33.',
+                  en: '20-item assessment of DSM-5 PTSD symptoms. Developed by the National Center for PTSD. Score 0–80, cut-off ≥31–33.' },
+                { label: 'ITQ', full: 'International Trauma Questionnaire',
+                  cs: '18 položek pro diagnostiku PTSD a komplexní PTSD podle ICD-11. Vyvinuto Cloitrem et al. (2018). Hodnotí znovuprožívání, vyhýbání, hrozbu a poruchy sebeorganizace.',
+                  en: '18-item measure for ICD-11 PTSD and Complex PTSD diagnosis. Developed by Cloitre et al. (2018). Assesses re-experiencing, avoidance, threat, and disturbances in self-organization.' },
+                { label: 'MDQ', full: 'Mood Disorder Questionnaire',
+                  cs: 'Screeningový nástroj pro bipolární poruchu. 15 položek — pozitivní screening vyžaduje ≥7 kladných odpovědí, současný výskyt a funkční narušení.',
+                  en: 'Screening tool for bipolar disorder. 15 items — positive screen requires ≥7 yes answers, co-occurrence, and functional impairment.' },
+                { label: 'ASRS', full: 'Adult ADHD Self-Report Scale',
+                  cs: '18 otázek screeningu ADHD u dospělých. Vyvinuto WHO. Část A (6 otázek) slouží jako rychlý screener, část B doplňuje klinický obraz.',
+                  en: '18-item adult ADHD screening tool. Developed by WHO. Part A (6 items) serves as a quick screener, Part B provides additional clinical information.' },
+                { label: 'CATI', full: 'Comprehensive Autistic Trait Inventory',
+                  cs: '42 položek měřících autistické rysy v 6 subškálách: sociální interakce, komunikace, senzorická citlivost, repetitivní chování, kognitivní rigidita a sociální kamufláž.',
+                  en: '42-item measure of autistic traits across 6 subscales: social interaction, communication, sensory sensitivity, repetitive behavior, cognitive rigidity, and social camouflaging.' },
+                { label: 'AQ-50 / AQ-10', full: 'Autism Spectrum Quotient',
+                  cs: 'Baron-Cohenův dotazník autistických rysů. AQ-50 je plná verze (cut-off ≥26), AQ-10 je zkrácený screener (cut-off ≥6).',
+                  en: 'Baron-Cohen\'s autism trait questionnaire. AQ-50 is the full version (cut-off ≥26), AQ-10 is a brief screener (cut-off ≥6).' },
+                { label: 'ISI', full: 'Insomnia Severity Index',
+                  cs: '7 otázek hodnotících závažnost nespavosti. Vyvinuto Morinem et al. (2001). Skóre 0–28, cut-off ≥15 pro středně těžkou nespavost.',
+                  en: '7-item measure of insomnia severity. Developed by Morin et al. (2001). Score 0–28, cut-off ≥15 for moderate insomnia.' },
+                { label: 'EAT-26', full: 'Eating Attitudes Test',
+                  cs: '26 otázek screenujících riziko poruch příjmu potravy. Vyvinuto Garnerem et al. (1982). Skóre ≥20 indikuje riziko.',
+                  en: '26-item screening tool for eating disorder risk. Developed by Garner et al. (1982). Score ≥20 indicates risk.' },
+                { label: 'CUDIT-R', full: 'Cannabis Use Disorder Identification Test — Revised',
+                  cs: '8 otázek hodnotících problematické užívání konopí. Skóre 0–32, cut-off ≥8 pro rizikové užívání.',
+                  en: '8-item measure of problematic cannabis use. Score 0–32, cut-off ≥8 for hazardous use.' },
+                { label: 'AUDIT', full: 'Alcohol Use Disorders Identification Test',
+                  cs: '10 otázek vyvinutých WHO pro screening rizikového pití alkoholu. Skóre 0–40, cut-off ≥8 pro rizikové pití.',
+                  en: '10-item WHO-developed screening tool for hazardous alcohol use. Score 0–40, cut-off ≥8 for hazardous drinking.' },
+                { label: 'DAST-10', full: 'Drug Abuse Screening Test',
+                  cs: '10 otázek screenujících problematické užívání drog (mimo alkohol a tabák). Skóre 0–10, ≥3 indikuje středně závažné problémy.',
+                  en: '10-item screening tool for problematic drug use (excluding alcohol and tobacco). Score 0–10, ≥3 indicates moderate problems.' },
+              ].map((w, i) => (
+                <div key={i} className="px-5 py-4 frosted">
+                  <div className="flex items-baseline gap-2 mb-1.5">
+                    <span className="text-sm font-semibold text-white/90">{w.label}</span>
+                    <span className="text-xs text-gray-600">{w.full}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed">{lang === 'cs' ? w.cs : w.en}</p>
+                </div>
+              ))}
+              <p className="text-[11px] text-gray-600 px-2 leading-relaxed">
+                {lang === 'cs'
+                  ? 'Všechny dotazníky jsou volně dostupné validované screeningové nástroje. Neslouží jako náhrada klinické diagnostiky.'
+                  : 'All questionnaires are freely available validated screening instruments. They do not replace clinical diagnosis.'}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Completed — view results */}

@@ -77,13 +77,13 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
   const totalScore = Object.values(activeScores).reduce((a, b) => a + b, 0);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
-      <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#060608] text-white">
+      <div className="max-w-3xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm">← {t('back')}</button>
           <span className="text-sm font-semibold text-orange-400">DASS-{showDass21 ? '21' : '42'} — {lang === 'cs' ? 'Výsledky' : 'Results'}</span>
-          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/40 text-amber-400 bg-amber-500/10' : 'border-gray-700/40 text-gray-500 hover:text-gray-300'}`}>{lang === 'en' ? '🇬🇧 EN' : '🇨🇿 CZ'}</button>
+          <button onClick={toggleLang} className={`px-3 py-1 rounded-lg text-xs font-mono transition-all border ${lang === 'en' ? 'border-amber-500/25 text-amber-400/90 bg-amber-500/[0.06]' : 'border-white/[0.08] text-gray-500 hover:text-gray-400 hover:border-white/[0.12]'}`}>{lang === 'en' ? 'EN' : 'CZ'}</button>
         </div>
 
         {/* Compare button */}
@@ -96,18 +96,18 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
         {/* Compare Modal */}
         {showCompare && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="frosted rounded-2xl p-6 w-full max-w-md shadow-xl">
               <h2 className="text-lg font-bold text-blue-300 mb-4">{lang === 'cs' ? 'Porovnat výsledky' : 'Compare Results'}</h2>
               <div className="space-y-3 mb-4">
-                <button onClick={() => { setCompareType('other'); setOtherScores(null); setOtherLabel(''); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='other' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S jiným člověkem' : 'With another person'}</button>
-                <button onClick={() => { setCompareType('pop'); setOtherScores(POP_AVG); setOtherLabel(lang==='cs'?'Průměr populace':'Population average'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='pop' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem populace' : 'With population average'}</button>
-                <button onClick={() => { setCompareType('mdd'); setOtherScores(MDD_AVG); setOtherLabel(lang==='cs'?'Průměr u deprese (MDD)':'Average for depression (MDD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='mdd' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u deprese (MDD)' : 'With average for depression (MDD)'}</button>
-                <button onClick={() => { setCompareType('gad'); setOtherScores(GAD_AVG); setOtherLabel(lang==='cs'?'Průměr u úzkosti (GAD)':'Average for anxiety (GAD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='gad' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-gray-900/30 border-gray-700 text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u úzkosti (GAD)' : 'With average for anxiety (GAD)'}</button>
+                <button onClick={() => { setCompareType('other'); setOtherScores(null); setOtherLabel(''); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='other' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S jiným člověkem' : 'With another person'}</button>
+                <button onClick={() => { setCompareType('pop'); setOtherScores(POP_AVG); setOtherLabel(lang==='cs'?'Průměr populace':'Population average'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='pop' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem populace' : 'With population average'}</button>
+                <button onClick={() => { setCompareType('mdd'); setOtherScores(MDD_AVG); setOtherLabel(lang==='cs'?'Průměr u deprese (MDD)':'Average for depression (MDD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='mdd' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u deprese (MDD)' : 'With average for depression (MDD)'}</button>
+                <button onClick={() => { setCompareType('gad'); setOtherScores(GAD_AVG); setOtherLabel(lang==='cs'?'Průměr u úzkosti (GAD)':'Average for anxiety (GAD)'); }} className={`w-full px-4 py-2 rounded-lg text-sm font-semibold border ${compareType==='gad' ? 'bg-blue-800/30 border-blue-400 text-blue-200' : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:text-gray-200'}`}>{lang === 'cs' ? 'S průměrem u úzkosti (GAD)' : 'With average for anxiety (GAD)'}</button>
               </div>
               {compareType === 'other' && (
                 <div className="mb-4">
                   <label className="block text-xs text-gray-400 mb-1">{lang === 'cs' ? 'Vlož JSON výsledků druhé osoby:' : "Paste JSON of other person's results:"}</label>
-                  <textarea rows={3} className="w-full p-2 rounded bg-gray-900 border border-gray-700 text-xs text-gray-200 mb-2" placeholder={'{"depression":12,"anxiety":8,"stress":10}'} value={otherLabel} onChange={e => setOtherLabel(e.target.value)} />
+                  <textarea rows={3} className="w-full p-2 rounded bg-white/[0.04] border border-white/[0.08] text-xs text-gray-200 mb-2" placeholder={'{"depression":12,"anxiety":8,"stress":10}'} value={otherLabel} onChange={e => setOtherLabel(e.target.value)} />
                   <button onClick={() => {
                     try {
                       const obj = JSON.parse(otherLabel);
@@ -135,7 +135,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
                     </thead>
                     <tbody>
                       {['depression','anxiety','stress'].map(sub => (
-                        <tr key={sub} className="border-t border-gray-800/50">
+                        <tr key={sub} className="border-t border-white/[0.05]">
                           <td className="py-1.5 text-gray-400">{SUBSCALE_LABELS[lang][sub]}</td>
                           <td className="text-center py-1.5 font-mono text-blue-300">{activeScores[sub]}</td>
                           <td className="text-center py-1.5 font-mono text-blue-400">{otherScores[sub]}</td>
@@ -147,7 +147,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
                     {['depression','anxiety','stress'].map(sub => (
                       <div key={sub} className="flex-1">
                         <div className="text-xs text-gray-400 mb-1 text-center">{SUBSCALE_LABELS[lang][sub]}</div>
-                        <div className="relative h-4 bg-gray-800 rounded-full">
+                        <div className="relative h-3 bg-white/[0.06] rounded-full">
                           <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(activeScores[sub]/activeMax)*100}%`,background:SUBSCALE_COLORS[sub],opacity:0.7}} />
                           <div className="absolute left-0 top-0 h-4 rounded-full" style={{width:`${(otherScores[sub]/activeMax)*100}%`,background:SUBSCALE_COLORS[sub],opacity:0.3}} />
                         </div>
@@ -161,7 +161,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
                 </div>
               )}
               <div className="flex gap-2 justify-end">
-                <button onClick={()=>setShowCompare(false)} className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-gray-700">{lang==='cs'?'Zavřít':'Close'}</button>
+                <button onClick={()=>setShowCompare(false)} className="px-4 py-2 rounded-lg text-xs font-semibold bg-white/[0.06] text-gray-300 hover:bg-white/[0.1]">{lang==='cs'?'Zavřít':'Close'}</button>
               </div>
             </div>
           </div>
@@ -169,20 +169,20 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* DASS-42 / DASS-21 toggle + show/hide live results */}
         <div className="flex gap-2 mb-6 items-center">
-          <button onClick={() => setShowDass21(false)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${!showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-gray-700/30 text-gray-500 hover:text-gray-300'}`}>
+          <button onClick={() => setShowDass21(false)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${!showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-white/[0.06]/30 text-gray-500 hover:text-gray-300'}`}>
             DASS-42 {lang === 'cs' ? '(plná verze)' : '(full version)'}
           </button>
-          <button onClick={() => setShowDass21(true)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-gray-700/30 text-gray-500 hover:text-gray-300'}`}>
+          <button onClick={() => setShowDass21(true)} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${showDass21 ? 'border-orange-500/40 text-orange-400 bg-orange-500/10' : 'border-white/[0.06]/30 text-gray-500 hover:text-gray-300'}`}>
             DASS-21 {lang === 'cs' ? '(zkrácená)' : '(short form)'}
           </button>
-          <button onClick={() => setShowLive(s => !s)} className={`ml-auto px-3 py-1 rounded-lg text-xs font-semibold border ${showLive ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-gray-700/30 text-gray-400 border-gray-700/20'}`}>
+          <button onClick={() => setShowLive(s => !s)} className={`ml-auto px-3 py-1 rounded-lg text-xs font-semibold border ${showLive ? 'bg-white/[0.08] text-gray-200 border-white/[0.1]' : 'bg-white/[0.03] text-gray-400 border-white/[0.05]'}`}>
             {showLive ? (lang === 'cs' ? 'Skrýt živé výsledky' : 'Hide live results') : (lang === 'cs' ? 'Zobrazit živé výsledky' : 'Show live results')}
           </button>
         </div>
 
         {/* Overview (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-scale-in">
+          <div className="frosted p-6 mb-6 animate-scale-in">
           <h2 className="text-xl font-bold text-gray-200 mb-2">{lang === 'cs' ? 'Přehled subškál' : 'Subscale Overview'}</h2>
           <p className="text-gray-500 text-xs mb-6">{lang === 'cs' ? `Celkové skóre: ${totalScore} (DASS-${showDass21 ? '21' : '42'})` : `Total score: ${totalScore} (DASS-${showDass21 ? '21' : '42'})`}</p>
           
@@ -203,7 +203,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
                     </span>
                   </div>
                 </div>
-                <div className="bg-gray-800 rounded-full h-2.5 overflow-hidden mb-2">
+                <div className="bg-white/[0.06] rounded-full h-2.5 overflow-hidden mb-2">
                   <div className="h-full rounded-full transition-all" style={{ width: `${(score / activeMax) * 100}%`, background: SUBSCALE_COLORS[sub] }} />
                 </div>
                 <p className="text-xs text-gray-500">{SUBSCALE_DESC[lang][sub]}</p>
@@ -215,7 +215,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* Severity cutoffs table (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl">
+          <div className="frosted p-6 mb-6">
           <h3 className="text-sm font-semibold text-gray-400 mb-4">{lang === 'cs' ? 'Škála závažnosti' : 'Severity Scale'} (DASS-{showDass21 ? '21' : '42'})</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -229,7 +229,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
               </thead>
               <tbody>
                 {['normal', 'mild', 'moderate', 'severe', 'extremelySevere'].map(key => (
-                  <tr key={key} className="border-t border-gray-800/50">
+                  <tr key={key} className="border-t border-white/[0.05]">
                     <td className="py-1.5 text-gray-400">{SEVERITY_LABELS[lang][key]}</td>
                     {['depression', 'anxiety', 'stress'].map(sub => {
                       const level = activeSeverity[sub].find(s => s.key === key);
@@ -250,7 +250,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* Item breakdown by subscale (live) */}
         {showLive && (
-          <div className="bg-gray-900/60 rounded-2xl border border-gray-800 p-6 mb-6 backdrop-blur-xl animate-slide-up delay-100">
+          <div className="frosted p-6 mb-6 animate-slide-up delay-100">
           <h3 className="text-lg font-semibold text-gray-300 mb-4">{lang === 'cs' ? 'Detail odpovědí podle subškál' : 'Answers by Subscale'}</h3>
           {['depression', 'anxiety', 'stress'].map(sub => {
             const indices = showDass21 ? DASS21_SUBSET[sub] : DASS42_SUBSCALES[sub];
@@ -265,13 +265,13 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
                     const val = answers[i] ?? 0;
                     const colr = val === 0 ? '#4ADE80' : val === 1 ? '#FBBF24' : val === 2 ? '#FB923C' : '#F87171';
                     return (
-                      <div key={i} className="p-2 rounded-lg border border-gray-800/30 bg-gray-800/10">
+                      <div key={i} className="p-2 rounded-lg border border-white/[0.06]/30 bg-white/[0.06]/10">
                         <div className="flex items-start gap-2 mb-1">
                           <span className="text-xs text-gray-600 shrink-0">{i + 1}.</span>
                           <span className="text-xs text-gray-400 flex-1 line-clamp-2">{questions[i]}</span>
                           <span className="text-xs font-mono font-bold shrink-0" style={{ color: colr }}>{val}</span>
                         </div>
-                        <div className="bg-gray-800 rounded-full h-1 overflow-hidden">
+                        <div className="bg-white/[0.06] rounded-full h-1 overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${(val / 3) * 100}%`, background: colr }} />
                         </div>
                       </div>
@@ -299,7 +299,7 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
 
         {/* Actions */}
         <div className="flex gap-3 mb-6">
-          {onSave && <button onClick={onSave} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
+          {onSave && <button onClick={onSave} className="px-6 py-3 bg-white/90 hover:bg-white text-[#060608] rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>}
           <button onClick={() => {
             const data = {
               test: showDass21 ? 'DASS-21' : 'DASS-42',
@@ -310,8 +310,8 @@ export default function DASS42Results({ answers, questions, lang, t, onBack, tog
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `dass${showDass21 ? '21' : '42'}_results.json`; a.click();
-          }} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">📦 JSON</button>
-          <button onClick={onBack} className="px-6 py-3 bg-gray-800/60 hover:bg-gray-700/60 rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
+          }} className="px-6 py-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-gray-300 font-semibold transition-all">JSON</button>
+          <button onClick={onBack} className="px-6 py-3 bg-white/[0.04] hover:bg-white/[0.07] rounded-xl text-gray-400 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
     </div>
