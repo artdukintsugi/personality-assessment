@@ -371,9 +371,19 @@ export default function App() {
   }, [location.pathname]);
 
   const setMode = useCallback((m) => {
-    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', audit: '/audit', dast10: '/dast10', itq: '/itq', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', audit_results: '/audit/results', dast10_results: '/dast10/results', itq_results: '/itq/results', history: '/history', profile: '/profile', sources: '/sources' };
+    const routes = { menu: '/', pid5: '/pid5', lpfs: '/lpfs', phq9: '/phq9', gad7: '/gad7', dass42: '/dass42', pcl5: '/pcl5', cati: '/cati', isi: '/isi', asrs: '/asrs', eat26: '/eat26', mdq: '/mdq', cuditr: '/cuditr', audit: '/audit', dast10: '/dast10', itq: '/itq', aq: '/aq', aq10: '/aq10', pid5_results: '/pid5/results', lpfs_results: '/lpfs/results', phq9_results: '/phq9/results', gad7_results: '/gad7/results', dass42_results: '/dass42/results', pcl5_results: '/pcl5/results', cati_results: '/cati/results', isi_results: '/isi/results', asrs_results: '/asrs/results', eat26_results: '/eat26/results', mdq_results: '/mdq/results', cuditr_results: '/cuditr/results', audit_results: '/audit/results', dast10_results: '/dast10/results', itq_results: '/itq/results', aq_results: '/aq/results', aq10_results: '/aq10/results', history: '/history', profile: '/profile', sources: '/sources' };
     navigate(routes[m] || '/');
+    window.scrollTo(0, 0);
   }, [navigate]);
+
+  // ── Toast notification ──
+  const [toast, setToast] = useState(null);
+  const toastTimeoutRef = useRef(null);
+  const showToast = useCallback((message) => {
+    setToast(message);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 2200);
+  }, []);
   const [idx, setIdx] = useState(() => lsGet(LS_KEYS.idx, 0));
   const [answers, setAnswers] = useState(() => lsGet(LS_KEYS.answers, {}));
   const [lpfsIdx, setLpfsIdx] = useState(() => lsGet(LS_KEYS.lpfsIdx, 0));
@@ -833,33 +843,45 @@ export default function App() {
     );
   };
 
+  // ═══ TOAST ═══
+  useEffect(() => {
+    if (!toast) return;
+    let el = document.getElementById('app-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'app-toast';
+      el.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none;';
+      document.body.appendChild(el);
+    }
+    el.innerHTML = `<div style="padding:10px 20px;border-radius:16px;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideUpFade 0.3s cubic-bezier(0.16,1,0.3,1) both;">${toast}</div>`;
+    return () => { if (el) el.innerHTML = ''; };
+  }, [toast]);
+
   // ═══ AUTH MODAL ═══
   const AuthModal = () => authForm && (
-    <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setAuthForm(null)}>
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">{authForm === 'login' ? t('loginTitle') : t('signupTitle')}</h3>
-        {authError && <div className="text-red-400 text-xs mb-3 p-2 rounded-lg bg-red-950/30 border border-red-500/20">{authError}</div>}
-        {/* Google OAuth */}
+    <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in" onClick={() => setAuthForm(null)}>
+      <div className="frosted p-6 w-full max-w-sm animate-scale-in" style={{ borderRadius: '24px', background: 'rgba(12,12,16,0.85)' }} onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-semibold text-white/90 mb-5">{authForm === 'login' ? t('loginTitle') : t('signupTitle')}</h3>
+        {authError && <div className="text-red-400 text-xs mb-4 p-3 rounded-xl bg-red-500/[0.08] border border-red-500/[0.15]">{authError}</div>}
         <button onClick={async () => { setAuthError(''); const res = await auth.signInWithGoogle(); if (res?.error) setAuthError(res.error.message); }}
-          className="w-full py-2.5 rounded-xl bg-white hover:bg-gray-100 text-gray-800 font-semibold text-sm mb-3 flex items-center justify-center gap-2 border border-gray-300 transition-all">
+          className="w-full py-2.5 rounded-xl bg-white hover:bg-gray-100 text-gray-800 font-semibold text-sm mb-4 flex items-center justify-center gap-2 transition-colors">
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
           {t('continueWithGoogle')}
         </button>
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex-1 h-px bg-gray-700"></div>
-          <span className="text-xs text-gray-500">{t('or')}</span>
-          <div className="flex-1 h-px bg-gray-700"></div>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 h-px bg-white/[0.06]"></div>
+          <span className="text-[11px] text-gray-600">{t('or')}</span>
+          <div className="flex-1 h-px bg-white/[0.06]"></div>
         </div>
-        {/* Email + heslo */}
         <input type="email" placeholder={t('emailPlaceholder')} value={authEmail} onChange={e => setAuthEmail(e.target.value)}
-          className="w-full mb-3 px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-sm text-gray-200 focus:outline-none focus:border-purple-500" />
+          className="w-full mb-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600" />
         <input type="password" placeholder={t('passwordPlaceholder')} value={authPass} onChange={e => setAuthPass(e.target.value)}
-          className="w-full mb-4 px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-sm text-gray-200 focus:outline-none focus:border-purple-500"
+          className="w-full mb-5 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600"
           onKeyDown={e => e.key === 'Enter' && handleAuth(authForm)} />
-        <button onClick={() => handleAuth(authForm)} className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm mb-2">
+        <button onClick={() => handleAuth(authForm)} className="w-full py-2.5 rounded-xl bg-white/90 hover:bg-white text-[#060608] font-semibold text-sm mb-3 transition-colors">
           {authForm === 'login' ? t('loginAction') : t('signupAction')}
         </button>
-        <button onClick={() => setAuthForm(authForm === 'login' ? 'signup' : 'login')} className="w-full text-center text-xs text-gray-500 hover:text-gray-300">
+        <button onClick={() => setAuthForm(authForm === 'login' ? 'signup' : 'login')} className="w-full text-center text-xs text-gray-500 hover:text-gray-300 transition-colors">
           {authForm === 'login' ? t('noAccount') : t('hasAccount')}
         </button>
       </div>
@@ -868,56 +890,55 @@ export default function App() {
 
   // ═══ ONBOARDING POPUP ═══
   const ONBOARD_STEPS = useMemo(() => lang === 'cs' ? [
-    { icon: '🧠', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 15 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
-    { icon: '📋', title: 'Jak to funguje', desc: 'Vyberte si dotazník, odpovídejte na otázky a na konci uvidíte své výsledky s podrobným skórováním. Odpovědi se automaticky ukládají — můžete se kdykoliv vrátit a pokračovat.' },
-    { icon: '🔗', title: 'Cross-reference analýza', desc: 'Po vyplnění více dotazníků systém automaticky analyzuje vztahy mezi vašimi výsledky — například jak spolu souvisí deprese, úzkost a nespavost.' },
-    { icon: '🔒', title: 'Soukromí a bezpečnost', desc: 'Vaše data jsou uložena pouze lokálně ve vašem prohlížeči. Po přihlášení se synchronizují do cloudu a zpřístupní Klinický profil. Žádná data nesdílíme s třetími stranami.' },
-    { icon: '⚕️', title: 'Důležité upozornění', desc: 'Tato aplikace je sebeposuzovací screeningový nástroj a nepředstavuje klinickou diagnózu. Pro odborné posouzení vždy konzultujte klinického psychologa nebo psychiatra.' },
+    { num: '01', title: 'Vítejte v psychodiagnostice', desc: 'Tato aplikace obsahuje 15 vědecky validovaných screeningových dotazníků pro sebeposouzení osobnosti, nálady, úzkosti, traumatu a dalších oblastí duševního zdraví.' },
+    { num: '02', title: 'Jak to funguje', desc: 'Vyberte si dotazník, odpovídejte na otázky a na konci uvidíte své výsledky s podrobným skórováním. Odpovědi se automaticky ukládají — můžete se kdykoliv vrátit a pokračovat.' },
+    { num: '03', title: 'Cross-reference analýza', desc: 'Po vyplnění více dotazníků systém automaticky analyzuje vztahy mezi vašimi výsledky — například jak spolu souvisí deprese, úzkost a nespavost.' },
+    { num: '04', title: 'Soukromí a bezpečnost', desc: 'Vaše data jsou uložena pouze lokálně ve vašem prohlížeči. Po přihlášení se synchronizují do cloudu a zpřístupní Klinický profil. Žádná data nesdílíme s třetími stranami.' },
+    { num: '05', title: 'Důležité upozornění', desc: 'Tato aplikace je sebeposuzovací screeningový nástroj a nepředstavuje klinickou diagnózu. Pro odborné posouzení vždy konzultujte klinického psychologa nebo psychiatra.' },
   ] : [
-    { icon: '🧠', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 15 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
-    { icon: '📋', title: 'How It Works', desc: 'Choose a questionnaire, answer the questions, and see your results with detailed scoring at the end. Answers are saved automatically — you can return and continue anytime.' },
-    { icon: '🔗', title: 'Cross-Reference Analysis', desc: 'After completing multiple questionnaires, the system automatically analyzes relationships between your results — e.g., how depression, anxiety, and insomnia are interconnected.' },
-    { icon: '🔒', title: 'Privacy & Security', desc: 'Your data is stored locally in your browser only. After signing in, data syncs to the cloud and unlocks the Clinical Profile. We never share data with third parties.' },
-    { icon: '⚕️', title: 'Important Notice', desc: 'This app is a self-report screening tool and does not constitute a clinical diagnosis. Always consult a clinical psychologist or psychiatrist for professional assessment.' },
+    { num: '01', title: 'Welcome to Psychodiagnostics', desc: 'This app contains 15 scientifically validated self-report screening questionnaires for personality, mood, anxiety, trauma, and other mental health domains.' },
+    { num: '02', title: 'How It Works', desc: 'Choose a questionnaire, answer the questions, and see your results with detailed scoring at the end. Answers are saved automatically — you can return and continue anytime.' },
+    { num: '03', title: 'Cross-Reference Analysis', desc: 'After completing multiple questionnaires, the system automatically analyzes relationships between your results — e.g., how depression, anxiety, and insomnia are interconnected.' },
+    { num: '04', title: 'Privacy & Security', desc: 'Your data is stored locally in your browser only. After signing in, data syncs to the cloud and unlocks the Clinical Profile. We never share data with third parties.' },
+    { num: '05', title: 'Important Notice', desc: 'This app is a self-report screening tool and does not constitute a clinical diagnosis. Always consult a clinical psychologist or psychiatrist for professional assessment.' },
   ], [lang]);
 
   const OnboardingModal = () => showOnboarding && (
-    <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-md flex items-center justify-center p-4" onClick={() => {}}>
-      <div className="bg-gray-900 border border-gray-700/60 rounded-3xl p-0 w-full max-w-md overflow-hidden shadow-2xl shadow-purple-500/10">
-        {/* Progress dots */}
-        <div className="flex justify-center gap-1.5 pt-5 pb-2">
+    <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in" onClick={() => {}}>
+      <div className="frosted w-full max-w-md overflow-hidden animate-scale-in" style={{ borderRadius: '24px', background: 'rgba(12,12,16,0.9)' }}>
+        {/* Progress */}
+        <div className="flex justify-center gap-1.5 pt-6 pb-2">
           {ONBOARD_STEPS.map((_, i) => (
-            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === onboardStep ? 'w-6 bg-purple-400' : i < onboardStep ? 'w-1.5 bg-purple-400/50' : 'w-1.5 bg-gray-700'}`} />
+            <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === onboardStep ? 'w-6 bg-white/70' : i < onboardStep ? 'w-1.5 bg-white/30' : 'w-1.5 bg-white/[0.08]'}`} />
           ))}
         </div>
         {/* Content */}
-        <div className="px-8 py-6 text-center">
-          <div className="text-5xl mb-4">{ONBOARD_STEPS[onboardStep].icon}</div>
-          <h2 className="text-xl font-bold text-gray-100 mb-3">{ONBOARD_STEPS[onboardStep].title}</h2>
+        <div className="px-8 py-8 text-center">
+          <div className="text-[11px] text-gray-600 font-medium tabular-nums mb-4">{ONBOARD_STEPS[onboardStep].num} / 05</div>
+          <h2 className="text-xl font-bold text-white/90 mb-3 tracking-tight">{ONBOARD_STEPS[onboardStep].title}</h2>
           <p className="text-sm text-gray-400 leading-relaxed">{ONBOARD_STEPS[onboardStep].desc}</p>
         </div>
-        {/* Buttons */}
+        {/* Actions */}
         <div className="px-8 pb-6 flex gap-3">
           {onboardStep > 0 && (
-            <button onClick={() => setOnboardStep(s => s - 1)} className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition-all">
+            <button onClick={() => setOnboardStep(s => s - 1)} className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-gray-300 text-sm font-medium transition-colors">
               {lang === 'cs' ? 'Zpět' : 'Back'}
             </button>
           )}
           {onboardStep < ONBOARD_STEPS.length - 1 ? (
-            <button onClick={() => setOnboardStep(s => s + 1)} className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold transition-all">
-              {lang === 'cs' ? 'Další' : 'Next'} →
+            <button onClick={() => setOnboardStep(s => s + 1)} className="flex-1 py-2.5 rounded-xl bg-white/90 hover:bg-white text-[#060608] text-sm font-semibold transition-colors">
+              {lang === 'cs' ? 'Další' : 'Next'}
             </button>
           ) : (
-            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm font-semibold transition-all">
-              {lang === 'cs' ? 'Začít používat' : 'Get Started'} ✨
+            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="flex-1 py-2.5 rounded-xl bg-white/90 hover:bg-white text-[#060608] text-sm font-semibold transition-colors">
+              {lang === 'cs' ? 'Začít' : 'Get Started'}
             </button>
           )}
         </div>
-        {/* Skip */}
         {onboardStep < ONBOARD_STEPS.length - 1 && (
           <div className="text-center pb-5">
-            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="text-xs text-gray-600 hover:text-gray-400 transition-all">
-              {lang === 'cs' ? 'Přeskočit úvod' : 'Skip intro'}
+            <button onClick={() => { setShowOnboarding(false); lsSet(LS_KEYS.onboarded, true); }} className="text-[11px] text-gray-600 hover:text-gray-400 transition-colors">
+              {lang === 'cs' ? 'Přeskočit' : 'Skip'}
             </button>
           </div>
         )}
@@ -927,7 +948,7 @@ export default function App() {
 
   // ── MENU ──
   if (mode === "menu") return (
-    <div className="min-h-screen bg-[#060608] text-white font-sans">
+    <div className="min-h-screen bg-[#060608] text-white">
       <AuthModal />
       <OnboardingModal />
 
@@ -1251,7 +1272,7 @@ export default function App() {
     if (!auth?.user) {
       // Not logged in — show login prompt
       return (
-        <div className="min-h-screen bg-[#060608] text-white font-sans flex items-center justify-center p-4">
+        <div className="min-h-screen bg-[#060608] text-white flex items-center justify-center p-4">
           <AuthModal />
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">🔒</div>
@@ -1790,7 +1811,7 @@ export default function App() {
         )}
 
         <div className="flex gap-3 mb-12">
-          <button onClick={() => { savePid5Result(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
+          <button onClick={() => { savePid5Result(); showToast(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
           <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
@@ -1960,7 +1981,7 @@ export default function App() {
         )}
 
         <div className="flex gap-3">
-          <button onClick={() => { saveLpfsResult(); alert(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
+          <button onClick={() => { saveLpfsResult(); showToast(t('resultSaved')); }} className="px-6 py-3 bg-green-700 hover:bg-green-600 rounded-xl text-white font-semibold transition-all">{t('saveResult')}</button>
           <button onClick={() => setMode("menu")} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 font-semibold transition-all">{t('menu')}</button>
         </div>
       </div>
@@ -2059,22 +2080,22 @@ export default function App() {
 
   // ═══ PHQ-9 RESULTS ═══
   if (mode === 'phq9_results') return (
-    <PHQ9Results answers={phq9Ans} questions={PHQ9_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePhq9Result(); alert(t('resultSaved')); }} />
+    <PHQ9Results answers={phq9Ans} questions={PHQ9_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePhq9Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ GAD-7 RESULTS ═══
   if (mode === 'gad7_results') return (
-    <GAD7Results answers={gad7Ans} questions={GAD7_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveGad7Result(); alert(t('resultSaved')); }} />
+    <GAD7Results answers={gad7Ans} questions={GAD7_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveGad7Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ DASS-42 RESULTS ═══
   if (mode === 'dass42_results') return (
-    <DASS42Results answers={dass42Ans} questions={DASS42_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDass42Result(); alert(t('resultSaved')); }} />
+    <DASS42Results answers={dass42Ans} questions={DASS42_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDass42Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ PCL-5 RESULTS ═══
   if (mode === 'pcl5_results') return (
-    <PCL5Results answers={pcl5Ans} questions={PCL5_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePcl5Result(); alert(t('resultSaved')); }} />
+    <PCL5Results answers={pcl5Ans} questions={PCL5_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { savePcl5Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ CATI QUESTIONNAIRE ═══
@@ -2127,12 +2148,12 @@ export default function App() {
 
   // ═══ CATI RESULTS ═══
   if (mode === 'cati_results') return (
-    <CATIResults answers={catiAns} questions={CATI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCatiResult(); alert(t('resultSaved')); }} />
+    <CATIResults answers={catiAns} questions={CATI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCatiResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ ISI RESULTS ═══
   if (mode === 'isi_results') return (
-    <ISIResults answers={isiAns} questions={ISI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveIsiResult(); alert(t('resultSaved')); }} />
+    <ISIResults answers={isiAns} questions={ISI_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveIsiResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ ASRS QUESTIONNAIRE ═══
@@ -2160,7 +2181,7 @@ export default function App() {
 
   // ═══ ASRS RESULTS ═══
   if (mode === 'asrs_results') return (
-    <ASRSResults answers={asrsAns} questions={ASRS_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAsrsResult(); alert(t('resultSaved')); }} />
+    <ASRSResults answers={asrsAns} questions={ASRS_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAsrsResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ EAT-26 QUESTIONNAIRE ═══
@@ -2198,7 +2219,7 @@ export default function App() {
 
   // ═══ EAT-26 RESULTS ═══
   if (mode === 'eat26_results') return (
-    <EAT26Results answers={eat26Ans} questions={EAT26_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveEat26Result(); alert(t('resultSaved')); }} />
+    <EAT26Results answers={eat26Ans} questions={EAT26_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveEat26Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ MDQ QUESTIONNAIRE ═══
@@ -2230,7 +2251,7 @@ export default function App() {
 
   // ═══ MDQ RESULTS ═══
   if (mode === 'mdq_results') return (
-    <MDQResults answers={mdqAns} questions={[]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveMdqResult(); alert(t('resultSaved')); }} />
+    <MDQResults answers={mdqAns} questions={[]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveMdqResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ CUDIT-R QUESTIONNAIRE ═══
@@ -2261,7 +2282,7 @@ export default function App() {
 
   // ═══ CUDIT-R RESULTS ═══
   if (mode === 'cuditr_results') return (
-    <CUDITRResults answers={cuditrAns} questions={CUDITR_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCuditrResult(); alert(t('resultSaved')); }} />
+    <CUDITRResults answers={cuditrAns} questions={CUDITR_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveCuditrResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ AUDIT QUESTIONNAIRE ═══
@@ -2302,7 +2323,7 @@ export default function App() {
 
   // ═══ AUDIT RESULTS ═══
   if (mode === 'audit_results') return (
-    <AUDITResults answers={auditAns} questions={AUDIT_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAuditResult(); alert(t('resultSaved')); }} />
+    <AUDITResults answers={auditAns} questions={AUDIT_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAuditResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ DAST-10 QUESTIONNAIRE ═══
@@ -2328,7 +2349,7 @@ export default function App() {
 
   // ═══ DAST-10 RESULTS ═══
   if (mode === 'dast10_results') return (
-    <DAST10Results answers={dast10Ans} questions={DAST10_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDast10Result(); alert(t('resultSaved')); }} />
+    <DAST10Results answers={dast10Ans} questions={DAST10_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveDast10Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ ITQ QUESTIONNAIRE ═══
@@ -2363,7 +2384,7 @@ export default function App() {
 
   // ═══ ITQ RESULTS ═══
   if (mode === 'itq_results') return (
-    <ITQResults answers={itqAns} questions={ITQ_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveItqResult(); alert(t('resultSaved')); }} />
+    <ITQResults answers={itqAns} questions={ITQ_QUESTIONS[lang]} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveItqResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ AQ-50 QUESTIONNAIRE ═══
@@ -2395,7 +2416,7 @@ export default function App() {
 
   // ═══ AQ-50 RESULTS ═══
   if (mode === 'aq_results') return (
-    <AQResults answers={aqAns} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAqResult(); alert(t('resultSaved')); }} />
+    <AQResults answers={aqAns} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAqResult(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ AQ-10 QUESTIONNAIRE ═══
@@ -2418,12 +2439,12 @@ export default function App() {
 
   // ═══ AQ-10 RESULTS ═══
   if (mode === 'aq10_results') return (
-    <AQ10Results answers={aq10Ans} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAq10Result(); alert(t('resultSaved')); }} />
+    <AQ10Results answers={aq10Ans} lang={lang} t={t} onBack={() => setMode('menu')} toggleLang={toggleLang} onSave={() => { saveAq10Result(); showToast(t('resultSaved')); }} />
   );
 
   // ═══ SOURCES / REFERENCES PAGE ═══
   if (mode === 'sources') return (
-    <div className="min-h-screen bg-[#060608] text-white font-sans">
+    <div className="min-h-screen bg-[#060608] text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">{lang === 'cs' ? 'Zdroje & Reference' : 'Sources & References'}</h1>
