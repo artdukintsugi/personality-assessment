@@ -984,10 +984,29 @@ export function getTestStatus(history, lang = 'cs') {
       else if (s >= 1.5) { status = 'elevated'; label = lang === 'cs' ? 'Nad klinickým prahem' : 'Above Clinical Threshold'; }
       else { status = 'ok'; label = lang === 'cs' ? 'V normě' : 'Normal'; }
     } else if (h.type === 'dass42') {
-      const s = h.score ?? 0;
-      if (s >= 60) { status = 'critical'; label = lang === 'cs' ? 'Těžké zatížení' : 'Severe Burden'; }
-      else if (s >= 30) { status = 'elevated'; label = lang === 'cs' ? 'Střední zatížení' : 'Moderate Burden'; }
-      else { status = 'ok'; label = lang === 'cs' ? 'Nízké' : 'Low'; }
+      const dep = h.depression ?? h.fullData?.depression;
+      const anx = h.anxiety   ?? h.fullData?.anxiety;
+      const str = h.stress    ?? h.fullData?.stress;
+      if (dep != null && anx != null && str != null) {
+        // Evaluate by worst subscale using DASS-42 clinical cut-offs
+        const depSev = dep >= 28 ? 4 : dep >= 21 ? 3 : dep >= 14 ? 2 : dep >= 10 ? 1 : 0;
+        const anxSev = anx >= 20 ? 4 : anx >= 15 ? 3 : anx >= 10 ? 2 : anx >= 8  ? 1 : 0;
+        const strSev = str >= 34 ? 4 : str >= 26 ? 3 : str >= 19 ? 2 : str >= 15 ? 1 : 0;
+        const worst = Math.max(depSev, anxSev, strSev);
+        const worstSub = depSev >= anxSev && depSev >= strSev ? (lang === 'cs' ? 'deprese' : 'depression')
+          : anxSev >= strSev ? (lang === 'cs' ? 'úzkost' : 'anxiety') : (lang === 'cs' ? 'stres' : 'stress');
+        if (worst >= 4)      { status = 'critical'; label = lang === 'cs' ? `Extrémní — ${worstSub}` : `Extremely Severe — ${worstSub}`; }
+        else if (worst >= 3) { status = 'elevated'; label = lang === 'cs' ? `Těžké — ${worstSub}` : `Severe — ${worstSub}`; }
+        else if (worst >= 2) { status = 'warning';  label = lang === 'cs' ? `Střední — ${worstSub}` : `Moderate — ${worstSub}`; }
+        else if (worst >= 1) { status = 'ok';       label = lang === 'cs' ? 'Mírné' : 'Mild'; }
+        else                 { status = 'ok';       label = lang === 'cs' ? 'V normě' : 'Normal'; }
+      } else {
+        // Fallback for old data (only total saved)
+        const s = h.score ?? 0;
+        if (s >= 60) { status = 'critical'; label = lang === 'cs' ? 'Těžké zatížení' : 'Severe'; }
+        else if (s >= 30) { status = 'elevated'; label = lang === 'cs' ? 'Střední zatížení' : 'Moderate'; }
+        else { status = 'ok'; label = lang === 'cs' ? 'Nízké' : 'Low'; }
+      }
     } else if (h.type === 'aq') {
       const s = h.score ?? 0;
       if (s >= 32) { status = 'elevated'; label = lang === 'cs' ? 'Zvýšené autistické rysy' : 'Elevated Autistic Traits'; }

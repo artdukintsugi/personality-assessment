@@ -27,13 +27,25 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
     if (testKey === 'pid5') return <span className="text-xs text-gray-500">{histEntry?.topDiags?.length || 0} {lang === 'cs' ? 'profilů' : 'profiles'}</span>;
     if (testKey === 'lpfs') return <span className="text-sm font-mono tabular-nums" style={{ color: st.color }}>{(histEntry?.score ?? 0).toFixed(2)}</span>;
     if (testKey === 'mdq') return <span className={`text-xs font-medium ${histEntry?.positive ? 'text-red-400' : 'text-green-400'}`}>{histEntry?.positive ? (lang === 'cs' ? 'Pozitivní' : 'Positive') : (lang === 'cs' ? 'Negativní' : 'Negative')}</span>;
+    if (testKey === 'asrs') {
+      // Old data stores partA (0–6), new stores total (0–18) — show partA/6 for old, total/18 for new
+      const score = histEntry?.score ?? 0;
+      if (score <= 6) return <span className="text-sm font-mono tabular-nums" style={{ color: STATUS_STYLES[st.status]?.dot }}>{score}<span className="text-gray-600 text-xs">/6 Part A</span></span>;
+      return <span className="text-sm font-mono tabular-nums" style={{ color: STATUS_STYLES[st.status]?.dot }}>{score}<span className="text-gray-600 text-xs">/18</span></span>;
+    }
+    if (testKey === 'dass42' && (histEntry?.depression != null)) {
+      const dep = histEntry.depression; const anx = histEntry.anxiety; const str = histEntry.stress;
+      return <span className="text-xs text-gray-400 tabular-nums">D:{dep} A:{anx} S:{str}</span>;
+    }
     return <span className="text-sm font-mono tabular-nums" style={{ color: STATUS_STYLES[st.status]?.dot }}>{histEntry?.score ?? '–'}</span>;
   };
 
   const TestRow = ({ testKey, histEntry }) => {
     const st = testStatuses[testKey];
     const sty = STATUS_STYLES[st.status];
-    const pct = histEntry?.score != null && MAX_SCORES[testKey] ? Math.round((histEntry.score / MAX_SCORES[testKey]) * 100) : null;
+    // ASRS: old data (score ≤6) = partA out of 6, new = total out of 18
+    const asrsMax = testKey === 'asrs' && histEntry?.score != null && histEntry.score <= 6 ? 6 : MAX_SCORES[testKey];
+    const pct = histEntry?.score != null && asrsMax ? Math.round((histEntry.score / asrsMax) * 100) : null;
     const date = histEntry?.date ? new Date(histEntry.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'cs-CZ', { day: 'numeric', month: 'short' }) : null;
 
     return (

@@ -574,8 +574,12 @@ export default function App() {
   }, [gad7Ans, saveToHistory]);
 
   const saveDass42Result = useCallback(() => {
-    const total = Object.values(dass42Ans).reduce((a,b) => a+b, 0);
-    saveToHistory('dass42', { score: total, fullData: { score: total, odpovedi: dass42Ans } });
+    const subs = {};
+    for (const [sub, indices] of Object.entries(DASS42_SUBSCALES)) {
+      subs[sub] = indices.reduce((sum, i) => sum + (dass42Ans[i] ?? 0), 0);
+    }
+    const total = Object.values(subs).reduce((a,b) => a+b, 0);
+    saveToHistory('dass42', { score: total, depression: subs.depression, anxiety: subs.anxiety, stress: subs.stress, fullData: { score: total, ...subs, odpovedi: dass42Ans } });
   }, [dass42Ans, saveToHistory]);
 
   const savePcl5Result = useCallback(() => {
