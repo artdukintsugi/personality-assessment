@@ -11,6 +11,25 @@ const STATUS_STYLES = {
 
 const MAX_SCORES = { phq9: 27, gad7: 21, dass42: 126, pcl5: 80, cati: 210, isi: 28, asrs: 18, eat26: 78, cuditr: 32, itq: 72, audit: 40, dast10: 10, aq: 50, aq10: 10 };
 
+const STALE_WARN = 90;   // days → amber badge
+const STALE_OLD  = 180;  // days → red badge
+
+function daysAgo(dateStr) {
+  if (!dateStr) return null;
+  return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
+}
+
+function stalenessLabel(days, lang) {
+  if (days === null) return null;
+  if (days < 30) return null;
+  const cs = lang === 'cs';
+  if (days < 60)  return cs ? '1 měs.' : '1 mo.';
+  if (days < 90)  return cs ? '2 měs.' : '2 mo.';
+  if (days < 180) return cs ? `${Math.floor(days/30)} měs.` : `${Math.floor(days/30)} mo.`;
+  if (days < 365) return cs ? `${Math.floor(days/30)} měs.` : `${Math.floor(days/30)} mo.`;
+  return cs ? `${Math.floor(days/365)} r.` : `${Math.floor(days/365)} yr.`;
+}
+
 export default function PatientProfile({ history, lang, onGoToTest, onViewResult, toggleLang, onBack, userEmail }) {
   useMemo(() => createT(lang), [lang]);
   const [showAllTests, setShowAllTests] = useState(false);
@@ -23,8 +42,12 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
 
   const flagged   = completedTests.filter(k => ['elevated', 'critical'].includes(testStatuses[k].status));
   const critical  = completedTests.filter(k => testStatuses[k].status === 'critical');
-  const warning   = completedTests.filter(k => testStatuses[k].status === 'warning');
-  const ok        = completedTests.filter(k => testStatuses[k].status === 'ok');
+
+  const staleTests = completedTests.filter(k => {
+    const entry = history.find(h => h.type === k);
+    const d = daysAgo(entry?.date);
+    return d !== null && d >= STALE_WARN;
+  });
 
   const ScoreDisplay = ({ testKey, histEntry, st }) => {
     if (testKey === 'pid5') return <span className="text-xs text-gray-500">{histEntry?.topDiags?.length || 0} {lang === 'cs' ? 'profilů' : 'profiles'}</span>;
@@ -50,6 +73,10 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
     const asrsMax = testKey === 'asrs' && histEntry?.score != null && histEntry.score <= 6 ? 6 : MAX_SCORES[testKey];
     const pct = histEntry?.score != null && asrsMax ? Math.round((histEntry.score / asrsMax) * 100) : null;
     const date = histEntry?.date ? new Date(histEntry.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'cs-CZ', { day: 'numeric', month: 'short' }) : null;
+    const days = daysAgo(histEntry?.date);
+    const ageLabel = stalenessLabel(days, lang);
+    const isVeryStale = days !== null && days >= STALE_OLD;
+    const isStale     = days !== null && days >= STALE_WARN;
 
     return (
       <div className="test-row px-5 py-3.5 flex items-center gap-4 group">
@@ -60,6 +87,11 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
             <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${sty.bg} ${sty.border} ${sty.text} border`}>
               {st.label}
             </span>
+            {isStale && (
+              <span className={`text-[11px] px-1.5 py-0.5 rounded-md border ${isVeryStale ? 'bg-red-500/[0.08] border-red-500/[0.2] text-red-400' : 'bg-amber-500/[0.08] border-amber-500/[0.2] text-amber-400'}`}>
+                {ageLabel} {lang === 'cs' ? '· zastaralé' : '· outdated'}
+              </span>
+            )}
           </div>
           {pct !== null && (
             <div className="mt-1.5 flex items-center gap-2">
@@ -144,6 +176,33 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
                   <div className="text-[11px] text-gray-500 mt-0.5 uppercase tracking-wide">{lang === 'cs' ? 'Překryvů' : 'Overlaps'}</div>
                 </div>
               </div>
+
+              {/* Staleness banner */}
+              {staleTests.length > 0 && (
+                <div className="mb-4 px-4 py-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.18] flex items-start gap-3">
+                  <span className="text-amber-400 mt-0.5 shrink-0">⏱</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-amber-300/90">
+                      {lang === 'cs'
+                        ? `${staleTests.length} ${staleTests.length === 1 ? 'test je zastaralý' : staleTests.length < 5 ? 'testy jsou zastaralé' : 'testů je zastaralých'}`
+                        : `${staleTests.length} ${staleTests.length === 1 ? 'test is outdated' : 'tests are outdated'}`}
+                    </p>
+                    <p className="text-xs text-amber-400/60 mt-0.5">
+                      {lang === 'cs'
+                        ? 'Pro aktuální výsledky zvažte opakování testů starších 3 měsíců.'
+                        : 'For current results, consider retaking tests older than 3 months.'}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {staleTests.map(k => (
+                        <button key={k} onClick={() => onGoToTest(k)}
+                          className="text-[11px] px-2 py-1 rounded-lg bg-amber-500/[0.1] border border-amber-500/[0.2] text-amber-400 hover:bg-amber-500/[0.18] transition-colors">
+                          {testStatuses[k].name} →
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Status overview — all tests as dot grid */}
               <div className="frosted px-5 py-4">
