@@ -12,7 +12,7 @@ const STATUS_STYLES = {
 const MAX_SCORES = { phq9: 27, gad7: 21, dass42: 126, pcl5: 80, cati: 210, isi: 28, asrs: 18, eat26: 78, cuditr: 32, itq: 72, audit: 40, dast10: 10, aq: 50, aq10: 10 };
 
 export default function PatientProfile({ history, lang, onGoToTest, onViewResult, toggleLang, onBack, userEmail }) {
-  const t = useMemo(() => createT(lang), [lang]);
+  useMemo(() => createT(lang), [lang]);
   const [showAllTests, setShowAllTests] = useState(false);
 
   const crossRefs = useMemo(() => generateCrossReferences(history, lang), [history, lang]);
@@ -21,7 +21,10 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
   const allTestKeys = Object.keys(TEST_META);
   const missingTests = allTestKeys.filter(k => !testStatuses[k]);
 
-  const flagged = completedTests.filter(k => ['elevated', 'critical'].includes(testStatuses[k].status));
+  const flagged   = completedTests.filter(k => ['elevated', 'critical'].includes(testStatuses[k].status));
+  const critical  = completedTests.filter(k => testStatuses[k].status === 'critical');
+  const warning   = completedTests.filter(k => testStatuses[k].status === 'warning');
+  const ok        = completedTests.filter(k => testStatuses[k].status === 'ok');
 
   const ScoreDisplay = ({ testKey, histEntry, st }) => {
     if (testKey === 'pid5') return <span className="text-xs text-gray-500">{histEntry?.topDiags?.length || 0} {lang === 'cs' ? 'profilů' : 'profiles'}</span>;
@@ -89,7 +92,7 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
     <div className="min-h-screen bg-[#060608] text-white">
       <div className="max-w-3xl mx-auto px-6 py-8 md:py-12">
 
-        {/* Header */}
+        {/* Nav */}
         <div className="flex items-center justify-between mb-10">
           <button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
             ← {lang === 'cs' ? 'Menu' : 'Menu'}
@@ -109,38 +112,74 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
           </div>
         </div>
 
-        {/* Title */}
-        <div className="mb-8">
-          <h1 className="heading-xl text-white/95 mb-1">{lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}</h1>
-          <p className="text-sm text-gray-500">
-            {completedTests.length === 0
-              ? (lang === 'cs' ? 'Žádné uložené výsledky' : 'No saved results yet')
-              : (lang === 'cs' ? `${completedTests.length} z ${allTestKeys.length} nástrojů dokončeno` : `${completedTests.length} of ${allTestKeys.length} instruments completed`)}
-          </p>
+        {/* ── DASHBOARD ──────────────────────────────── */}
+        <div className="mb-10 animate-scale-in">
+          <h1 className="heading-xl text-white/95 mb-6">{lang === 'cs' ? 'Klinický profil' : 'Clinical Profile'}</h1>
+
+          {completedTests.length === 0 ? (
+            <div className="frosted p-10 text-center">
+              <p className="text-gray-500 text-sm mb-6 max-w-sm mx-auto">
+                {lang === 'cs'
+                  ? 'Vyplňte alespoň jeden dotazník a uložte výsledky, abyste viděli svůj klinický profil.'
+                  : 'Complete and save at least one questionnaire to see your clinical profile here.'}
+              </p>
+              <button onClick={onBack} className="px-5 py-2.5 rounded-xl bg-white/90 text-[#060608] font-semibold text-sm hover:bg-white transition-colors">
+                {lang === 'cs' ? 'Přejít na dotazníky' : 'Go to questionnaires'}
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Stat row */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="frosted px-4 py-3.5 text-center">
+                  <div className="text-2xl font-bold tabular-nums text-white/90">{completedTests.length}<span className="text-sm text-gray-600 font-normal">/{allTestKeys.length}</span></div>
+                  <div className="text-[11px] text-gray-500 mt-0.5 uppercase tracking-wide">{lang === 'cs' ? 'Dokončeno' : 'Completed'}</div>
+                </div>
+                <div className={`px-4 py-3.5 text-center rounded-2xl border ${flagged.length > 0 ? 'bg-orange-500/[0.06] border-orange-500/[0.15]' : 'frosted'}`}>
+                  <div className={`text-2xl font-bold tabular-nums ${flagged.length > 0 ? 'text-orange-400' : 'text-white/90'}`}>{flagged.length}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5 uppercase tracking-wide">{lang === 'cs' ? 'Zvýšených' : 'Elevated'}</div>
+                </div>
+                <div className={`px-4 py-3.5 text-center rounded-2xl border ${crossRefs.length > 0 ? 'bg-purple-500/[0.06] border-purple-500/[0.15]' : 'frosted'}`}>
+                  <div className={`text-2xl font-bold tabular-nums ${crossRefs.length > 0 ? 'text-purple-400' : 'text-white/90'}`}>{crossRefs.length}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5 uppercase tracking-wide">{lang === 'cs' ? 'Překryvů' : 'Overlaps'}</div>
+                </div>
+              </div>
+
+              {/* Status overview — all tests as dot grid */}
+              <div className="frosted px-5 py-4">
+                <p className="text-[11px] text-gray-600 uppercase tracking-wider font-medium mb-3">{lang === 'cs' ? 'Přehled' : 'Overview'}</p>
+                <div className="flex flex-wrap gap-2">
+                  {completedTests.map(k => {
+                    const st = testStatuses[k];
+                    const sty = STATUS_STYLES[st.status];
+                    return (
+                      <button key={k} onClick={() => onViewResult(history.find(h => h.type === k))}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all hover:brightness-110 ${sty.bg} ${sty.border} ${sty.text}`}>
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: sty.dot }} />
+                        {st.name}
+                      </button>
+                    );
+                  })}
+                  {missingTests.length > 0 && (
+                    <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-gray-600 border border-white/[0.05]">
+                      +{missingTests.length} {lang === 'cs' ? 'nevyplněných' : 'incomplete'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Empty state */}
-        {completedTests.length === 0 && (
-          <div className="frosted p-10 text-center mb-8">
-            <p className="text-gray-500 text-sm mb-6 max-w-sm mx-auto">
-              {lang === 'cs'
-                ? 'Vyplňte alespoň jeden dotazník a uložte výsledky, abyste viděli svůj klinický profil.'
-                : 'Complete and save at least one questionnaire to see your clinical profile here.'}
-            </p>
-            <button onClick={onBack} className="px-5 py-2.5 rounded-xl bg-white/90 text-[#060608] font-semibold text-sm hover:bg-white transition-colors">
-              {lang === 'cs' ? 'Přejít na dotazníky' : 'Go to questionnaires'}
-            </button>
-          </div>
-        )}
-
-        {/* Flagged findings */}
+        {/* ── ELEVATED FINDINGS ──────────────────────── */}
         {flagged.length > 0 && (
           <div className="mb-8 animate-slide-up">
             <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1 mb-3">
               {lang === 'cs' ? 'Zvýšené nálezy' : 'Elevated Findings'}
             </p>
-            <div className="rounded-2xl overflow-hidden border border-orange-500/[0.12] bg-orange-500/[0.04] divide-y divide-white/[0.05]">
-              {flagged.map(k => {
+            <div className="rounded-2xl overflow-hidden border border-orange-500/[0.12] bg-orange-500/[0.03] divide-y divide-white/[0.05]">
+              {/* Critical first */}
+              {[...critical, ...flagged.filter(k => !critical.includes(k))].map(k => {
                 const histEntry = history.find(h => h.type === k);
                 return <TestRow key={k} testKey={k} histEntry={histEntry} />;
               })}
@@ -148,14 +187,50 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
           </div>
         )}
 
-        {/* Results by category */}
-        {completedTests.length > 0 && (
+        {/* ── DIAGNOSTIC OVERLAPS ────────────────────── */}
+        {crossRefs.length > 0 && (
           <div className="mb-8 animate-slide-up delay-50">
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1 mb-3">
+              {lang === 'cs' ? 'Diagnostické překryvy' : 'Diagnostic Overlaps'}
+            </p>
+            <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05]">
+              {crossRefs.map(ref => {
+                const strengthDot = ref.strength === 'strong' ? '#F87171' : ref.strength === 'moderate' ? '#FBBF24' : '#60A5FA';
+                const strengthText = ref.strength === 'strong' ? 'text-red-400' : ref.strength === 'moderate' ? 'text-amber-400' : 'text-blue-400';
+                return (
+                  <div key={ref.id} className="px-5 py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: strengthDot, opacity: 0.85 }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-white/90 mb-1">{ref.title[lang]}</div>
+                        <div className="text-xs text-gray-500 leading-relaxed mb-2">{ref.description[lang]}</div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {ref.tests.map(tk => (
+                            <span key={tk} className="text-[11px] px-1.5 py-0.5 rounded bg-white/[0.05] text-gray-500 font-mono border border-white/[0.06]">
+                              {TEST_META[tk]?.name || tk}
+                            </span>
+                          ))}
+                          <span className={`text-[11px] ${strengthText} ml-1`}>
+                            {ref.strength === 'strong' ? (lang === 'cs' ? 'silná vazba' : 'strong') : ref.strength === 'moderate' ? (lang === 'cs' ? 'střední' : 'moderate') : (lang === 'cs' ? 'naznačující' : 'suggestive')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── ALL RESULTS ────────────────────────────── */}
+        {completedTests.length > 0 && (
+          <div className="mb-8 animate-slide-up delay-100">
             <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1 mb-3">
               {lang === 'cs' ? 'Všechny výsledky' : 'All Results'}
             </p>
             {CLINICAL_DOMAINS.map(domain => {
-              const doneInDomain = domain.tests.filter(k => testStatuses[k] && !flagged.includes(k));
+              const doneInDomain = domain.tests.filter(k => testStatuses[k]);
               const missingInDomain = domain.tests.filter(k => !testStatuses[k]);
               if (doneInDomain.length === 0 && (!showAllTests || missingInDomain.length === 0)) return null;
               return (
@@ -194,48 +269,12 @@ export default function PatientProfile({ history, lang, onGoToTest, onViewResult
           </div>
         )}
 
-        {/* Cross-references */}
-        {crossRefs.length > 0 && (
-          <div className="mb-8 animate-slide-up delay-100">
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-medium px-1 mb-3">
-              {lang === 'cs' ? 'Vzájemné překryvy' : 'Diagnostic Overlaps'}
-            </p>
-            <div className="rounded-2xl frosted overflow-hidden divide-y divide-white/[0.05]">
-              {crossRefs.map(ref => {
-                const strengthColor = ref.strength === 'strong' ? 'text-red-400' : ref.strength === 'moderate' ? 'text-amber-400' : 'text-blue-400';
-                const strengthDot = ref.strength === 'strong' ? '#F87171' : ref.strength === 'moderate' ? '#FBBF24' : '#60A5FA';
-                return (
-                  <div key={ref.id} className="px-5 py-4">
-                    <div className="flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: strengthDot, opacity: 0.8 }} />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-white/90 mb-1">{ref.title[lang]}</div>
-                        <div className="text-xs text-gray-500 leading-relaxed mb-2">{ref.description[lang]}</div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {ref.tests.map(tk => (
-                            <span key={tk} className="text-[11px] px-1.5 py-0.5 rounded bg-white/[0.05] text-gray-500 font-mono border border-white/[0.06]">
-                              {TEST_META[tk]?.name || tk}
-                            </span>
-                          ))}
-                          <span className={`text-[11px] ${strengthColor} ml-1`}>
-                            {ref.strength === 'strong' ? (lang === 'cs' ? 'silná vazba' : 'strong link') : ref.strength === 'moderate' ? (lang === 'cs' ? 'středně silná' : 'moderate') : (lang === 'cs' ? 'naznačující' : 'suggestive')}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Disclaimer */}
         {completedTests.length > 0 && (
           <p className="text-xs text-gray-600 leading-relaxed text-center px-4 mb-10">
             {lang === 'cs'
-              ? 'Výsledky jsou generovány ze sebeposuzovacích dotazníků a neslouží jako klinická diagnóza. Překryvy ukazují statisticky známé komorbidity, nikoli kauzální vztahy. Konzultujte klinického psychologa nebo psychiatra.'
-              : 'Results are generated from self-report questionnaires and do not constitute a clinical diagnosis. Overlaps indicate statistically known comorbidities, not causal relationships. Consult a clinical psychologist or psychiatrist.'}
+              ? 'Výsledky jsou ze sebeposuzovacích dotazníků a neslouží jako klinická diagnóza. Překryvy ukazují statisticky známé komorbidity, nikoli kauzální vztahy. Konzultujte odborníka.'
+              : 'Results are from self-report questionnaires and do not constitute a clinical diagnosis. Overlaps indicate statistically known comorbidities, not causal relationships. Consult a professional.'}
           </p>
         )}
 
