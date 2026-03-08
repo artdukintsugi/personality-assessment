@@ -114,44 +114,6 @@ export function generateCrossReferences(history, lang = 'cs') {
     });
   }
 
-  // ─── 2. Depression + DASS-42 Depression concordance ───
-  if (phq9 !== null && phq9 >= 10 && dassD !== null && dassD >= 14) {
-    refs.push({
-      id: 'dep_dass_concordance',
-      tests: ['phq9', 'dass42'],
-      strength: 'strong',
-      icon: '✓',
-      color: '#10B981',
-      title: {
-        cs: 'Depresivní symptomy potvrzeny dvěma nástroji',
-        en: 'Depressive Symptoms Confirmed by Two Instruments',
-      },
-      description: {
-        cs: `PHQ-9 (${phq9}/27) i DASS-42 depresní subškála (${dassD}) shodně ukazují na klinicky významnou depresi. Shoda dvou nezávislých nástrojů zvyšuje spolehlivost nálezu.`,
-        en: `PHQ-9 (${phq9}/27) and DASS-42 depression subscale (${dassD}) both indicate clinically significant depression. Agreement between two independent instruments increases finding reliability.`,
-      },
-    });
-  }
-
-  // ─── 3. Anxiety + DASS-42 Anxiety concordance ───
-  if (gad7 !== null && gad7 >= 10 && dassA !== null && dassA >= 10) {
-    refs.push({
-      id: 'anx_dass_concordance',
-      tests: ['gad7', 'dass42'],
-      strength: 'strong',
-      icon: '✓',
-      color: '#10B981',
-      title: {
-        cs: 'Úzkostné symptomy potvrzeny dvěma nástroji',
-        en: 'Anxiety Symptoms Confirmed by Two Instruments',
-      },
-      description: {
-        cs: `GAD-7 (${gad7}/21) i DASS-42 úzkostná subškála (${dassA}) shodně indikují klinicky významnou úzkost. Konvergentní validita dvou nástrojů posiluje diagnostický nález.`,
-        en: `GAD-7 (${gad7}/21) and DASS-42 anxiety subscale (${dassA}) both indicate clinically significant anxiety. Convergent validity of two instruments strengthens the diagnostic finding.`,
-      },
-    });
-  }
-
   // ─── 4. PTSD + Depression ───
   if (pcl5 !== null && pcl5 >= PCL5_CUTOFF && phq9 !== null && phq9 >= 10) {
     refs.push({
@@ -726,25 +688,6 @@ export function generateCrossReferences(history, lang = 'cs') {
       description: {
         cs: `ITQ indikuje CPTSD a PHQ-9 (${phq9}) ukazuje depresi. Deprese je jednou z nejčastějších komorbidních diagnóz u CPTSD. DSO komponenta (negativní sebepojetí, dysregulace afektu) se s depresí značně překrývá.`,
         en: `ITQ indicates CPTSD and PHQ-9 (${phq9}) shows depression. Depression is one of the most common comorbid diagnoses with CPTSD. The DSO component (negative self-concept, affect dysregulation) significantly overlaps with depression.`,
-      },
-    });
-  }
-
-  // ─── ITQ: PTSD concordance with PCL-5 ───
-  if ((itqDx === 'ptsd' || itqDx === 'cptsd') && pcl5 !== null && pcl5 >= PCL5_CUTOFF) {
-    refs.push({
-      id: 'itq_pcl5_concordance',
-      tests: ['itq', 'pcl5'],
-      strength: 'strong',
-      icon: '✓',
-      color: '#F43F5E',
-      title: {
-        cs: 'PTSD potvrzeno dvěma nástroji (ICD-11 + DSM-5)',
-        en: 'PTSD Confirmed by Two Instruments (ICD-11 + DSM-5)',
-      },
-      description: {
-        cs: `ITQ (ICD-11: ${itqDx?.toUpperCase()}) a PCL-5 (${pcl5}, DSM-5 cut-off ≥${PCL5_CUTOFF}) oba potvrzují traumatickou symptomatiku. Shoda ICD-11 a DSM-5 nástrojů výrazně zvyšuje diagnostickou jistotu.`,
-        en: `ITQ (ICD-11: ${itqDx?.toUpperCase()}) and PCL-5 (${pcl5}, DSM-5 cut-off ≥${PCL5_CUTOFF}) both confirm trauma symptomatology. Agreement between ICD-11 and DSM-5 instruments significantly increases diagnostic confidence.`,
       },
     });
   }
